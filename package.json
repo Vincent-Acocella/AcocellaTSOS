@@ -1,0 +1,22 @@
+{
+  "name": "tsos-2019-master",
+  "version": "1.0.0",
+  "description": "2019 Browser-based Operating System in TypeScript =================================================",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Vincent-Acocella/TSOS-2019-master.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Vincent-Acocella/TSOS-2019-master/issues"
+  },
+  "homepage": "https://github.com/Vincent-Acocella/TSOS-2019-master#readme"
+}

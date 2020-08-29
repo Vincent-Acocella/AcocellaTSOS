@@ -9,34 +9,35 @@
    ------------ */
 var TSOS;
 (function (TSOS) {
-    class Queue {
-        constructor(q = new Array()) {
+    var Queue = /** @class */ (function () {
+        function Queue(q) {
+            if (q === void 0) { q = new Array(); }
             this.q = q;
         }
-        getSize() {
+        Queue.prototype.getSize = function () {
             return this.q.length;
-        }
-        isEmpty() {
+        };
+        Queue.prototype.isEmpty = function () {
             return (this.q.length == 0);
-        }
-        enqueue(element) {
+        };
+        Queue.prototype.enqueue = function (element) {
             this.q.push(element);
-        }
-        dequeue() {
+        };
+        Queue.prototype.dequeue = function () {
             var retVal = null;
             if (this.q.length > 0) {
                 retVal = this.q.shift();
             }
             return retVal;
-        }
-        toString() {
+        };
+        Queue.prototype.toString = function () {
             var retVal = "";
             for (var i in this.q) {
                 retVal += "[" + this.q[i] + "] ";
             }
             return retVal;
-        }
-    }
+        };
+        return Queue;
+    }());
     TSOS.Queue = Queue;
 })(TSOS || (TSOS = {}));
-//# sourceMappingURL=queue.js.map

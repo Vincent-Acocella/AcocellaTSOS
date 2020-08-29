@@ -6,26 +6,31 @@
      ------------ */
 var TSOS;
 (function (TSOS) {
-    class Console {
-        constructor(currentFont = _DefaultFontFamily, currentFontSize = _DefaultFontSize, currentXPosition = 0, currentYPosition = _DefaultFontSize, buffer = "") {
+    var Console = /** @class */ (function () {
+        function Console(currentFont, currentFontSize, currentXPosition, currentYPosition, buffer) {
+            if (currentFont === void 0) { currentFont = _DefaultFontFamily; }
+            if (currentFontSize === void 0) { currentFontSize = _DefaultFontSize; }
+            if (currentXPosition === void 0) { currentXPosition = 0; }
+            if (currentYPosition === void 0) { currentYPosition = _DefaultFontSize; }
+            if (buffer === void 0) { buffer = ""; }
             this.currentFont = currentFont;
             this.currentFontSize = currentFontSize;
             this.currentXPosition = currentXPosition;
             this.currentYPosition = currentYPosition;
             this.buffer = buffer;
         }
-        init() {
+        Console.prototype.init = function () {
             this.clearScreen();
             this.resetXY();
-        }
-        clearScreen() {
+        };
+        Console.prototype.clearScreen = function () {
             _DrawingContext.clearRect(0, 0, _Canvas.width, _Canvas.height);
-        }
-        resetXY() {
+        };
+        Console.prototype.resetXY = function () {
             this.currentXPosition = 0;
             this.currentYPosition = this.currentFontSize;
-        }
-        handleInput() {
+        };
+        Console.prototype.handleInput = function () {
             while (_KernelInputQueue.getSize() > 0) {
                 // Get the next character from the kernel input queue.
                 var chr = _KernelInputQueue.dequeue();
@@ -46,8 +51,8 @@ var TSOS;
                 }
                 // TODO: Add a case for Ctrl-C that would allow the user to break the current program.
             }
-        }
-        putText(text) {
+        };
+        Console.prototype.putText = function (text) {
             /*  My first inclination here was to write two functions: putChar() and putString().
                 Then I remembered that JavaScript is (sadly) untyped and it won't differentiate
                 between the two. (Although TypeScript would. But we're compiling to JavaScipt anyway.)
@@ -62,8 +67,8 @@ var TSOS;
                 var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, text);
                 this.currentXPosition = this.currentXPosition + offset;
             }
-        }
-        advanceLine() {
+        };
+        Console.prototype.advanceLine = function () {
             this.currentXPosition = 0;
             /*
              * Font size measures from the baseline to the highest point in the font.
@@ -74,8 +79,8 @@ var TSOS;
                 _DrawingContext.fontDescent(this.currentFont, this.currentFontSize) +
                 _FontHeightMargin;
             // TODO: Handle scrolling. (iProject 1)
-        }
-    }
+        };
+        return Console;
+    }());
     TSOS.Console = Console;
 })(TSOS || (TSOS = {}));
-//# sourceMappingURL=console.js.map

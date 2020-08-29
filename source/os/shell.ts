@@ -24,11 +24,35 @@ module TSOS {
             var sc: ShellCommand;
             //
             // Load the command list.
-
             // ver
             sc = new ShellCommand(this.shellVer,
                                   "ver",
                                   "- Displays the current version data.");
+            this.commandList[this.commandList.length] = sc;
+
+            //date
+            sc = new ShellCommand(this.shellDate, 
+                                "date",
+                                "-Displays the current dateTime.")
+            this.commandList[this.commandList.length] = sc;
+
+            //status
+            sc = new ShellCommand(this.shellStatus, 
+                "setstatus",
+                "-set a new status.")
+            this.commandList[this.commandList.length] = sc;
+
+
+            //whereami                   
+            sc = new ShellCommand(this.shellWhereAmi, 
+                                "whereami",
+                                "-You were probably frozen for 70 years.")
+            this.commandList[this.commandList.length] = sc;
+
+            //flipacoin
+            sc = new ShellCommand(this.shellcoinflip, 
+                                "flipacoin",
+                                "-Heads or Tails.")
             this.commandList[this.commandList.length] = sc;
 
             // help
@@ -167,7 +191,6 @@ module TSOS {
             return retVal;
         }
 
-        //
         // Shell Command Functions. Kinda not part of Shell() class exactly, but
         // called from here, so kept here to avoid violating the law of least astonishment.
         //
@@ -204,7 +227,7 @@ module TSOS {
         // actual parameter list when this function is called, so I feel like we need it.
 
         public shellVer(args: string[]) {
-            _StdOut.putText(APP_NAME + " version " + APP_VERSION);
+            _StdOut.putText(SHISUTEMU + " version " + APP_VERSION);
         }
 
         public shellHelp(args: string[]) {
@@ -228,19 +251,12 @@ module TSOS {
         }
 
         public shellMan(args: string[]) {
-            if (args.length > 0) {
-                var topic = args[0];
-                switch (topic) {
-                    case "help":
-                        _StdOut.putText("Help displays a list of (hopefully) valid commands.");
-                        break;
-                    // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
-                    default:
-                        _StdOut.putText("No manual entry for " + args[0] + ".");
-                }
-            } else {
-                _StdOut.putText("Usage: man <topic>  Please supply a topic.");
-            }
+            let line = "";
+            if (args.length > 0)
+                line = (args[0] == "help") ? "Help displays a list of (hopefully) valid commands." : "No manual entry for" + args[0] + ".";
+             else 
+                line = ("Usage: man <topic>  Please supply a topic.");
+            _StdOut.putText(line);
         }
 
         public shellTrace(args: string[]) {
@@ -283,6 +299,26 @@ module TSOS {
                 _StdOut.putText("Usage: prompt <string>  Please supply a string.");
             }
         }
+
+        public shellDate(args:string[]){_StdOut.putText(Date());}
+        
+        public shellWhereAmi(args:string[]){_StdOut.putText("In a recover room in New York City. Where am I really, the game is from 1941 and I know because I was there.");}
+        
+        public shellcoinflip(args: string[]){
+            var result = (Math.floor(Math.random() * 2) == 0) ? "HEADS" : "TAILS";
+            _StdOut.putText(result);
+        }
+
+        public shellStatus(args: string[]){
+            if (args.length > 0) {
+                document.getElementById("status").innerHTML = args[0];
+            }else{
+                _StdOut.putText("Please type a status");
+            }
+            
+        }
+
+
 
     }
 }

@@ -31,11 +31,14 @@
    <!-- Other Routines -->
    <script type="text/javascript" src="distrib/utils.js"></script>
    <!-- Uncomment the line below to enable GLaDOS testing. -->
-   <script type="text/javascript" src="http://alanclasses.github.io/TSOS/test/glados-ip0.js"></script>
+   <script type="text/javascript" src="test/glados-ip0.js"></script>
    
 </head>
 
 <body onload="onDocumentLoad()">
+
+   <h2>Welcome to OS</h2>
+   <h3 id="status">Status: </h3>
 
 <div id="divMain" style="width:100%;">
 
@@ -65,7 +68,32 @@
              value="Reset"
              tabindex="2"
              onclick="TSOS.Control.hostBtnReset_click(this);">
+
+      <marquee behavior="scroll" loop="-10" width="30%">
+         <i>
+            <span color="blue">
+               Current Date and Time:   
+               <span id="dt"></span>
+            </span>
+         </i>
+      </marquee>
    </div>
+   
+   <script>
+      var dt = document.getElementById('dt');
+      function getCurrentDateTime() {
+      var dateTime = new Date();
+      var day = dateTime.getUTCDay();
+      var month = dateTime.getMonth();
+      var year = dateTime.getFullYear();
+      var seconds = dateTime.getSeconds();
+      var minute = dateTime.getMinutes();
+      var hour = dateTime.getHours();
+      dt.textContent = month + "/" + day + "/" + year+ "  " + hour + ":" + minute + ":" + seconds;
+      }
+
+      setInterval(getCurrentDateTime, 1000);
+   </script>
 
    <div id="divConsole" style="margin:4px; width:500px; height:500px; float:left;">
       <canvas id="display"
