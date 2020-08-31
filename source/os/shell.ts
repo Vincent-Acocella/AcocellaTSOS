@@ -12,7 +12,7 @@
 module TSOS {
     export class Shell {
         // Properties
-        public promptStr = ">";
+        public promptStr = "<~>";
         public commandList = [];
         public curses = "[fuvg],[cvff],[shpx],[phag],[pbpxfhpxre],[zbgureshpxre],[gvgf]";
         public apologies = "[sorry]";
@@ -22,7 +22,6 @@ module TSOS {
 
         public init() {
             var sc: ShellCommand;
-            //
             // Load the command list.
             // ver
             sc = new ShellCommand(this.shellVer,
@@ -38,10 +37,9 @@ module TSOS {
 
             //status
             sc = new ShellCommand(this.shellStatus, 
-                "setstatus",
+                "status",
                 "-set a new status.")
             this.commandList[this.commandList.length] = sc;
-
 
             //whereami                   
             sc = new ShellCommand(this.shellWhereAmi, 
@@ -97,6 +95,16 @@ module TSOS {
                                   "<string> - Sets the prompt.");
             this.commandList[this.commandList.length] = sc;
 
+            sc = new ShellCommand(this.shellError,
+                                    "error",
+                                    "- Force an error on the OS....Psycho");
+            this.commandList[this.commandList.length] = sc;
+
+            sc = new ShellCommand(this.shellLoad,
+                "load",
+                "- LoadHouse validate code");
+this.commandList[this.commandList.length] = sc;
+
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
 
@@ -110,6 +118,8 @@ module TSOS {
 
         public handleInput(buffer) {
             _Kernel.krnTrace("Shell Command~" + buffer);
+
+            // _Kernel.krnTrace("!!!!!!"+ buffer + "!!!!!!");
             //
             // Parse the input...
             //
@@ -126,6 +136,7 @@ module TSOS {
             var index: number = 0;
             var found: boolean = false;
             var fn = undefined;
+
             while (!found && index < this.commandList.length) {
                 if (this.commandList[index].command === cmd) {
                     found = true;
@@ -137,6 +148,7 @@ module TSOS {
             if (found) {
                 this.execute(fn, args);  // Note that args is always supplied, though it might be empty.
             } else {
+                
                 // It's not found, so check for curses and apologies before declaring the command invalid.
                 if (this.curses.indexOf("[" + Utils.rot13(cmd) + "]") >= 0) {     // Check for curses.
                     this.execute(this.shellCurse);
@@ -154,11 +166,14 @@ module TSOS {
             _StdOut.advanceLine();
             // ... call the command function passing in the args with some über-cool functional programming ...
             fn(args);
+           
             // Check to see if we need to advance the line again
             if (_StdOut.currentXPosition > 0) {
+              //  _Kernel.krnTrace("!!!!!!HERE?????!!!!");
                 _StdOut.advanceLine();
             }
             // ... and finally write the prompt again.
+            //("!!!!!!!!!! little detore huh");
             this.putPrompt();
         }
 
@@ -195,6 +210,7 @@ module TSOS {
         // called from here, so kept here to avoid violating the law of least astonishment.
         //
         public shellInvalidCommand() {
+            // _Kernel.krnTrace("I HEArD YOURE THE TOUGHEST GUY HERE");
             _StdOut.putText("Invalid Command. ");
             if (_SarcasticMode) {
                 _StdOut.putText("Unbelievable. You, [subject name here],");
@@ -315,10 +331,16 @@ module TSOS {
             }else{
                 _StdOut.putText("Please type a status");
             }
-            
         }
 
+        public shellError(args: String[]){
+            _Kernel.krnTrapError("AHHHHHHHHHHHHHHH WHY MUST YOU CAUSE ME HARM FOR A DAMN TEST YOU BASTARD");
+        }
 
-
+        //Add	a	shell	command	called	load	to	validate	the	user	code	in	the	HTML5	
+        //text	area	(id=	“taProgramInput”).	Only	hex	digits	and	spaces	are	valid.	
+        public shellLoad(args: String[]){
+            
+        }
     }
 }

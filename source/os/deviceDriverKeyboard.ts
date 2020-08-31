@@ -44,8 +44,37 @@ module TSOS {
                 _KernelInputQueue.enqueue(chr);
             } else if (((keyCode >= 48) && (keyCode <= 57)) ||   // digits
                         (keyCode == 32)                     ||   // space
-                        (keyCode == 13)) {                       // enter
-                chr = String.fromCharCode(keyCode);
+                        (keyCode == 13)                     ||    // enter
+                        (keyCode == 8)                      ||   //delete
+                        (keyCode == 9)){                         //tab
+                                           
+            chr = String.fromCharCode(keyCode);
+            _KernelInputQueue.enqueue(chr);
+
+            //TODO turn into a switch
+
+            }else if(keyCode == 38){
+                chr = "upArrow";
+                _KernelInputQueue.enqueue(chr);
+            }else if(keyCode == 40){
+                chr = "downArrow";
+                _KernelInputQueue.enqueue(chr);
+            }else if(keyCode == 190){
+                chr = ".";
+                _KernelInputQueue.enqueue(chr);
+            }else if(keyCode == 49){
+                if(isShifted)
+                    chr = "!";
+                _KernelInputQueue.enqueue(chr);
+            }else if(keyCode == 191){
+                if(isShifted)
+                    chr = "?";
+                _KernelInputQueue.enqueue(chr);
+            }else if(keyCode == 188){
+                chr = ",";
+                _KernelInputQueue.enqueue(chr);
+            }else if(keyCode == 186){
+                chr = ";";
                 _KernelInputQueue.enqueue(chr);
             }
         }

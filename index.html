@@ -1,5 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="en">
+
 <head>
    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
    <meta name="author"             content="Alan G. Labouseur" />
@@ -31,14 +32,14 @@
    <!-- Other Routines -->
    <script type="text/javascript" src="distrib/utils.js"></script>
    <!-- Uncomment the line below to enable GLaDOS testing. -->
-   <script type="text/javascript" src="test/glados-ip0.js"></script>
+   <!-- <script type="text/javascript" src="test/glados-ip1.js"></script> -->
    
 </head>
 
 <body onload="onDocumentLoad()">
 
    <h2>Welcome to OS</h2>
-   <h3 id="status">Status: </h3>
+   <h3>Status: <span id="status"></span></h3>
 
 <div id="divMain" style="width:100%;">
 
@@ -71,10 +72,8 @@
 
       <marquee behavior="scroll" loop="-10" width="30%">
          <i>
-            <span color="blue">
                Current Date and Time:   
                <span id="dt"></span>
-            </span>
          </i>
       </marquee>
    </div>
@@ -83,24 +82,20 @@
       var dt = document.getElementById('dt');
       function getCurrentDateTime() {
       var dateTime = new Date();
-      var day = dateTime.getUTCDay();
-      var month = dateTime.getMonth();
-      var year = dateTime.getFullYear();
       var seconds = dateTime.getSeconds();
       var minute = dateTime.getMinutes();
       var hour = dateTime.getHours();
-      dt.textContent = month + "/" + day + "/" + year+ "  " + hour + ":" + minute + ":" + seconds;
+      dt.textContent = dateTime + "  " + hour + ":" + minute + ":" + seconds;
       }
-
       setInterval(getCurrentDateTime, 1000);
    </script>
 
-   <div id="divConsole" style="margin:4px; width:500px; height:500px; float:left;">
-      <canvas id="display"
-              width="500px"
-              height="500px"
-              tabindex="3">
-      </canvas>
+   <div id="divConsole" style="margin:4px; width:500; height:500; float:left;">
+         <canvas id="display"  
+            width="500"
+            height="500"
+            tabindex="3">
+         </canvas>
    </div>
 
    <div id="divLog" style="margin-left:520px;">

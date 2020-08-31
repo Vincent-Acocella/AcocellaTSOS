@@ -12,14 +12,13 @@ var TSOS;
     var Shell = /** @class */ (function () {
         function Shell() {
             // Properties
-            this.promptStr = ">";
+            this.promptStr = "<~>";
             this.commandList = [];
             this.curses = "[fuvg],[cvff],[shpx],[phag],[pbpxfhpxre],[zbgureshpxre],[gvgf]";
             this.apologies = "[sorry]";
         }
         Shell.prototype.init = function () {
             var sc;
-            //
             // Load the command list.
             // ver
             sc = new TSOS.ShellCommand(this.shellVer, "ver", "- Displays the current version data.");
@@ -28,7 +27,7 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellDate, "date", "-Displays the current dateTime.");
             this.commandList[this.commandList.length] = sc;
             //status
-            sc = new TSOS.ShellCommand(this.shellStatus, "setstatus", "-set a new status.");
+            sc = new TSOS.ShellCommand(this.shellStatus, "status", "-set a new status.");
             this.commandList[this.commandList.length] = sc;
             //whereami                   
             sc = new TSOS.ShellCommand(this.shellWhereAmi, "whereami", "-You were probably frozen for 70 years.");
@@ -57,6 +56,10 @@ var TSOS;
             // prompt <string>
             sc = new TSOS.ShellCommand(this.shellPrompt, "prompt", "<string> - Sets the prompt.");
             this.commandList[this.commandList.length] = sc;
+            sc = new TSOS.ShellCommand(this.shellError, "error", "- Force an error on the OS....Psycho");
+            this.commandList[this.commandList.length] = sc;
+            sc = new TSOS.ShellCommand(this.shellLoad, "load", "- LoadHouse validate code");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             // Display the initial prompt.
@@ -67,6 +70,7 @@ var TSOS;
         };
         Shell.prototype.handleInput = function (buffer) {
             _Kernel.krnTrace("Shell Command~" + buffer);
+            // _Kernel.krnTrace("!!!!!!"+ buffer + "!!!!!!");
             //
             // Parse the input...
             //
@@ -116,9 +120,11 @@ var TSOS;
             fn(args);
             // Check to see if we need to advance the line again
             if (_StdOut.currentXPosition > 0) {
+                //  _Kernel.krnTrace("!!!!!!HERE?????!!!!");
                 _StdOut.advanceLine();
             }
             // ... and finally write the prompt again.
+            //("!!!!!!!!!! little detore huh");
             this.putPrompt();
         };
         Shell.prototype.parseInput = function (buffer) {
@@ -148,6 +154,7 @@ var TSOS;
         // called from here, so kept here to avoid violating the law of least astonishment.
         //
         Shell.prototype.shellInvalidCommand = function () {
+            // _Kernel.krnTrace("I HEArD YOURE THE TOUGHEST GUY HERE");
             _StdOut.putText("Invalid Command. ");
             if (_SarcasticMode) {
                 _StdOut.putText("Unbelievable. You, [subject name here],");
@@ -260,6 +267,13 @@ var TSOS;
             else {
                 _StdOut.putText("Please type a status");
             }
+        };
+        Shell.prototype.shellError = function (args) {
+            _Kernel.krnTrapError("AHHHHHHHHHHHHHHH WHY MUST YOU CAUSE ME HARM FOR A DAMN TEST YOU BASTARD");
+        };
+        //Add	a	shell	command	called	load	to	validate	the	user	code	in	the	HTML5	
+        //text	area	(id=	“taProgramInput”).	Only	hex	digits	and	spaces	are	valid.	
+        Shell.prototype.shellLoad = function (args) {
         };
         return Shell;
     }());
