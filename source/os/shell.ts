@@ -338,9 +338,20 @@ module TSOS {
         }
 
         //Add	a	shell	command	called	load	to	validate	the	user	code	in	the	HTML5	
-        //text	area	(id=	“taProgramInput”).	Only	hex	digits	and	spaces	are	valid.	
+        //text	area	(id=	“taProgramInput”).	Only	hex	digits	and	spaces	are	valid.
+        //A-F 0-9
         public shellLoad(args: String[]){
-            
+            var program = (<HTMLInputElement>document.getElementById("taProgramInput")).value;
+           if(program.length > 0) {
+               program = program.replace(/\s/g,'');
+               let hex = /([^0123456789abcdefABCDEF\s])/g;
+               var result = program.match(hex);
+               if (result.length > 0) {
+                   _StdOut.putText("The file you entered is not in hexidecimal format.");
+               }else{
+                   _StdOut.putText("That's some pretty good looking text.");
+               }
+           }
         }
     }
 }

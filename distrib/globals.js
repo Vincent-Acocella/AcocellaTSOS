@@ -12,7 +12,7 @@
 //
 var SHISUTEMU = "TSOS"; // 'cause Bob and I were at a loss for a better name.
 var APP_VERSION = "0.07"; // What did you expect?
-var CPU_CLOCK_INTERVAL = 500; // This is in ms (milliseconds) so 1000 = 1 second.
+var CPU_CLOCK_INTERVAL = 100; // This is in ms (milliseconds) so 1000 = 1 second.
 var TIMER_IRQ = 0; // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
 // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
 var KEYBOARD_IRQ = 1;

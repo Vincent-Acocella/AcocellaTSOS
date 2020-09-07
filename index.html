@@ -82,10 +82,7 @@
       var dt = document.getElementById('dt');
       function getCurrentDateTime() {
       var dateTime = new Date();
-      var seconds = dateTime.getSeconds();
-      var minute = dateTime.getMinutes();
-      var hour = dateTime.getHours();
-      dt.textContent = dateTime + "  " + hour + ":" + minute + ":" + seconds;
+      dt.textContent = dateTime;
       }
       setInterval(getCurrentDateTime, 1000);
    </script>

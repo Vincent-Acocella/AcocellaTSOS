@@ -93,7 +93,7 @@ var TSOS;
                 for (var i = 0; i < userInput.length; i++) {
                     _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, userInput[i]);
                     var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, userInput[i]);
-                    this.currentXPosition = this.currentXPosition + offset;
+                    this.currentXPosition += offset;
                     if (this.currentXPosition + 7 > _Canvas.width) {
                         this.advanceLine();
                     }
