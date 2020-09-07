@@ -85,13 +85,19 @@ var TSOS;
                 // TODO: Add a case for Ctrl-C that would allow the user to break the current program.
             }
         };
-        Console.prototype.putText = function (text) {
-            if (text !== "") {
-                // Draw the text at the current X and Y coordinates.
-                _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, text);
-                // Move the current X position.
-                var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, text);
-                this.currentXPosition = this.currentXPosition + offset;
+        //Prints single letter from input at a time. Might be a better way that runs faster with counting the size of the input and cutting it off if it
+        //at that index of the string. This way works well and I have yet to see a difference in computing therefore, I think it is ok to stay for now??
+        //I believe later in the course we track cpu cycles so I would re-evaluate at that time.
+        Console.prototype.putText = function (userInput) {
+            if (userInput !== "") {
+                for (var i = 0; i < userInput.length; i++) {
+                    _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, userInput[i]);
+                    var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, userInput[i]);
+                    this.currentXPosition = this.currentXPosition + offset;
+                    if (this.currentXPosition + 7 > _Canvas.width) {
+                        this.advanceLine();
+                    }
+                }
             }
         };
         Console.prototype.advanceLine = function () {
@@ -104,7 +110,7 @@ var TSOS;
                 _DrawingContext.putImageData(oldCanvas, 0, -lineSize); // Move her up WE GOT A BIG ONE
             }
             else {
-                this.currentYPosition += lineSize; //Its a little one try typing menu next time. I want you to. See what happens
+                this.currentYPosition += lineSize; //Its a little one try typing help next time. I want you to. See what happens
             }
         };
         Console.prototype.backspace = function () {
@@ -115,9 +121,9 @@ var TSOS;
         };
         Console.prototype.clearCmdLine = function (val) {
             _DrawingContext.clearRect(0, this.currentYPosition - this.currentFontSize, //Removes the height
-            0, //keep x position
+            this.currentXPosition, //keep x position for now
             this.currentFontSize + _FontHeightMargin);
-            // this.currentXPosition = 0; //Reset x
+            this.currentXPosition = 0; //Reset x to start
             this.userInput = val;
             this.putText("<~>" + val);
         };

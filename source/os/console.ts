@@ -79,27 +79,34 @@ module TSOS {
             }
         }
 
-        public putText(text): void {
-            if (text !== "") {
-                // Draw the text at the current X and Y coordinates.
-                _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, text);
-                // Move the current X position.
-                var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, text);
-                this.currentXPosition = this.currentXPosition + offset;
+        //Prints single letter from input at a time. Might be a better way that runs faster with counting the size of the input and cutting it off if it
+        //at that index of the string. This way works well and I have yet to see a difference in computing therefore, I think it is ok to stay for now??
+        //I believe later in the course we track cpu cycles so I would re-evaluate at that time.
+
+        putText(userInput) {
+            if (userInput !== "") {
+                for (let i = 0; i < userInput.length; i++) {
+                    _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, userInput[i]);
+                    var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, userInput[i]);
+                    this.currentXPosition += offset;
+                    if (this.currentXPosition + 7 > _Canvas.width) {
+                        this.advanceLine();
+                    }
+                }
             }
-         }
+        }
 
         public advanceLine(): void {
             this.currentXPosition = 0;
             var lineSize = this.currentFontSize+ _DefaultFontSize  + _FontHeightMargin; //Y of line
             if (this.currentYPosition + lineSize > _Canvas.height) { // Checks if current bar is showing
                 var oldCanvas = _DrawingContext.getImageData(0, 0, _Canvas.width, _Canvas.height); //Save that there canvas because we've lost the ability to type
-                this.clearScreen(); 
+                this.clearScreen();
                 //void ctx.putImageData(imageData, dx, dy);
                 _DrawingContext.putImageData(oldCanvas, 0, - lineSize);// Move her up WE GOT A BIG ONE
             }
             else {
-                this.currentYPosition += lineSize; //Its a little one try typing menu next time. I want you to. See what happens
+                this.currentYPosition += lineSize; //Its a little one try typing help next time. I want you to. See what happens
             }
         }
 

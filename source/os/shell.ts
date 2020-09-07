@@ -103,7 +103,7 @@ module TSOS {
             sc = new ShellCommand(this.shellLoad,
                 "load",
                 "- LoadHouse validate code");
-this.commandList[this.commandList.length] = sc;
+            this.commandList[this.commandList.length] = sc;
 
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
