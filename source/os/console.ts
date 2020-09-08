@@ -110,6 +110,8 @@ module TSOS {
             }
         }
 
+        //backspace command
+        //simply, the last input of the string is removed and reentered
         public backspace(): void{
             if(this.userInput.length > 0){
                 this.userInput = this.userInput.substr(0, this.userInput.length - 1);
@@ -117,15 +119,19 @@ module TSOS {
             }
         }
 
-        public clearCmdLine(val): void{
+        //Ahhh the saving grace
+        // remove the line and recreate it. used for almost ever function
+        public clearCmdLine(newVal): void{
+            //void ctx.clearRect(x, y, width, height);
             _DrawingContext.clearRect(0, this.currentYPosition - this.currentFontSize, //Removes the height
                     this.currentXPosition, //keep x position for now
                     this.currentFontSize + _FontHeightMargin); 
             this.currentXPosition = 0; //Reset x to start
-            this.userInput = val;
-            this.putText("<~>" + val);
+            this.userInput = newVal;
+            this.putText("<~>" + newVal);
         }
 
+        //Gets tab list related to last input
         public getTabList(stg){
             let options = [];
             let cmdList = _OsShell.commandList;
