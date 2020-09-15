@@ -1,6 +1,10 @@
 <!DOCTYPE HTML>
 <html lang="en">
 
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
 <head>
    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
    <meta name="author"             content="Alan G. Labouseur" />
@@ -32,8 +36,7 @@
    <!-- Other Routines -->
    <script type="text/javascript" src="distrib/utils.js"></script>
    <!-- Uncomment the line below to enable GLaDOS testing. -->
-   <!-- <script type="text/javascript" src="test/glados-ip1.js"></script> -->
-   
+    <script type="text/javascript" src="test/glados-ip2.js"></script>
 </head>
 
 <body onload="onDocumentLoad()">
@@ -69,6 +72,17 @@
              value="Reset"
              tabindex="2"
              onclick="TSOS.Control.hostBtnReset_click(this);">
+
+      <input type="button"
+             id = "singleStep"
+             name="singleStep"
+             class="normal_button"
+             disabled="disabled"
+             value="Enable Single Step"
+             tabindex="2"
+             onclick="TSOS.Control.hostBtnEnableSingleStep(this);">
+
+
 
       <marquee behavior="scroll" loop="-10" width="30%">
          <i>

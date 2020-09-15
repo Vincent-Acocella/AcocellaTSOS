@@ -16,6 +16,8 @@ module TSOS {
         public commandList = [];
         public curses = "[fuvg],[cvff],[shpx],[phag],[pbpxfhpxre],[zbgureshpxre],[gvgf]";
         public apologies = "[sorry]";
+        public loadFile = [];
+        public fileIndex = 0;
 
         constructor() {
         }
@@ -107,11 +109,8 @@ module TSOS {
 
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
-
             // Display the initial prompt.
-            this.putPrompt();
         }
-
         public putPrompt() {
             _StdOut.putText(this.promptStr);
         }
@@ -267,7 +266,7 @@ module TSOS {
         }
 
         public shellMan(args: string[]) {
-            let line = "";
+            let line;
             if (args.length > 0)
                 line = (args[0] == "help") ? "Help displays a list of (hopefully) valid commands." : "No manual entry for" + args[0] + ".";
              else 
@@ -334,6 +333,7 @@ module TSOS {
         }
 
         public shellError(args: String[]){
+            _StdOut.putText("AHHHHHHHHHHHHHHH WHY MUST YOU CAUSE ME HARM FOR A DAMN TEST YOU BASTARD");
             _Kernel.krnTrapError("AHHHHHHHHHHHHHHH WHY MUST YOU CAUSE ME HARM FOR A DAMN TEST YOU BASTARD");
         }
 
@@ -342,16 +342,18 @@ module TSOS {
         //A-F 0-9
         public shellLoad(args: String[]){
             var program = (<HTMLInputElement>document.getElementById("taProgramInput")).value;
-           if(program.length > 0) {
-               program = program.replace(/\s/g,'');
-               let hex = /([^0123456789abcdefABCDEF\s])/g;
-               var result = program.match(hex);
-               if (result.length > 0) {
+
+            if(program.length > 0) {
+               if (!program.match(/^[a-fA-F0-9\s]+$/)) {
                    _StdOut.putText("The file you entered is not in hexidecimal format.");
-               }else{
-                   _StdOut.putText("That's some pretty good looking text.");
+               } else {
+                    program = program.replace(/\s/g,'');
+           //         //this.loadFile[this.fileIndex] = program;
+           //          //_StdOut.putText(this.fileIndex);
+           //         _StdOut.putText("To access type: 'Run " + this.fileIndex + "'.");
+           //         //this.fileIndex++;
                }
-           }
+            }
         }
     }
 }

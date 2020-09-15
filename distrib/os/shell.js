@@ -16,6 +16,8 @@ var TSOS;
             this.commandList = [];
             this.curses = "[fuvg],[cvff],[shpx],[phag],[pbpxfhpxre],[zbgureshpxre],[gvgf]";
             this.apologies = "[sorry]";
+            this.loadFile = [];
+            this.fileIndex = 0;
         }
         Shell.prototype.init = function () {
             var sc;
@@ -63,7 +65,6 @@ var TSOS;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             // Display the initial prompt.
-            this.putPrompt();
         };
         Shell.prototype.putPrompt = function () {
             _StdOut.putText(this.promptStr);
@@ -205,7 +206,7 @@ var TSOS;
             _StdOut.resetXY();
         };
         Shell.prototype.shellMan = function (args) {
-            var line = "";
+            var line;
             if (args.length > 0)
                 line = (args[0] == "help") ? "Help displays a list of (hopefully) valid commands." : "No manual entry for" + args[0] + ".";
             else
@@ -269,22 +270,26 @@ var TSOS;
             }
         };
         Shell.prototype.shellError = function (args) {
+            _StdOut.putText("AHHHHHHHHHHHHHHH WHY MUST YOU CAUSE ME HARM FOR A DAMN TEST YOU BASTARD");
             _Kernel.krnTrapError("AHHHHHHHHHHHHHHH WHY MUST YOU CAUSE ME HARM FOR A DAMN TEST YOU BASTARD");
         };
         //Add	a	shell	command	called	load	to	validate	the	user	code	in	the	HTML5	
         //text	area	(id=	“taProgramInput”).	Only	hex	digits	and	spaces	are	valid.
         //A-F 0-9
         Shell.prototype.shellLoad = function (args) {
-            var program = document.getElementById("userFile").value;
+            var program = document.getElementById("taProgramInput").value;
             if (program.length > 0) {
-                program = program.replace(/\s/g, '');
-                var hex = /([^0123456789abcdefABCDEF\s])/g;
-                var result = program.match(hex);
-                if (result.length > 0) {
+                if (!program.match(/^[a-fA-F0-9\s]+$/)) {
                     _StdOut.putText("The file you entered is not in hexidecimal format.");
                 }
                 else {
-                    _StdOut.putText("That's some pretty good looking text.");
+                    //         _StdOut.putText("That's some pretty good looking text.");
+                    program = program.replace(/\s/g, '');
+                    _StdOut.putText(program);
+                    //         //this.loadFile[this.fileIndex] = program;
+                    //          //_StdOut.putText(this.fileIndex);
+                    //         _StdOut.putText("To access type: 'Run " + this.fileIndex + "'.");
+                    //         //this.fileIndex++;
                 }
             }
         };

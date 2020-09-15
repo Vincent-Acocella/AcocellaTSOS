@@ -52,7 +52,7 @@ module TSOS {
                                 this.advanceLine();
                             }
                         }
-                    }else if (chr=== "upArrow"){
+                    }else if (chr === "upArrow"){
                         if(this.cmdHistory.length > 0 && this.cmdHistory.length > this.tabIndex+1){
                             this.clearCmdLine(this.cmdHistory[this.tabIndex +1]);
                             this.tabIndex++;
@@ -62,7 +62,7 @@ module TSOS {
                             this.clearCmdLine(this.cmdHistory[this.tabIndex-1]);
                             this.tabIndex--;
                         }
-                    }else if (chr === String.fromCharCode(13)) { // the Enter key
+                    }else if (chr === String.fromCharCode(13)){ // the Enter key
                         _Kernel.krnTrace("!!!!!!!!!!!!!!" + this.userInput + "!!!!!!!!!!!!!");
                         _OsShell.handleInput(this.userInput);
                         this.cmdHistory.push(this.userInput);
@@ -121,7 +121,7 @@ module TSOS {
 
         //Ahhh the saving grace
         // remove the line and recreate it. used for almost ever function
-        public clearCmdLine(newVal): void{
+        public clearCmdLine(newVal): void {
             //void ctx.clearRect(x, y, width, height);
             _DrawingContext.clearRect(0, this.currentYPosition - this.currentFontSize, //Removes the height
                     this.currentXPosition, //keep x position for now
@@ -132,10 +132,10 @@ module TSOS {
         }
 
         //Gets tab list related to last input
-        public getTabList(stg){
+        public getTabList(stg) {
             let options = [];
             let cmdList = _OsShell.commandList;
-            for(let i = 0; i < cmdList.length; i++){
+            for(let i = 0; i < cmdList.length; i++) {
                 if(cmdList[i].command.substr(0, stg.length) === stg) {
                     options.push(cmdList[i].command);
                 }

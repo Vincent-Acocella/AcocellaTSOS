@@ -67,14 +67,12 @@ module TSOS {
             this.krnTrace("end shutdown OS");
         }
 
-
         public krnOnCPUClockPulse() {
             /* This gets called from the host hardware simulation every time there is a hardware clock pulse.
                This is NOT the same as a TIMER, which causes an interrupt and is handled like other interrupts.
                This, on the other hand, is the clock pulse from the hardware / VM / host that tells the kernel
                that it has to look for interrupts and process them if it finds any.                          
             */
-
             // Check for an interrupt, if there are any. Page 560
             if (_KernelInterruptQueue.getSize() > 0) {
                 // Process the first interrupt on the interrupt queue.
@@ -87,7 +85,6 @@ module TSOS {
                 this.krnTrace("Idle");
             }
         }
-
 
         //
         // Interrupt Handling
@@ -113,7 +110,7 @@ module TSOS {
             // TODO: Consider using an Interrupt Vector in the future.
             // Note: There is no need to "dismiss" or acknowledge the interrupts in our design here.
             //       Maybe the hardware simulation will grow to support/require that in the future.
-            switch (irq) {
+            switch(irq) {
                 case TIMER_IRQ:
                     this.krnTimerISR();               // Kernel built-in routine for timers (not the clock).
                     break;
@@ -152,19 +149,19 @@ module TSOS {
         // OS Utility Routines
         //
         public krnTrace(msg: string) {
-             // Check globals to see if trace is set ON.  If so, then (maybe) log the message.
-             if (_Trace) {
-                if (msg === "Idle") {
-                    // We can't log every idle clock pulse because it would quickly lag the browser quickly.
-                    if (_OSclock % 10 == 0) {
-                        // Check the CPU_CLOCK_INTERVAL in globals.ts for an
-                        // idea of the tick rate and adjust this line accordingly.
-                        Control.hostLog(msg, "OS");
-                    }
-                } else {
+            // Check globals to see if trace is set ON.  If so, then (maybe) log the message.
+         if (_Trace) {
+            if (msg === "Idle") {
+                // We can't log every idle clock pulse because it would quickly lag the browser quickly.
+                if (_OSclock % 10 == 0) {
+                    // Check the CPU_CLOCK_INTERVAL in globals.ts for an
+                    // idea of the tick rate and adjust this line accordingly.
                     Control.hostLog(msg, "OS");
                 }
-             }
+            } else {
+                Control.hostLog(msg, "OS");
+            }
+         }
         }
 
         public krnTrapError(msg) {
