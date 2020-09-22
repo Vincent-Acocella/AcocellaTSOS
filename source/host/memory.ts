@@ -2,8 +2,12 @@ module TSOS {
     export class Memory {
         public memoryThread= [];
         public progsInMem;
+        public currentIndex;
 
         constructor() {
+            this.memoryThread = [];
+            this.progsInMem = 0;
+            this.currentIndex = 0;
         }
 
         public init() {
