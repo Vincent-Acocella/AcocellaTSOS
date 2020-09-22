@@ -282,13 +282,9 @@ var TSOS;
                 }
                 else {
                     program = program.replace(/\s/g, '');
-                    if (program.length % 2 !== 0) {
-                        _StdOut.putText("The file you entered has the wrong amount of chars.");
-                    }
-                    else {
-                        _Kernel.krnTrace("@#$%^&*&^%$#$%^&*&^%$#%^&*&^%$#$%^&*");
-                        TSOS.Utils.loadMemory(program);
-                    }
+                    // _StdOut.putText("The file you entered has the wrong amount of chars.");
+                    _Kernel.krnTrace(program);
+                    _MemoryManager.loadMemory();
                 }
             }
         };

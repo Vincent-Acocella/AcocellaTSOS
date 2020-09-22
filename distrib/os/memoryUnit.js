@@ -1,5 +1,6 @@
 var TSOS;
 (function (TSOS) {
+    var hello;
     var MemoryUnit = /** @class */ (function () {
         function MemoryUnit() {
             this.memory = "1";
@@ -11,7 +12,7 @@ var TSOS;
         }
         MemoryUnit.startUpMemory = function () {
         };
-        MemoryUnit.prototype.addToMemory = function (code) {
+        MemoryUnit.addToMemory = function (code) {
             _Kernel.krnTrace(code);
         };
         return MemoryUnit;
