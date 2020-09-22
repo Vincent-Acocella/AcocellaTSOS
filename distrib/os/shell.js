@@ -16,8 +16,6 @@ var TSOS;
             this.commandList = [];
             this.curses = "[fuvg],[cvff],[shpx],[phag],[pbpxfhpxre],[zbgureshpxre],[gvgf]";
             this.apologies = "[sorry]";
-            this.loadFile = [];
-            this.fileIndex = 0;
         }
         Shell.prototype.init = function () {
             var sc;
@@ -283,14 +281,23 @@ var TSOS;
                     _StdOut.putText("The file you entered is not in hexidecimal format.");
                 }
                 else {
-                    //         _StdOut.putText("That's some pretty good looking text.");
                     program = program.replace(/\s/g, '');
-                    _StdOut.putText(program);
-                    //         //this.loadFile[this.fileIndex] = program;
-                    //          //_StdOut.putText(this.fileIndex);
-                    //         _StdOut.putText("To access type: 'Run " + this.fileIndex + "'.");
-                    //         //this.fileIndex++;
+                    if (program.length % 2 !== 0) {
+                        _StdOut.putText("The file you entered has the wrong amount of chars.");
+                    }
+                    else {
+                        _Kernel.krnTrace("@#$%^&*&^%$#$%^&*&^%$#%^&*&^%$#$%^&*");
+                        TSOS.Utils.loadMemory(program);
+                    }
                 }
+            }
+        };
+        Shell.prototype.shellRun = function (args) {
+            if (args.length > 0) {
+                //Run CPU
+            }
+            else {
+                _StdOut.putText("ERROR MESSAGE GOES HERE");
             }
         };
         return Shell;

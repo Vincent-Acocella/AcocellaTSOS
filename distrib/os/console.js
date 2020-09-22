@@ -7,7 +7,7 @@
 var TSOS;
 (function (TSOS) {
     var Console = /** @class */ (function () {
-        function Console(currentFont, currentFontSize, currentXPosition, currentYPosition, userInput, cmdHistory, tabIndex) {
+        function Console(currentFont, currentFontSize, currentXPosition, currentYPosition, userInput, cmdHistory, tabIndex, memoryIndex) {
             if (currentFont === void 0) { currentFont = _DefaultFontFamily; }
             if (currentFontSize === void 0) { currentFontSize = _DefaultFontSize; }
             if (currentXPosition === void 0) { currentXPosition = 0; }
@@ -15,6 +15,7 @@ var TSOS;
             if (userInput === void 0) { userInput = ""; }
             if (cmdHistory === void 0) { cmdHistory = []; }
             if (tabIndex === void 0) { tabIndex = 0; }
+            if (memoryIndex === void 0) { memoryIndex = 0; }
             this.currentFont = currentFont;
             this.currentFontSize = currentFontSize;
             this.currentXPosition = currentXPosition;
@@ -22,6 +23,7 @@ var TSOS;
             this.userInput = userInput;
             this.cmdHistory = cmdHistory;
             this.tabIndex = tabIndex;
+            this.memoryIndex = memoryIndex;
         }
         Console.prototype.init = function () {
             this.clearScreen();

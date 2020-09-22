@@ -16,10 +16,8 @@ module TSOS {
         public commandList = [];
         public curses = "[fuvg],[cvff],[shpx],[phag],[pbpxfhpxre],[zbgureshpxre],[gvgf]";
         public apologies = "[sorry]";
-        public loadFile = [];
-        public fileIndex = 0;
-
-        constructor() {
+        constructor(
+        ) {
         }
 
         public init() {
@@ -347,13 +345,24 @@ module TSOS {
                if (!program.match(/^[a-fA-F0-9\s]+$/)) {
                    _StdOut.putText("The file you entered is not in hexidecimal format.");
                } else {
-                    program = program.replace(/\s/g,'');
-           //         //this.loadFile[this.fileIndex] = program;
-           //          //_StdOut.putText(this.fileIndex);
-           //         _StdOut.putText("To access type: 'Run " + this.fileIndex + "'.");
-           //         //this.fileIndex++;
+                   program = program.replace(/\s/g,'');
+                   if(program.length %2 !== 0){
+                       _StdOut.putText("The file you entered has the wrong amount of chars.");
+                   }else{
+                       _Kernel.krnTrace("@#$%^&*&^%$#$%^&*&^%$#%^&*&^%$#$%^&*");
+                      TSOS.Utils.loadMemory(program);
+                   }
                }
             }
+        }
+
+        public shellRun(args: String[]){
+            if(args.length > 0){
+            //Run CPU
+            } else{
+                _StdOut.putText("ERROR MESSAGE GOES HERE");
+            }
+
         }
     }
 }

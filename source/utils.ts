@@ -43,5 +43,23 @@ module TSOS {
             }
             return retVal;
         }
+
+        //Memory Utils
+
+        public static loadMemory(usrProg: string){
+            _Kernel.krnTrace("YESSSSSSS");
+            //var currentPos = (_MemoryUnit.currentIndex() !== -1) ? _MemoryUnit.currentIndex() : 0;
+            for (let i: number = 0; i < usrProg.length; i + 2) {
+                let code: string = String.prototype.concat(usrProg.charAt(i) + usrProg.charAt(i + 1));
+                _MemoryUnit.addToMemory(code);
+            }
+            _MemoryUnit.progsInMem++;
+            _MemoryUnit.endIndex = (_MemoryUnit.progsInMem + 1) + (_MemoryUnit.memory.length - 1);
+            return _MemoryUnit.progsInMem + 1;
+        }
+
+
+
+
     }
 }

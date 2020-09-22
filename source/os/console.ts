@@ -14,9 +14,9 @@ module TSOS {
                     public currentYPosition = _DefaultFontSize,
                     public userInput = "",
                     public cmdHistory = [],
-                    public tabIndex = 0
-                    ) {
-        }
+                    public tabIndex = 0,
+                    public memoryIndex = 0
+                    ) {}
 
         public init(): void {
             this.clearScreen();
