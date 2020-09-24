@@ -346,10 +346,9 @@ module TSOS {
                    _StdOut.putText("The file you entered is not in hexidecimal format.");
                } else {
                    program = program.replace(/\s/g,'');
-
                   // _StdOut.putText("The file you entered has the wrong amount of chars.");
-                   _Kernel.krnTrace(program);
-                  _MemoryManager.loadMemory();
+                   let progNum = _MemoryManager.loadMemory(program);
+                   _StdOut.putText("Type 'run " + progNum +"' To run code")
                }
            }
         }

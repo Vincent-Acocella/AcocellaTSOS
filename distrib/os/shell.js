@@ -283,8 +283,8 @@ var TSOS;
                 else {
                     program = program.replace(/\s/g, '');
                     // _StdOut.putText("The file you entered has the wrong amount of chars.");
-                    _Kernel.krnTrace(program);
-                    _MemoryManager.loadMemory();
+                    var progNum = _MemoryManager.loadMemory(program);
+                    _StdOut.putText("Type 'run " + progNum + "' To run code");
                 }
             }
         };

@@ -3,14 +3,17 @@ var TSOS;
     var MemoryManager = /** @class */ (function () {
         function MemoryManager() {
         }
-        MemoryManager.prototype.loadMemory = function () {
-            _StdOut.putText("RRERERERRERERER");
-            // for (let i: number = 0; i < usrProg.length; i + 2) {
-            //     let code: string = String.prototype.concat(usrProg.charAt(i) + usrProg.charAt(i + 1));
-            //     _Memory.memoryThread[i] = code;
-            //     _Memory.currentIndex++;
-            // }
-            // return _Memory.progsInMem + 1;
+        MemoryManager.prototype.loadMemory = function (usrProg) {
+            // var curIndex = 0;
+            var val = usrProg + "";
+            _Kernel.krnTrace(val);
+            for (var i = 0; i < 10; i += 2) {
+                var code = usrProg.substr(i, i + 1);
+                _MemoryAccessor.write(code, i + _Memory.currentIndex);
+            }
+            _Memory.progsInMem++;
+            console.log(_Memory.progsInMem);
+            return _Memory.progsInMem;
         };
         return MemoryManager;
     }());

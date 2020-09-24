@@ -8,6 +8,7 @@ module TSOS {
             this.memoryThread = [];
             this.progsInMem = 0;
             this.currentIndex = 0;
+            this.init();
         }
 
         public init() {

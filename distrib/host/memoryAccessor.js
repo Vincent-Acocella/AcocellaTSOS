@@ -9,6 +9,7 @@ var TSOS;
         };
         MemoryAccessor.prototype.write = function (code, index) {
             _Memory.memoryThread[index] = code;
+            _Memory.currentIndex++;
         };
         return MemoryAccessor;
     }());

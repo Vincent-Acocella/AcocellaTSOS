@@ -10,6 +10,7 @@ module TSOS{
 
         public write(code: string,index: number){
             _Memory.memoryThread[index] = code;
+            _Memory.currentIndex++;
         }
     }
 }
