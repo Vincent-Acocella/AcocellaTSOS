@@ -3,17 +3,14 @@ var TSOS;
     var MemoryManager = /** @class */ (function () {
         function MemoryManager() {
         }
+        //Load input into memory. It is in backwards
         MemoryManager.prototype.loadMemory = function (usrProg) {
-            // var curIndex = 0;
-            var val = usrProg + "";
-            _Kernel.krnTrace(val);
-            for (var i = 0; i < 10; i += 2) {
+            for (var i = 0; i < usrProg.length; i += 2) {
                 var code = usrProg.substr(i, i + 1);
-                _MemoryAccessor.write(code, i + _Memory.currentIndex);
+                _MemoryAccessor.write(code);
             }
-            _Memory.progsInMem++;
-            console.log(_Memory.progsInMem);
-            return _Memory.progsInMem;
+            var progsInMem = _MemoryAccessor.updateMap(_Memory.endIndex);
+            return progsInMem;
         };
         return MemoryManager;
     }());

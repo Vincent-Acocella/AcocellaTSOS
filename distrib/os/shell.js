@@ -287,6 +287,9 @@ var TSOS;
                     _StdOut.putText("Type 'run " + progNum + "' To run code");
                 }
             }
+            else {
+                _StdOut.putText("No Program to Load");
+            }
         };
         Shell.prototype.shellRun = function (args) {
             if (args.length > 0) {

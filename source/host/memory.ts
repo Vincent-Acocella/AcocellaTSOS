@@ -1,13 +1,12 @@
 module TSOS {
     export class Memory {
         public memoryThread= [];
-        public progsInMem;
-        public currentIndex;
+        public endIndex;
+
 
         constructor() {
             this.memoryThread = [];
-            this.progsInMem = 0;
-            this.currentIndex = 0;
+            this.endIndex = 0;
             this.init();
         }
 
@@ -15,6 +14,7 @@ module TSOS {
             for (let i = 0; i < 256; i++) {
                 this.memoryThread[i] = "00";
             }
+            this.endIndex =0;
         }
     }
 }

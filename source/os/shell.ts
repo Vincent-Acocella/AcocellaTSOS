@@ -348,14 +348,21 @@ module TSOS {
                    program = program.replace(/\s/g,'');
                   // _StdOut.putText("The file you entered has the wrong amount of chars.");
                    let progNum = _MemoryManager.loadMemory(program);
-                   _StdOut.putText("Type 'run " + progNum +"' To run code")
+
+                   _StdOut.putText("Type 'run " + progNum +"' To run code");
                }
-           }
+           }else{
+                _StdOut.putText("No Program to Load");
+            }
         }
 
         public shellRun(args: String[]){
             if(args.length > 0){
             //Run CPU
+                if(_MemoryManager.runMemory(args)){
+
+                }
+
             } else{
                 _StdOut.putText("ERROR MESSAGE GOES HERE");
             }
