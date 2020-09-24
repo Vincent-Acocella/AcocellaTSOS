@@ -8,13 +8,17 @@ module TSOS{
         init(){
             _Memory.init();
         }
-
-        //progs in mem is a counter for the next free program spot +1
-        //End index points to thelast spot +1 of the input
+        //This is accounted for in memoryManager
 
         //Prog to index map is an array that uses its index to keep track of the coorelation from prog to endindex
 
-        //The array will be a map the index will be 1 infront of the stored index
+        //Map is EX: [ 10, 5, 6]
+        //              0  1  2
+        // the 10 corresponds to the end index of the first program
+
+        //Update the map
+        // Iterates the progs in mem
+        //sets the map at index of the new prog(actually 1 less in array) to the endIndex(actually ine spot in front)
         public updateMap(endIndex: number):number{
             this.progsInMem++
             this.progToIndexMap[this.progsInMem] = endIndex;
@@ -23,7 +27,7 @@ module TSOS{
 
         //EX: prog 1 is stored in spot 0 but its progNumber is 1 so we have to back up 1 in the array
         public getMapValue(progNumber: number): number{
-           return this.progToIndexMap[progNumber-1];
+           return this.progToIndexMap[progNumber];
         }
 
 
@@ -33,12 +37,18 @@ module TSOS{
 
         public write(code: string){
             _Memory.memoryThread.push(code);
-            _Memory.endIndex++;
+            if(_Memory.endIndex !== 256) {
+                _Memory.endIndex++;
+                return true;
+            }else{
+                return false;
+            }
         }
+        public execute(start:number , end: number) {
+            while (end <= start) {
 
-
-
-
-
+                start--;
+            }
+        }
     }
 }

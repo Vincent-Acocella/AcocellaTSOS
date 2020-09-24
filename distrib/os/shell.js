@@ -277,11 +277,12 @@ var TSOS;
         Shell.prototype.shellLoad = function (args) {
             var program = document.getElementById("taProgramInput").value;
             if (program.length > 0) {
+                //removes sequential space
+                program = program.replace(/\s+/g, " ").trim();
                 if (!program.match(/^[a-fA-F0-9\s]+$/)) {
                     _StdOut.putText("The file you entered is not in hexidecimal format.");
                 }
                 else {
-                    program = program.replace(/\s/g, '');
                     // _StdOut.putText("The file you entered has the wrong amount of chars.");
                     var progNum = _MemoryManager.loadMemory(program);
                     _StdOut.putText("Type 'run " + progNum + "' To run code");
@@ -294,6 +295,8 @@ var TSOS;
         Shell.prototype.shellRun = function (args) {
             if (args.length > 0) {
                 //Run CPU
+                if (_MemoryManager.runMemory(args)) {
+                }
             }
             else {
                 _StdOut.putText("ERROR MESSAGE GOES HERE");

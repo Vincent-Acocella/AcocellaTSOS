@@ -339,16 +339,16 @@ module TSOS {
         //text	area	(id=	“taProgramInput”).	Only	hex	digits	and	spaces	are	valid.
         //A-F 0-9
         public shellLoad(args: String[]){
-            var program = (<HTMLInputElement>document.getElementById("taProgramInput")).value;
+            let program = (<HTMLInputElement>document.getElementById("taProgramInput")).value;
 
             if(program.length > 0) {
-               if (!program.match(/^[a-fA-F0-9\s]+$/)) {
+                //removes sequential space
+                program = program.replace(/\s+/g, " ").trim();
+                if (!program.match(/^[a-fA-F0-9\s]+$/)) {
                    _StdOut.putText("The file you entered is not in hexidecimal format.");
                } else {
-                   program = program.replace(/\s/g,'');
                   // _StdOut.putText("The file you entered has the wrong amount of chars.");
                    let progNum = _MemoryManager.loadMemory(program);
-
                    _StdOut.putText("Type 'run " + progNum +"' To run code");
                }
            }else{
@@ -362,7 +362,6 @@ module TSOS {
                 if(_MemoryManager.runMemory(args)){
 
                 }
-
             } else{
                 _StdOut.putText("ERROR MESSAGE GOES HERE");
             }
