@@ -60,17 +60,17 @@ module TSOS {
 
                 //Add a carry
                 case "6D":
-                    this.addCarry();
+                    this.addCarry(code);
                     break;
 
                 //Load the X register with a constant
                 case "A2":
-                    this.loadXregCons();
+                    this.loadXregCons(code);
                     break;
 
                 //Load the X register from memory
                 case "AE":
-                    this.loadXregMem();
+                    this.loadXregMem(code);
                     break;
 
                 //Load the Y register with a constant
@@ -143,16 +143,29 @@ module TSOS {
             }
         }
 
-        private addCarry() {
-
+        private addCarry(value) {
+            this.additionalBytesNeeded = 2;
+            if (_Memory.memoryThread[value - 2].match("00")) {
+                let valuetoAdd = parseInt(_Memory.memoryThread[value-1]);
+                this.Acc = valuetoAdd + this.Acc;
+            }else{
+                _StdOut.putText("Only one memory segment exists currently");
+            }
         }
 
-        private loadXregCons() {
-
+        private loadXregCons(value) {
+            this.additionalBytesNeeded = 1;
+            this.Xreg = parseInt(_Memory.memoryThread[value-1]);
         }
 
-        private loadXregMem() {
-
+        private loadXregMem(value) {
+            this.additionalBytesNeeded = 2;
+            if (_Memory.memoryThread[value - 2].match("00")) {
+                let spotInMem = parseInt(_Memory.memoryThread[value - 1]);
+                this.Xreg = _Memory.memoryThread[spotInMem];
+            }else{
+                _StdOut.putText("Only one memory segment exists currently");
+            }
         }
 
         private loadYregCons() {
