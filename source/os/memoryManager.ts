@@ -3,7 +3,7 @@ module TSOS{
         constructor() {
 
         }
-        //Load input into memory. It is in backwards!
+        //Load input into memory. It is in backwards! Its acually not tho.
             public loadMemory(usrProg:string){
              for(let i = 0;i < usrProg.length; i+=3){
 
@@ -11,8 +11,8 @@ module TSOS{
                  //The pain I was caused. The betrayal. I guess it makes up for my 7 commits last project :/
                  // You 2 : me 0
 
+                 //Concats opcode
                  let code:string = usrProg.charAt(i)+usrProg.charAt(i+1);
-                 console.log(code);
 
                   if(!_MemoryAccessor.write(code)){
                       break;
@@ -28,27 +28,29 @@ module TSOS{
         //The array keeps track of the past values uses the prev index as ref
         public runMemory(progNumber){
 
-            let endIndexOfCurProg = _MemoryAccessor.getMapValue(progNumber)-1;
-            let pastEndValue;
+            let startIndexOfCurProg = _MemoryAccessor.getMapValue(progNumber);
+            let endIndex;
 
             //The past end value is actually the first value
 
             //Map = [2,4]
             //Memory = [A9, 45, B4, 54, 0]
-            // So prog 1 would end at the first value of the prog 1
             //The only other thing to account for is if it is the first prog which ends at 0
 
-            //I think this works pretty cool. I don't know if this has been done(Probably) but I feel loke I am
-            //Making this much more complicated than needed but like.... She's going to work
+            //---------------------------------------
+
+            //I thought I'd keep in the above comments as a learning experience. I somehow forgot how a stack worked. The array is not reverse
 
             if(progNumber !== 0) {
-                pastEndValue  = _MemoryAccessor.getMapValue(progNumber);
+                endIndex  = _MemoryAccessor.getMapValue(progNumber + 1);
             }else{
-                pastEndValue = 0;
+                endIndex = _Memory.endIndex;
             }
             //Loop through index of memory using end values so we go backwards
             //We end at the first element (Explaination above)
-            _MemoryAccessor.read(endIndexOfCurProg,pastEndValue);
+
+            //We need to move back 1 of the end index
+            _MemoryAccessor.read(startIndexOfCurProg,endIndex-1);
         }
     }
 }

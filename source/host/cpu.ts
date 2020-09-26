@@ -75,16 +75,17 @@ module TSOS {
 
                 //Load the Y register with a constant
                 case "A0":
-                    this.loadYregCons();
+                    this.loadYregCons(code);
                     break;
 
                 //Load the Y register from memory
                 case "AC":
-                    this.loadYregMem();
+                    this.loadYregMem(code);
                     break;
 
                 //No operation
                 case "EA":
+                    this.additionalBytesNeeded = 0;
                     break;
 
                 //break (which is really a system call)
@@ -93,7 +94,7 @@ module TSOS {
 
                 //compare a byte in memory to the X reg. sets Z flag if =
                 case "EC":
-                    this.compXmem();
+                    this.compXmem(code);
                     break;
 
                 //Branch n bytes if Z flag =0
@@ -111,23 +112,23 @@ module TSOS {
                     break;
                 default:
             }
-
             return this.additionalBytesNeeded;
         }
 
 
         private loadAcc(value) {
             this.additionalBytesNeeded = 1;
-            this.Acc = _Memory.memoryThread[value-1];
+            this.Acc = _Memory.memoryThread[value+1];
         }
 
         private loadAccFrmMem(value) {
             this.additionalBytesNeeded = 2;
-            if(_Memory.memoryThread[value-2].match("00")){
+            if(_Memory.memoryThread[value+2].match("00")){
                 //Load accumulator from memory means that we are taking the location in memory and returning the value to the Accumulator
                 //Location 10 for example is the start position -10
-               let numInMem = parseInt(_Memory.memoryThread[value-1]);
-               this.Acc = _Memory.memoryThread[value - numInMem];
+                //FIX FIX FIX
+               let numInMem = parseInt(_Memory.memoryThread[value+1]);
+               this.Acc = _Memory.memoryThread[numInMem];
             }else{
                 _StdOut.putText("Only one memory segment exists currently");
             }
@@ -135,8 +136,8 @@ module TSOS {
 
         private strAccInMem(value) {
             this.additionalBytesNeeded = 2;
-            if(_Memory.memoryThread[value-2].match("00")){
-                let locationToStore = parseInt(_Memory.memoryThread[value-1]);
+            if(_Memory.memoryThread[value+2].match("00")){
+                let locationToStore = parseInt(_Memory.memoryThread[value+1]);
                 _Memory.memoryThread[locationToStore] = this.Acc;
             }else{
                 _StdOut.putText("Only one memory segment exists currently");
@@ -145,8 +146,8 @@ module TSOS {
 
         private addCarry(value) {
             this.additionalBytesNeeded = 2;
-            if (_Memory.memoryThread[value - 2].match("00")) {
-                let valuetoAdd = parseInt(_Memory.memoryThread[value-1]);
+            if (_Memory.memoryThread[value + 2].match("00")) {
+                let valuetoAdd = parseInt(_Memory.memoryThread[value+1]);
                 this.Acc = valuetoAdd + this.Acc;
             }else{
                 _StdOut.putText("Only one memory segment exists currently");
@@ -155,28 +156,36 @@ module TSOS {
 
         private loadXregCons(value) {
             this.additionalBytesNeeded = 1;
-            this.Xreg = parseInt(_Memory.memoryThread[value-1]);
+            this.Xreg = parseInt(_Memory.memoryThread[value+1]);
         }
 
         private loadXregMem(value) {
             this.additionalBytesNeeded = 2;
-            if (_Memory.memoryThread[value - 2].match("00")) {
-                let spotInMem = parseInt(_Memory.memoryThread[value - 1]);
+            if (_Memory.memoryThread[value + 2].match("00")) {
+                let spotInMem = parseInt(_Memory.memoryThread[value + 1]);
                 this.Xreg = _Memory.memoryThread[spotInMem];
             }else{
                 _StdOut.putText("Only one memory segment exists currently");
             }
         }
 
-        private loadYregCons() {
-
+        private loadYregCons(value) {
+            this.additionalBytesNeeded = 1;
+            this.Yreg = parseInt(_Memory.memoryThread[value+1]);
         }
 
-        private loadYregMem() {
-
+        private loadYregMem(value) {
+            this.additionalBytesNeeded = 2;
+            if (_Memory.memoryThread[value + 2].match("00")) {
+                let spotInMem = parseInt(_Memory.memoryThread[value + 1]);
+                this.Yreg = _Memory.memoryThread[spotInMem];
+            }else{
+                _StdOut.putText("Only one memory segment exists currently");
+            }
         }
 
-        private compXmem() {
+        private compXmem(value) {
+
 
         }
 
