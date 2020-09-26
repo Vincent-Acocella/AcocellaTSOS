@@ -5,7 +5,6 @@ module TSOS{
         }
         //Load input into memory. It is in backwards!
             public loadMemory(usrProg:string){
-
              for(let i = 0;i < usrProg.length; i+=3){
 
                  //I'm mad at you. You load two things in glados so when my console log I thought I was wrong
@@ -35,7 +34,7 @@ module TSOS{
             //The past end value is actually the first value
 
             //Map = [2,4]
-            // Memory = [A9, 45, B4, 54, 0]
+            //Memory = [A9, 45, B4, 54, 0]
             // So prog 1 would end at the first value of the prog 1
             //The only other thing to account for is if it is the first prog which ends at 0
 
@@ -49,7 +48,7 @@ module TSOS{
             }
             //Loop through index of memory using end values so we go backwards
             //We end at the first element (Explaination above)
-            _MemoryAccessor.execute(endIndexOfCurProg,pastEndValue)
+            _MemoryAccessor.read(endIndexOfCurProg,pastEndValue);
         }
     }
 }

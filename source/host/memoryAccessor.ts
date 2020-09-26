@@ -34,7 +34,6 @@ module TSOS{
         //Yes Yes I know I am loading the code in backwards into the array sue me. Is it wrong maybe but Watch it work.
         //I will be preforming my next magic trick by running backwards! Probably been done before but hey. I thought it's a cool idea
         //I wanted to make a map and work off that but this was done in about 10 lines of code so like. Better?
-
         public write(code: string){
             _Memory.memoryThread.push(code);
             if(_Memory.endIndex !== 256) {
@@ -44,11 +43,13 @@ module TSOS{
                 return false;
             }
         }
-        public execute(start:number , end: number) {
-            while (end <= start) {
 
-                start--;
+        //Read grabs the current input from memory and loops through it while running the opcode.
+        public read(start: number , end: number) {
+            while (end <= start) {
+                start -= _CPU.runOpCode(start) - 1;
             }
         }
+
     }
 }

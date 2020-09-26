@@ -69,7 +69,6 @@ module TSOS {
             // TODO in the future: Optionally update a log database or some streaming service.
         }
 
-
         //
         // Host Events
         //
@@ -118,11 +117,9 @@ module TSOS {
         }
 
         public static hostBtnEnableSingleStep(btn): void{
-
-
-
-
-
+            if(_CPU.isExecuting){
+                _SingleStep = true;
+            }
         }
     }
 }
