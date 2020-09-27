@@ -99,12 +99,12 @@ module TSOS {
 
                 //Branch n bytes if Z flag =0
                 case "D0":
-                    this.branchIfZ();
+                    this.branchIfZ(code);
                     break;
 
                 //Increment the value of a byte
                 case "EE":
-                    this.incremVal();
+                    this.incremVal(code);
                     break;
 
                 //System Call
@@ -185,18 +185,37 @@ module TSOS {
         }
 
         private compXmem(value) {
-
-
+            this.additionalBytesNeeded = 2;
+            if (_Memory.memoryThread[value + 2].match("00")) {
+                let spotInMem = parseInt(_Memory.memoryThread[value + 1]);
+                this.Zflag = (this.Xreg === spotInMem)? 1:0;
+            }else{
+                _StdOut.putText("Only one memory segment exists currently");
+            }
         }
 
-        private branchIfZ() {
+        private branchIfZ(value) {
+            this.additionalBytesNeeded = 1;
 
+            if(this.Zflag === 0){
+                let temp = parseInt(_Memory.memoryThread[value + 1]);
+                if(temp === 0){
+                    this.additionalBytesNeeded = -1;
+                }else{
+                    //Do this to account for a branch to 0
+                    this.additionalBytesNeeded = -(temp+1);
+                }
+            }
         }
 
-        private incremVal() {
-
+        private incremVal(value) {
+            this.additionalBytesNeeded = 2;
+            if (_Memory.memoryThread[value + 2].match("00")) {
+                let temp = parseInt(_Memory.memoryThread[value + 1]);
+                _Memory.memoryThread[value+1] = temp+1;
+            }else{
+                _StdOut.putText("Only one memory segment exists currently");
+            }
         }
-
-
     }
 }

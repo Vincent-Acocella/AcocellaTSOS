@@ -47,9 +47,16 @@ module TSOS{
         }
 
         //Read grabs the current input from memory and loops through it while running the opcode.
-        public read(start: number , end: number) {
-            while (start <= end) {
-                start += _CPU.runOpCode(start) + 1;
+        public read(startIndex: number , endIndex: number) {
+            while (startIndex < endIndex) {
+                let moveThatBus = _CPU.runOpCode(startIndex) + 1;
+
+                if(moveThatBus < 0){
+                    //Time to branch
+                    startIndex = (-moveThatBus)-1;
+                }else{
+                    startIndex+= moveThatBus;
+                }
             }
         }
 

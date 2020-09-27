@@ -50,7 +50,7 @@ module TSOS{
             //We end at the first element (Explaination above)
 
             //We need to move back 1 of the end index
-            _MemoryAccessor.read(startIndexOfCurProg,endIndex-1);
+            _MemoryAccessor.read(startIndexOfCurProg, endIndex);
         }
     }
 }
