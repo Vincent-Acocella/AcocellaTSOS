@@ -60,6 +60,8 @@ var TSOS;
             this.commandList[this.commandList.length] = sc;
             sc = new TSOS.ShellCommand(this.shellLoad, "load", "- LoadHouse validate code");
             this.commandList[this.commandList.length] = sc;
+            sc = new TSOS.ShellCommand(this.shellRun, "run", "- runCode");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             // Display the initial prompt.

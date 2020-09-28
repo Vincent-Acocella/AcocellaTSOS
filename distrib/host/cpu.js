@@ -13,7 +13,7 @@
 var TSOS;
 (function (TSOS) {
     var Cpu = /** @class */ (function () {
-        function Cpu(PC, Acc, Xreg, Yreg, Zflag, IR, bytesNeeded, 
+        function Cpu(PC, Acc, Xreg, Yreg, Zflag, IR, endOfProg, bytesNeeded, 
         //public PCB = _PCB,
         isExecuting) {
             if (PC === void 0) { PC = 0; }
@@ -21,7 +21,8 @@ var TSOS;
             if (Xreg === void 0) { Xreg = 0; }
             if (Yreg === void 0) { Yreg = 0; }
             if (Zflag === void 0) { Zflag = 0; }
-            if (IR === void 0) { IR = 0; }
+            if (IR === void 0) { IR = "0"; }
+            if (endOfProg === void 0) { endOfProg = 0; }
             if (bytesNeeded === void 0) { bytesNeeded = 0; }
             if (isExecuting === void 0) { isExecuting = false; }
             this.PC = PC;
@@ -30,6 +31,7 @@ var TSOS;
             this.Yreg = Yreg;
             this.Zflag = Zflag;
             this.IR = IR;
+            this.endOfProg = endOfProg;
             this.bytesNeeded = bytesNeeded;
             this.isExecuting = isExecuting;
         }
@@ -39,13 +41,30 @@ var TSOS;
             this.Xreg = 0;
             this.Yreg = 0;
             this.Zflag = 0;
-            this.IR = 0;
+            this.IR = "";
+            this.endOfProg = 0;
             this.bytesNeeded = 0;
             //this.PCB = null;
             this.isExecuting = false;
         };
         Cpu.prototype.cycle = function () {
+            _DeviceDisplay.updateCPU();
+            _DeviceDisplay.updatePCB();
+            _PCB.state = 1;
             _Kernel.krnTrace('CPU cycle');
+            var moveThatBus = this.fetch(_Memory.memoryThread[this.PC]);
+            if (moveThatBus < 0) {
+                //Time to branch
+                this.PC = (-moveThatBus) - 1;
+            }
+            else {
+                //Increment by bytes
+                this.PC += moveThatBus;
+            }
+            if (this.PC < this.endOfProg) {
+                this.isExecuting = false;
+                _PCB.state = 3;
+            }
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
         };
@@ -213,6 +232,9 @@ var TSOS;
         };
         Cpu.prototype.returnCPU = function () {
             return [this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag];
+        };
+        Cpu.prototype.finsihedProg = function () {
+            this.isExecuting = (this.PC < this.endOfProg) ? true : false;
         };
         return Cpu;
     }());

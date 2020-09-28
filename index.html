@@ -41,7 +41,7 @@
    <!-- Other Routines -->
    <script type="text/javascript" src="distrib/utils.js"></script>
    <!-- Uncomment the line below to enable GLaDOS testing. -->
-   <!--   <script type="text/javascript" src="test/glados-ip2.js"></script>-->
+      <script type="text/javascript" src="test/glados-ip2.js"></script>
 </head>
 
 <body onload="onDocumentLoad()">
@@ -81,12 +81,19 @@
       <input type="button"
              id = "singleStep"
              name="singleStep"
-             class="normal_button"
              disabled="disabled"
              value="Enable Single Step"
-             tabindex="2"
+             tabindex="3"
              width="200px"
              onclick="TSOS.Control.hostBtnEnableSingleStep(this);">
+
+      <input type="button"
+             id = "activeSingleStep"
+             name = "activeSingleStep"
+             disabled ="disabled"
+             value = ">"
+             tabindex="4"
+             onclick="TSOS.Control.takeATinyStep(this)">
 
       <marquee behavior="scroll" loop="-10" width="30%">
          <i>
@@ -156,7 +163,7 @@
          <table name="pcb"
                 id="pcb"
                 bgcolor ="white"
-                style="color: black; display: block; height: 55px; width: 148px;"
+                style="color: black; display: block; height: 55px; width: 270px;"
          ></table>
       </label>
    </div>

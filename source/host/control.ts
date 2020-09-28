@@ -120,13 +120,17 @@ module TSOS {
         public static hostBtnEnableSingleStep(btn): void{
             if(_SingleStep){
                 _SingleStep = false;
-                btn.value("Single Step disabled");
-
+                (<HTMLButtonElement>document.getElementById("singleStep")).innerText = ("Single Step disabled");
+                (<HTMLButtonElement>document.getElementById("activeSingleStep")).disabled = true;
             }else{
                 _SingleStep = true;
-                btn.value("Single Step Enabled");
+                (<HTMLButtonElement>document.getElementById("singleStep")).innerHTML = ("Single Step Enabled");
+                (<HTMLButtonElement>document.getElementById("activeSingleStep")).disabled = false;
             }
         }
 
+        public static takeATinyStep(btn): void{
+            _CPU.cycle();
+        }
     }
 }

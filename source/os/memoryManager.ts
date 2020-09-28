@@ -19,17 +19,18 @@ module TSOS{
                       break;
                   }
              }
-             return _MemoryAccessor.updateMap(startIndex,_Memory.endIndex);
+             return _MemoryAccessor.updateMap(startIndex, _Memory.endIndex);
         }
 
         //Execute until previous end value is hit
         //The array keeps track of the past values uses the prev index as ref
         public runMemory(progNumber){
             //get the map value
-            let startIndexOfCurProg = _MemoryAccessor.getMapValue(progNumber);
-            _CPU.PC = startIndexOfCurProg[0];
-            _CPU.endOfProg = startIndexOfCurProg[1];
-            _MemoryAccessor.read();
+            if(progNumber <= _MemoryAccessor.progInMem){
+                _PCB.newTask(progNumber);
+                _CPU.isExecuting = true;
+            }
+
         }
 
     }

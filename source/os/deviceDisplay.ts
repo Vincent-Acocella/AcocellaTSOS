@@ -48,6 +48,11 @@ module TSOS{
                 let next = row.insertCell(i);
                 next.innerHTML = header[i];
             }
+            let row2 = table.insertRow(1);
+            for(let i = 0; i < header.length; i++){
+                let next = row2.insertCell(i);
+                next.innerHTML = "0";
+            }
         }
 
 
@@ -60,7 +65,6 @@ module TSOS{
                 let next = row.insertCell(i);
                 next.innerHTML = String(header[i]);
             }
-
         }
 
         public startUpPCB(){
@@ -72,13 +76,19 @@ module TSOS{
                 let next = row.insertCell(i);
                 next.innerHTML = String(header[i]);
             }
+
+            let row2 = table.insertRow(1);
+            for(let i = 0; i < header.length; i++){
+                let next = row2.insertCell(i);
+                next.innerHTML = "0";
+            }
         }
 
         public updatePCB(){
             let table: HTMLTableElement = <HTMLTableElement>document.getElementById("pcb");
 
             let header = _PCB.returnPCB();
-            let row = table.insertRow(0);
+            let row = table.insertRow(1);
             for(let i = 0; i < header.length; i++){
                 let next = row.insertCell(i);
                 next.innerHTML = String(header[i]);

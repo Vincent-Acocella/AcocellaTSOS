@@ -43,6 +43,11 @@ var TSOS;
                 var next = row.insertCell(i);
                 next.innerHTML = header[i];
             }
+            var row2 = table.insertRow(1);
+            for (var i = 0; i < header.length; i++) {
+                var next = row2.insertCell(i);
+                next.innerHTML = "0";
+            }
         };
         DeviceDisplay.prototype.updateCPU = function () {
             var table = document.getElementById("cpu");
@@ -54,8 +59,27 @@ var TSOS;
             }
         };
         DeviceDisplay.prototype.startUpPCB = function () {
+            var table = document.getElementById("pcb");
+            var header = ["PID", "PC", "IR", "ACC", "X", "Y", "Z", "State", "Location"];
+            var row = table.insertRow(0);
+            for (var i = 0; i < header.length; i++) {
+                var next = row.insertCell(i);
+                next.innerHTML = String(header[i]);
+            }
+            var row2 = table.insertRow(1);
+            for (var i = 0; i < header.length; i++) {
+                var next = row2.insertCell(i);
+                next.innerHTML = "0";
+            }
         };
         DeviceDisplay.prototype.updatePCB = function () {
+            var table = document.getElementById("pcb");
+            var header = _PCB.returnPCB();
+            var row = table.insertRow(1);
+            for (var i = 0; i < header.length; i++) {
+                var next = row.insertCell(i);
+                next.innerHTML = String(header[i]);
+            }
         };
         return DeviceDisplay;
     }());

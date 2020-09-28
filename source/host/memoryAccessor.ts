@@ -1,7 +1,7 @@
 module TSOS{
 
     export class MemoryAccessor{
-        public progsInMem = 0;
+        public progInMem = -1;
         public progToIndexMap=[];
         constructor() {
         }
@@ -19,9 +19,9 @@ module TSOS{
         //Update the map
         // Iterates the progs in mem
         public updateMap(startIndex: number, endIndex: number){
-            this.progsInMem++
-            this.progToIndexMap[this.progsInMem] = [startIndex, endIndex];
-            return this.progsInMem;
+            this.progInMem++
+            this.progToIndexMap[this.progInMem] = [startIndex, endIndex];
+            return this.progInMem;
         }
 
         public getMapValue(progNumber: number): number{
@@ -44,11 +44,6 @@ module TSOS{
             }else{
                 return false;
             }
-        }
-
-        //Read grabs the current input from memory and loops through it while running the opcode.
-        public read() {
-                _CPU.isExecuting = true;
         }
     }
 }

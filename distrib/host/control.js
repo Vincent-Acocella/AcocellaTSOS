@@ -102,12 +102,17 @@ var TSOS;
         Control.hostBtnEnableSingleStep = function (btn) {
             if (_SingleStep) {
                 _SingleStep = false;
-                btn.value("Single Step disabled");
+                document.getElementById("singleStep").innerText = ("Single Step disabled");
+                document.getElementById("activeSingleStep").disabled = true;
             }
             else {
                 _SingleStep = true;
-                btn.value("Single Step Enabled");
+                document.getElementById("singleStep").innerHTML = ("Single Step Enabled");
+                document.getElementById("activeSingleStep").disabled = false;
             }
+        };
+        Control.takeATinyStep = function (btn) {
+            _CPU.cycle();
         };
         return Control;
     }());

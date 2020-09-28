@@ -26,6 +26,14 @@ module TSOS{
             this.Zflag = 0;
         }
 
+        public newTask(PID){
+            this.PID = PID;
+            let temp = _MemoryAccessor.getMapValue(this.PID);
+            this.PC = temp[0];
+            _CPU.endOfProg = temp[1];
+            this.load();
+        }
+
 
         //State 0 is idle
         //1 is running
@@ -52,5 +60,6 @@ module TSOS{
         public returnPCB(){
             return [this.PID, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag, this.state, this.location];
         }
+
     }
 }

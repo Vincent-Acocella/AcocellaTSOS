@@ -41,6 +41,7 @@ module TSOS {
 
             //memory
             _MemoryManager = new TSOS.MemoryManager();
+            _PCB = new TSOS.ProcessControlBlock();
 
             // Enable the OS Interrupts.  (Not the CPU clock interrupt, as that is done in the hardware sim.)
             this.krnTrace("Enabling the interrupts.");
@@ -77,28 +78,28 @@ module TSOS {
                that it has to look for interrupts and process them if it finds any.                          
             */
             // Check for an interrupt, if there are any. Page 560
-            if (_SingleStep) {
-                if (_KernelInterruptQueue.getSize() > 0) {
 
-                    if (_PCB.state === 1) {
-                        _PCB.save();
-                        _DeviceDisplay.updatePCB();
-                    }
+                if (_KernelInterruptQueue.getSize() > 0) {
+                    // if (_PCB.state === 1) {
+                    //     _PCB.save();
+                    //     _DeviceDisplay.updatePCB();
+                    // }
                     // Process the first interrupt on the interrupt queue.
                     // TODO (maybe): Implement a priority queue based on the IRQ number/id to enforce interrupt priority.
                     var interrupt = _KernelInterruptQueue.dequeue();
                     this.krnInterruptHandler(interrupt.irq, interrupt.params);
-                } else if (_CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed.
-                    if (_PCB.state === 2) {
-                        _PCB.load();
-                        _DeviceDisplay.updatePCB();
-                    }
-                    _DeviceDisplay.updateCPU();
+                } else if (_CPU.isExecuting) {
+
+                    // If there are no interrupts then run one CPU cycle if there is anything being processed.
+                    // if (_PCB.state === 2) {
+                    //     _PCB.load();
+                    //     _DeviceDisplay.updatePCB();
+                    // }
+
                     _CPU.cycle();
                 } else {                       // If there are no interrupts and there is nothing being executed then just be idle.
                     this.krnTrace("Idle");
                 }
-            }
         }
         //
         // Interrupt Handling

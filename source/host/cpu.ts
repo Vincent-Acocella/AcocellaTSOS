@@ -41,6 +41,8 @@ module TSOS {
         }
 
         public cycle(): void {
+            _DeviceDisplay.updateCPU();
+            _DeviceDisplay.updatePCB();
             _PCB.state = 1;
             _Kernel.krnTrace('CPU cycle');
             let moveThatBus = this.fetch(_Memory.memoryThread[this.PC]);

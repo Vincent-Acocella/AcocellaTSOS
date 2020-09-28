@@ -27,16 +27,15 @@ const KEYBOARD_IRQ: number = 1;
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
 //
 
+
 var _SingleStep = false;
 var _CPU:TSOS.Cpu;  // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
-//var _PCB = TSOS.ProcessControlBlock;
 var	_Memory:TSOS.Memory;
 var	_MemoryAccessor:TSOS.MemoryAccessor;
 var _DeviceDisplay : any = null;
 //	Software	(OS)
 var	_MemoryManager:	any	= null;
-
-var _PCB: TSOS.ProcessControlBlock;
+var _PCB: TSOS.ProcessControlBlock = null;
 
 var _OSclock: number = 0;  // Page 23.
 
@@ -63,6 +62,7 @@ var _StdOut: TSOS.Console = null;
 // UI
 var _Console: TSOS.Console;
 var _OsShell: TSOS.Shell;
+
 
 // At least this OS is not trying to kill you. (Yet.)
 var _SarcasticMode: boolean = false;

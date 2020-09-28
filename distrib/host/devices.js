@@ -23,7 +23,6 @@ var TSOS;
         // Hardware/Host Clock Pulse
         //
         Devices.hostClockPulse = function () {
-            console.log("pulse");
             // Increment the hardware (host) clock.
             _OSclock++;
             // Call the kernel clock pulse event handler.

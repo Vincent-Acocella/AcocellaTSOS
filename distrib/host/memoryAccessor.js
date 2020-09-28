@@ -2,7 +2,7 @@ var TSOS;
 (function (TSOS) {
     var MemoryAccessor = /** @class */ (function () {
         function MemoryAccessor() {
-            this.progsInMem = 0;
+            this.progInMem = -1;
             this.progToIndexMap = [];
         }
         MemoryAccessor.prototype.init = function () {
@@ -15,10 +15,10 @@ var TSOS;
         // the 10 corresponds to the start index of the first program
         //Update the map
         // Iterates the progs in mem
-        MemoryAccessor.prototype.updateMap = function (startIndex) {
-            this.progsInMem++;
-            this.progToIndexMap[this.progsInMem] = startIndex;
-            return this.progsInMem;
+        MemoryAccessor.prototype.updateMap = function (startIndex, endIndex) {
+            this.progInMem++;
+            this.progToIndexMap[this.progInMem] = [startIndex, endIndex];
+            return this.progInMem;
         };
         MemoryAccessor.prototype.getMapValue = function (progNumber) {
             return this.progToIndexMap[progNumber];
@@ -36,20 +36,6 @@ var TSOS;
             }
             else {
                 return false;
-            }
-        };
-        //Read grabs the current input from memory and loops through it while running the opcode.
-        MemoryAccessor.prototype.read = function (startIndex, endIndex) {
-            while (startIndex < endIndex) {
-                _CPU.isExecuting;
-                var moveThatBus = _CPU.fetch(startIndex);
-                if (moveThatBus < 0) {
-                    //Time to branch
-                    startIndex = (-moveThatBus) - 1;
-                }
-                else {
-                    startIndex += moveThatBus;
-                }
             }
         };
         return MemoryAccessor;
