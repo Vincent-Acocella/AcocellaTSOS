@@ -35,10 +35,6 @@ module TSOS {
             _krnKeyboardDriver.driverEntry();                    // Call the driverEntry() initialization routine.
             this.krnTrace(_krnKeyboardDriver.status);
 
-            //
-            // ... more?
-            //
-
             //memory
             _MemoryManager = new TSOS.MemoryManager();
             _PCB = new TSOS.ProcessControlBlock();
@@ -92,10 +88,9 @@ module TSOS {
 
                     // If there are no interrupts then run one CPU cycle if there is anything being processed.
                     // if (_PCB.state === 2) {
-                    //     _PCB.load();
+                         //_PCB.load();
                     //     _DeviceDisplay.updatePCB();
                     // }
-
                     _CPU.cycle();
                 } else {                       // If there are no interrupts and there is nothing being executed then just be idle.
                     this.krnTrace("Idle");

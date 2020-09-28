@@ -13,9 +13,7 @@
 var TSOS;
 (function (TSOS) {
     var Cpu = /** @class */ (function () {
-        function Cpu(PC, Acc, Xreg, Yreg, Zflag, IR, endOfProg, bytesNeeded, 
-        //public PCB = _PCB,
-        isExecuting) {
+        function Cpu(PC, Acc, Xreg, Yreg, Zflag, IR, endOfProg, bytesNeeded, isExecuting) {
             if (PC === void 0) { PC = 0; }
             if (Acc === void 0) { Acc = 0; }
             if (Xreg === void 0) { Xreg = 0; }
@@ -44,15 +42,12 @@ var TSOS;
             this.IR = "";
             this.endOfProg = 0;
             this.bytesNeeded = 0;
-            //this.PCB = null;
             this.isExecuting = false;
         };
         Cpu.prototype.cycle = function () {
-            _DeviceDisplay.updateCPU();
-            _DeviceDisplay.updatePCB();
-            _PCB.state = 1;
+            // _PCB.state = 1;
             _Kernel.krnTrace('CPU cycle');
-            var moveThatBus = this.fetch(_Memory.memoryThread[this.PC]);
+            var moveThatBus = this.fetch(this.PC);
             if (moveThatBus < 0) {
                 //Time to branch
                 this.PC = (-moveThatBus) - 1;
@@ -61,12 +56,11 @@ var TSOS;
                 //Increment by bytes
                 this.PC += moveThatBus;
             }
-            if (this.PC < this.endOfProg) {
+            if (this.PC > this.endOfProg) {
                 this.isExecuting = false;
-                _PCB.state = 3;
+                // _PCB.state = 3;
             }
-            // TODO: Accumulate CPU usage and profiling statistics here.
-            // Do the real work here. Be sure to set this.isExecuting appropriately.
+            _DeviceDisplay.reload();
         };
         Cpu.prototype.fetch = function (code) {
             var opCode = _Memory.memoryThread[code];
@@ -114,7 +108,7 @@ var TSOS;
                 case "EC":
                     this.compXmem(code);
                     break;
-                //Branch n bytes if Z flag =0
+                //Branch n bytes if Z flag = 0
                 case "D0":
                     this.branchIfZ(code);
                     break;
@@ -127,12 +121,12 @@ var TSOS;
                     break;
                 default:
             }
-            this.PC++;
             return this.bytesNeeded;
         };
         Cpu.prototype.loadAcc = function (value) {
-            this.bytesNeeded = 3;
+            this.bytesNeeded = 2;
             this.Acc = _Memory.memoryThread[value + 1];
+            console.log(this.Acc);
         };
         Cpu.prototype.loadAccFrmMem = function (value) {
             this.bytesNeeded = 3;

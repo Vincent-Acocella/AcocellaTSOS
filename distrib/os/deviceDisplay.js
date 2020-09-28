@@ -6,6 +6,11 @@ var TSOS;
             this.startUpCPU();
             this.startUpPCB();
         }
+        DeviceDisplay.prototype.reload = function () {
+            this.updatePCB();
+            this.updateCPU();
+            this.updateMemory();
+        };
         DeviceDisplay.prototype.updateMemory = function () {
             var table = document.getElementById('memoryUnit');
             var index = 0;
@@ -13,6 +18,9 @@ var TSOS;
                 for (var j = 1; j < 9; j++) {
                     table.rows[i].cells.item(j).innerHTML = _Memory.memoryThread[index].toString();
                     table.rows[i].cells.item(j).style['font-weight'] = "normal";
+                    if (index === _CPU.PC) {
+                        table.rows[i].cells.item(j).style.color = "magenta";
+                    }
                     index++;
                 }
             }
@@ -44,13 +52,14 @@ var TSOS;
                 next.innerHTML = header[i];
             }
             var row2 = table.insertRow(1);
-            for (var i = 0; i < header.length; i++) {
-                var next = row2.insertCell(i);
+            for (var j = 0; j < header.length; j++) {
+                var next = row2.insertCell(j);
                 next.innerHTML = "0";
             }
         };
         DeviceDisplay.prototype.updateCPU = function () {
             var table = document.getElementById("cpu");
+            table.deleteRow(1);
             var header = _CPU.returnCPU();
             var row = table.insertRow(1);
             for (var i = 0; i < header.length; i++) {
@@ -74,6 +83,7 @@ var TSOS;
         };
         DeviceDisplay.prototype.updatePCB = function () {
             var table = document.getElementById("pcb");
+            table.deleteRow(1);
             var header = _PCB.returnPCB();
             var row = table.insertRow(1);
             for (var i = 0; i < header.length; i++) {

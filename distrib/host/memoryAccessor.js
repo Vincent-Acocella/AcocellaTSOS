@@ -15,9 +15,9 @@ var TSOS;
         // the 10 corresponds to the start index of the first program
         //Update the map
         // Iterates the progs in mem
-        MemoryAccessor.prototype.updateMap = function (startIndex, endIndex) {
+        MemoryAccessor.prototype.updateMap = function (startIndex) {
             this.progInMem++;
-            this.progToIndexMap[this.progInMem] = [startIndex, endIndex];
+            this.progToIndexMap[this.progInMem] = startIndex;
             return this.progInMem;
         };
         MemoryAccessor.prototype.getMapValue = function (progNumber) {

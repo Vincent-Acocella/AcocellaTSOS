@@ -14,12 +14,11 @@ module TSOS{
 
                  //Concats opcode
                  let code:string = usrProg.charAt(i)+usrProg.charAt(i+1);
-
                   if(!_MemoryAccessor.write(code)){
                       break;
                   }
              }
-             return _MemoryAccessor.updateMap(startIndex, _Memory.endIndex);
+             return _MemoryAccessor.updateMap(startIndex);
         }
 
         //Execute until previous end value is hit
@@ -30,8 +29,6 @@ module TSOS{
                 _PCB.newTask(progNumber);
                 _CPU.isExecuting = true;
             }
-
         }
-
     }
 }

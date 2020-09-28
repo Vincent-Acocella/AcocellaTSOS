@@ -366,7 +366,6 @@ module TSOS {
             if(args.length > 0){
             //Run CPU
                 if(_MemoryManager.runMemory(args)){
-
                 }
             } else{
                 _StdOut.putText("ERROR MESSAGE GOES HERE");

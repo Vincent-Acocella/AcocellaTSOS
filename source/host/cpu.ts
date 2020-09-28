@@ -23,7 +23,6 @@ module TSOS {
                     public IR: string = "0",
                     public endOfProg = 0,
                     public bytesNeeded = 0,
-                    //public PCB = _PCB,
                     public isExecuting: boolean = false) {
         }
 
@@ -36,16 +35,13 @@ module TSOS {
             this.IR = "";
             this.endOfProg = 0;
             this.bytesNeeded = 0;
-            //this.PCB = null;
             this.isExecuting = false;
         }
 
         public cycle(): void {
-            _DeviceDisplay.updateCPU();
-            _DeviceDisplay.updatePCB();
-            _PCB.state = 1;
+            // _PCB.state = 1;
             _Kernel.krnTrace('CPU cycle');
-            let moveThatBus = this.fetch(_Memory.memoryThread[this.PC]);
+            let moveThatBus = this.fetch(this.PC);
             if(moveThatBus < 0){
                 //Time to branch
                 this.PC = (-moveThatBus)-1;
@@ -53,16 +49,16 @@ module TSOS {
                 //Increment by bytes
                 this.PC+= moveThatBus;
             }
-            if(this.PC < this.endOfProg){
-                this.isExecuting =false;
-                _PCB.state = 3;
+            if(this.PC > this.endOfProg){
+                this.isExecuting = false;
+                // _PCB.state = 3;
             }
-            // TODO: Accumulate CPU usage and profiling statistics here.
-            // Do the real work here. Be sure to set this.isExecuting appropriately.
+            _DeviceDisplay.reload();
         }
 
         public fetch(code){
             let opCode = _Memory.memoryThread[code];
+
             switch(opCode){
                 //Load the accumulator with a constant
                 case "A9":
@@ -118,7 +114,7 @@ module TSOS {
                     this.compXmem(code);
                     break;
 
-                //Branch n bytes if Z flag =0
+                //Branch n bytes if Z flag = 0
                 case "D0":
                     this.branchIfZ(code);
                     break;
@@ -133,14 +129,14 @@ module TSOS {
                     break;
                 default:
             }
-            this.PC++;
             return this.bytesNeeded;
         }
 
 
         private loadAcc(value) {
-            this.bytesNeeded = 3;
-            this.Acc = _Memory.memoryThread[value+1];
+            this.bytesNeeded = 2;
+            this.Acc = _Memory.memoryThread[value + 1];
+            console.log(this.Acc);
         }
 
         private loadAccFrmMem(value) {
@@ -240,8 +236,9 @@ module TSOS {
                 _StdOut.putText("Only one memory segment exists currently");
             }
         }
+
         public returnCPU(){
-            return [this.PC,this.IR,this.Acc,this.Xreg,this.Yreg,this.Zflag];
+            return [this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag];
         }
 
         private finsihedProg(){

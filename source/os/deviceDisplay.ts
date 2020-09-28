@@ -7,6 +7,12 @@ module TSOS{
             this.startUpPCB();
         }
 
+        public reload(){
+            this.updatePCB();
+            this.updateCPU();
+            this.updateMemory();
+        }
+
         public updateMemory(){
             let table: HTMLTableElement = <HTMLTableElement> document.getElementById('memoryUnit');
             let index = 0;
@@ -14,6 +20,9 @@ module TSOS{
                 for (let j = 1; j < 9; j++) {
                     table.rows[i].cells.item(j).innerHTML = _Memory.memoryThread[index].toString();
                     table.rows[i].cells.item(j).style['font-weight'] = "normal";
+                    if(index === _CPU.PC){
+                        table.rows[i].cells.item(j).style.color = "magenta";
+                    }
                     index++;
                 }
             }
@@ -49,8 +58,8 @@ module TSOS{
                 next.innerHTML = header[i];
             }
             let row2 = table.insertRow(1);
-            for(let i = 0; i < header.length; i++){
-                let next = row2.insertCell(i);
+            for(let j = 0; j < header.length; j++){
+                let next = row2.insertCell(j);
                 next.innerHTML = "0";
             }
         }
@@ -58,7 +67,7 @@ module TSOS{
 
         public updateCPU(){
             let table: HTMLTableElement = <HTMLTableElement>document.getElementById("cpu");
-
+            table.deleteRow(1);
             let header = _CPU.returnCPU();
             let row = table.insertRow(1);
             for(let i = 0; i < header.length; i++){
@@ -86,7 +95,7 @@ module TSOS{
 
         public updatePCB(){
             let table: HTMLTableElement = <HTMLTableElement>document.getElementById("pcb");
-
+            table.deleteRow(1);
             let header = _PCB.returnPCB();
             let row = table.insertRow(1);
             for(let i = 0; i < header.length; i++){

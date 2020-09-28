@@ -18,9 +18,9 @@ module TSOS{
 
         //Update the map
         // Iterates the progs in mem
-        public updateMap(startIndex: number, endIndex: number){
+        public updateMap(startIndex: number){
             this.progInMem++
-            this.progToIndexMap[this.progInMem] = [startIndex, endIndex];
+            this.progToIndexMap[this.progInMem] = startIndex;
             return this.progInMem;
         }
 

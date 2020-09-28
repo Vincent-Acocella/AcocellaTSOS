@@ -16,7 +16,7 @@ var TSOS;
                     break;
                 }
             }
-            return _MemoryAccessor.updateMap(startIndex, _Memory.endIndex);
+            return _MemoryAccessor.updateMap(startIndex);
         };
         //Execute until previous end value is hit
         //The array keeps track of the past values uses the prev index as ref

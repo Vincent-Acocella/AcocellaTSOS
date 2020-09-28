@@ -27,10 +27,8 @@ module TSOS{
         }
 
         public newTask(PID){
-            this.PID = PID;
-            let temp = _MemoryAccessor.getMapValue(this.PID);
-            this.PC = temp[0];
-            _CPU.endOfProg = temp[1];
+            this.PID = parseInt(PID);
+            this.PC = _MemoryAccessor.getMapValue(this.PID);
             this.load();
         }
 
@@ -58,7 +56,7 @@ module TSOS{
             this.state = 1;
         }
         public returnPCB(){
-            return [this.PID, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag, this.state, this.location];
+            return [this.PID, this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag, this.state, this.location];
         }
 
     }
