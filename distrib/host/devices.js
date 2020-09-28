@@ -20,16 +20,15 @@ var TSOS;
         function Devices() {
             _hardwareClockID = -1;
         }
-        //
         // Hardware/Host Clock Pulse
         //
         Devices.hostClockPulse = function () {
+            console.log("pulse");
             // Increment the hardware (host) clock.
             _OSclock++;
             // Call the kernel clock pulse event handler.
             _Kernel.krnOnCPUClockPulse();
         };
-        //
         // Keyboard Interrupt, a HARDWARE Interrupt Request. (See pages 560-561 in our text book.)
         //
         Devices.hostEnableKeyboardInterrupt = function () {

@@ -2,19 +2,52 @@ module TSOS{
 
     export class ProcessControlBlock{
 
-        constructor(public PC: number = 0,
+        constructor(
+                    public PID: number = 0,
+                    public PC: number = 0,
                     public Acc: number = 0,
                     public Xreg: number = 0,
                     public Yreg: number = 0,
+                    public IR: string = "",
+                    public state: number = 0,
+                    public location: string = "memory",
                     public Zflag: number = 0) {
         }
 
         public init(): void {
+            this.PID = 0;
             this.PC = 0;
             this.Acc = 0;
             this.Xreg = 0;
             this.Yreg = 0;
+            this.IR = "";
+            this.state = 0;
+            this.location = "memory";
             this.Zflag = 0;
+        }
+
+
+        //State 0 is idle
+        //1 is running
+        //2 is holding
+        //3 Complete (Done) Back to 1 and clear
+
+        public save(){
+            this.PC = _CPU.PC;
+            this.Zflag = _CPU.Zflag;
+            this.Yreg = _CPU.Yreg;
+            this.Xreg = _CPU.Xreg;
+            this.IR = _CPU.IR;
+            this.state = 2;
+        }
+
+        public load(){
+            _CPU.PC = this.PC;
+            _CPU.Zflag = this.Zflag;
+            _CPU.Yreg = this.Yreg;
+            _CPU.Xreg = this.Xreg;
+            _CPU.IR = this.IR;
+            this.state = 1;
         }
     }
 }

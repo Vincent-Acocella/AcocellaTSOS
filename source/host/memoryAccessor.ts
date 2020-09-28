@@ -18,9 +18,9 @@ module TSOS{
 
         //Update the map
         // Iterates the progs in mem
-        public updateMap(startIndex: number):number{
+        public updateMap(startIndex: number, endIndex: number){
             this.progsInMem++
-            this.progToIndexMap[this.progsInMem] = startIndex;
+            this.progToIndexMap[this.progsInMem] = [startIndex, endIndex];
             return this.progsInMem;
         }
 
@@ -47,18 +47,8 @@ module TSOS{
         }
 
         //Read grabs the current input from memory and loops through it while running the opcode.
-        public read(startIndex: number , endIndex: number) {
-            while (startIndex < endIndex) {
-
-                let moveThatBus = _CPU.fetch(startIndex);
-
-                if(moveThatBus < 0){
-                    //Time to branch
-                    startIndex = (-moveThatBus)-1;
-                }else{
-                    startIndex+= moveThatBus;
-                }
-            }
+        public read() {
+                _CPU.isExecuting = true;
         }
     }
 }

@@ -23,14 +23,15 @@ var TSOS;
         //Execute until previous end value is hit
         //The array keeps track of the past values uses the prev index as ref
         MemoryManager.prototype.runMemory = function (progNumber) {
-            var startIndexOfCurProg = _MemoryAccessor.getMapValue(progNumber);
-            var endIndex;
             //The past end value is actually the first value
             //Map = [2,4]
             //Memory = [A9, 45, B4, 54, 0]
             //The only other thing to account for is if it is the first prog which ends at 0
             //--------------------------------------------------------------------------------
             //I thought I'd keep in the above comments as a learning experience. I somehow forgot how a stack worked. The array is not reverse
+            var startIndexOfCurProg = _MemoryAccessor.getMapValue(progNumber);
+            _CPU.PC = startIndexOfCurProg;
+            var endIndex;
             if (progNumber !== 0) {
                 endIndex = _MemoryAccessor.getMapValue(progNumber + 1);
             }

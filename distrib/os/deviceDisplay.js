@@ -21,8 +21,8 @@ var TSOS;
             var table = document.getElementById('memoryUnit');
             for (var i = 0; i < _Memory.memoryThread.length / 8; i++) {
                 var row = table.insertRow(i);
-                var first = row.insertCell(0);
                 var address = i * 8;
+                var first = row.insertCell(0);
                 var memUnit = "0x";
                 for (var j = 0; j < 3 - address.toString(16).length; j++) {
                     memUnit += "0";
@@ -44,7 +44,7 @@ var TSOS;
                 next.innerHTML = header[i];
             }
         };
-        DeviceDisplay.prototype.startUpPCB = function () {
+        DeviceDisplay.prototype.updateCPU = function () {
             var table = document.getElementById("cpu");
             var header = _CPU.returnCPU();
             var row = table.insertRow(1);
@@ -53,7 +53,7 @@ var TSOS;
                 next.innerHTML = String(header[i]);
             }
         };
-        DeviceDisplay.prototype.updateCPU = function () {
+        DeviceDisplay.prototype.startUpPCB = function () {
         };
         DeviceDisplay.prototype.updatePCB = function () {
         };

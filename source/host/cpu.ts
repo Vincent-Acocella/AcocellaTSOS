@@ -20,7 +20,8 @@ module TSOS {
                     public Xreg: number = 0,
                     public Yreg: number = 0,
                     public Zflag: number = 0,
-                    public IR: number = 0,
+                    public IR: string = "0",
+                    public endOfProg = 0,
                     public bytesNeeded = 0,
                     //public PCB = _PCB,
                     public isExecuting: boolean = false) {
@@ -32,14 +33,28 @@ module TSOS {
             this.Xreg = 0;
             this.Yreg = 0;
             this.Zflag = 0;
-            this.IR = 0;
+            this.IR = "";
+            this.endOfProg = 0;
             this.bytesNeeded = 0;
             //this.PCB = null;
             this.isExecuting = false;
         }
 
         public cycle(): void {
+            _PCB.state = 1;
             _Kernel.krnTrace('CPU cycle');
+            let moveThatBus = this.fetch(_Memory.memoryThread[this.PC]);
+            if(moveThatBus < 0){
+                //Time to branch
+                this.PC = (-moveThatBus)-1;
+            }else{
+                //Increment by bytes
+                this.PC+= moveThatBus;
+            }
+            if(this.PC < this.endOfProg){
+                this.isExecuting =false;
+                _PCB.state = 3;
+            }
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
         }
@@ -225,6 +240,10 @@ module TSOS {
         }
         public returnCPU(){
             return [this.PC,this.IR,this.Acc,this.Xreg,this.Yreg,this.Zflag];
+        }
+
+        private finsihedProg(){
+           this.isExecuting = (this.PC < this.endOfProg)? true: false;
         }
     }
 }

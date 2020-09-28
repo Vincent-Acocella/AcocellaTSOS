@@ -23,7 +23,6 @@ module TSOS {
             _hardwareClockID = -1;
         }
 
-        //
         // Hardware/Host Clock Pulse
         //
         public static hostClockPulse(): void {
@@ -33,7 +32,6 @@ module TSOS {
             _Kernel.krnOnCPUClockPulse();
         }
 
-        //
         // Keyboard Interrupt, a HARDWARE Interrupt Request. (See pages 560-561 in our text book.)
         //
         public static hostEnableKeyboardInterrupt(): void {

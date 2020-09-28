@@ -41,6 +41,7 @@ var TSOS;
         //Read grabs the current input from memory and loops through it while running the opcode.
         MemoryAccessor.prototype.read = function (startIndex, endIndex) {
             while (startIndex < endIndex) {
+                _CPU.isExecuting;
                 var moveThatBus = _CPU.fetch(startIndex);
                 if (moveThatBus < 0) {
                     //Time to branch
