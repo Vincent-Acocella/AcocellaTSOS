@@ -20,7 +20,9 @@ module TSOS {
                     public Xreg: number = 0,
                     public Yreg: number = 0,
                     public Zflag: number = 0,
-                    public additionalBytesNeeded = 0,
+                    public IR: number = 0,
+                    public bytesNeeded = 0,
+                    //public PCB = _PCB,
                     public isExecuting: boolean = false) {
         }
 
@@ -30,7 +32,9 @@ module TSOS {
             this.Xreg = 0;
             this.Yreg = 0;
             this.Zflag = 0;
-            this.additionalBytesNeeded = 0;
+            this.IR = 0;
+            this.bytesNeeded = 0;
+            //this.PCB = null;
             this.isExecuting = false;
         }
 
@@ -40,7 +44,7 @@ module TSOS {
             // Do the real work here. Be sure to set this.isExecuting appropriately.
         }
 
-        public runOpCode(code){
+        public fetch(code){
             let opCode = _Memory.memoryThread[code];
             switch(opCode){
                 //Load the accumulator with a constant
@@ -85,7 +89,7 @@ module TSOS {
 
                 //No operation
                 case "EA":
-                    this.additionalBytesNeeded = 0;
+                    this.bytesNeeded = 1;
                     break;
 
                 //break (which is really a system call)
@@ -112,17 +116,18 @@ module TSOS {
                     break;
                 default:
             }
-            return this.additionalBytesNeeded;
+            this.PC++;
+            return this.bytesNeeded;
         }
 
 
         private loadAcc(value) {
-            this.additionalBytesNeeded = 1;
+            this.bytesNeeded = 3;
             this.Acc = _Memory.memoryThread[value+1];
         }
 
         private loadAccFrmMem(value) {
-            this.additionalBytesNeeded = 2;
+            this.bytesNeeded = 3;
             if(_Memory.memoryThread[value+2].match("00")){
                 //Load accumulator from memory means that we are taking the location in memory and returning the value to the Accumulator
                 //Location 10 for example is the start position -10
@@ -135,7 +140,7 @@ module TSOS {
         }
 
         private strAccInMem(value) {
-            this.additionalBytesNeeded = 2;
+            this.bytesNeeded = 3;
             if(_Memory.memoryThread[value+2].match("00")){
                 let locationToStore = parseInt(_Memory.memoryThread[value+1]);
                 _Memory.memoryThread[locationToStore] = this.Acc;
@@ -145,7 +150,7 @@ module TSOS {
         }
 
         private addCarry(value) {
-            this.additionalBytesNeeded = 2;
+            this.bytesNeeded = 3;
             if (_Memory.memoryThread[value + 2].match("00")) {
                 let valuetoAdd = parseInt(_Memory.memoryThread[value+1]);
                 this.Acc = valuetoAdd + this.Acc;
@@ -155,12 +160,12 @@ module TSOS {
         }
 
         private loadXregCons(value) {
-            this.additionalBytesNeeded = 1;
+            this.bytesNeeded = 2;
             this.Xreg = parseInt(_Memory.memoryThread[value+1]);
         }
 
         private loadXregMem(value) {
-            this.additionalBytesNeeded = 2;
+            this.bytesNeeded = 3;
             if (_Memory.memoryThread[value + 2].match("00")) {
                 let spotInMem = parseInt(_Memory.memoryThread[value + 1]);
                 this.Xreg = _Memory.memoryThread[spotInMem];
@@ -170,12 +175,12 @@ module TSOS {
         }
 
         private loadYregCons(value) {
-            this.additionalBytesNeeded = 1;
+            this.bytesNeeded = 2;
             this.Yreg = parseInt(_Memory.memoryThread[value+1]);
         }
 
         private loadYregMem(value) {
-            this.additionalBytesNeeded = 2;
+            this.bytesNeeded = 3;
             if (_Memory.memoryThread[value + 2].match("00")) {
                 let spotInMem = parseInt(_Memory.memoryThread[value + 1]);
                 this.Yreg = _Memory.memoryThread[spotInMem];
@@ -185,7 +190,7 @@ module TSOS {
         }
 
         private compXmem(value) {
-            this.additionalBytesNeeded = 2;
+            this.bytesNeeded = 3;
             if (_Memory.memoryThread[value + 2].match("00")) {
                 let spotInMem = parseInt(_Memory.memoryThread[value + 1]);
                 this.Zflag = (this.Xreg === spotInMem)? 1:0;
@@ -195,27 +200,31 @@ module TSOS {
         }
 
         private branchIfZ(value) {
-            this.additionalBytesNeeded = 1;
 
             if(this.Zflag === 0){
-                let temp = parseInt(_Memory.memoryThread[value + 1]);
-                if(temp === 0){
-                    this.additionalBytesNeeded = -1;
+                this.PC = parseInt(_Memory.memoryThread[value + 1]);
+                if(this.PC === 0){
+                    this.bytesNeeded = -1;
                 }else{
                     //Do this to account for a branch to 0
-                    this.additionalBytesNeeded = -(temp+1);
+                    this.bytesNeeded = -(this.PC+1);
                 }
+            }else{
+                this.bytesNeeded = 3;
             }
         }
 
         private incremVal(value) {
-            this.additionalBytesNeeded = 2;
+            this.bytesNeeded = 3;
             if (_Memory.memoryThread[value + 2].match("00")) {
                 let temp = parseInt(_Memory.memoryThread[value + 1]);
                 _Memory.memoryThread[value+1] = temp+1;
             }else{
                 _StdOut.putText("Only one memory segment exists currently");
             }
+        }
+        public returnCPU(){
+            return [this.PC,this.IR,this.Acc,this.Xreg,this.Yreg,this.Zflag];
         }
     }
 }

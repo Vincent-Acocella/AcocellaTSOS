@@ -28,6 +28,7 @@ var TSOS;
         Console.prototype.init = function () {
             this.clearScreen();
             this.resetXY();
+            this.clearCmdLine("");
         };
         Console.prototype.clearScreen = function () {
             _DrawingContext.clearRect(0, 0, _Canvas.width, _Canvas.height);

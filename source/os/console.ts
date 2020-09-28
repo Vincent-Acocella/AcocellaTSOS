@@ -21,6 +21,7 @@ module TSOS {
         public init(): void {
             this.clearScreen();
             this.resetXY();
+            this.clearCmdLine("");
         }
 
         public clearScreen(): void {

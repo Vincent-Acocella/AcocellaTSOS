@@ -286,6 +286,7 @@ var TSOS;
                     // _StdOut.putText("The file you entered has the wrong amount of chars.");
                     var progNum = _MemoryManager.loadMemory(program);
                     _StdOut.putText("Type 'run " + progNum + "' To run code");
+                    _DeviceDisplay.updateMemory();
                 }
             }
             else {

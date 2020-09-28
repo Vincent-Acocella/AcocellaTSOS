@@ -37,7 +37,7 @@ module TSOS{
             //Memory = [A9, 45, B4, 54, 0]
             //The only other thing to account for is if it is the first prog which ends at 0
 
-            //---------------------------------------
+            //--------------------------------------------------------------------------------
 
             //I thought I'd keep in the above comments as a learning experience. I somehow forgot how a stack worked. The array is not reverse
 
@@ -46,11 +46,13 @@ module TSOS{
             }else{
                 endIndex = _Memory.endIndex;
             }
+
             //Loop through index of memory using end values so we go backwards
             //We end at the first element (Explaination above)
 
             //We need to move back 1 of the end index
             _MemoryAccessor.read(startIndexOfCurProg, endIndex);
         }
+
     }
 }

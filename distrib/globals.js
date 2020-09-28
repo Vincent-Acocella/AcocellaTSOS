@@ -20,9 +20,12 @@ var KEYBOARD_IRQ = 1;
 // Global Variables
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
 //
+var _SingleStep = false;
 var _CPU; // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
+//var _PCB = TSOS.ProcessControlBlock;
 var _Memory;
 var _MemoryAccessor;
+var _DeviceDisplay = null;
 //	Software	(OS)
 var _MemoryManager = null;
 var _OSclock = 0; // Page 23.

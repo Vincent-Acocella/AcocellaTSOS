@@ -90,6 +90,7 @@ module TSOS {
             _Memory = new Memory();
             _Memory.init();
             _MemoryAccessor = new MemoryAccessor();
+            _DeviceDisplay = new DeviceDisplay();
 
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(Devices.hostClockPulse, CPU_CLOCK_INTERVAL);
@@ -117,9 +118,15 @@ module TSOS {
         }
 
         public static hostBtnEnableSingleStep(btn): void{
-            if(_CPU.isExecuting){
+            if(_SingleStep){
+                _SingleStep = false;
+                btn.value("Single Step disabled");
+
+            }else{
                 _SingleStep = true;
+                btn.value("Single Step Enabled");
             }
         }
+
     }
 }

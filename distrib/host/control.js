@@ -76,6 +76,7 @@ var TSOS;
             _Memory = new TSOS.Memory();
             _Memory.init();
             _MemoryAccessor = new TSOS.MemoryAccessor();
+            _DeviceDisplay = new TSOS.DeviceDisplay();
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(TSOS.Devices.hostClockPulse, CPU_CLOCK_INTERVAL);
             // .. and call the OS Kernel Bootstrap routine.
@@ -99,6 +100,14 @@ var TSOS;
             // page from its cache, which is not what we want.
         };
         Control.hostBtnEnableSingleStep = function (btn) {
+            if (_SingleStep) {
+                _SingleStep = false;
+                btn.value("Single Step disabled");
+            }
+            else {
+                _SingleStep = true;
+                btn.value("Single Step Enabled");
+            }
         };
         return Control;
     }());

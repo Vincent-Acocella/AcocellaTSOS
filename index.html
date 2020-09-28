@@ -1,10 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="en">
 
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-
 <head>
    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
    <meta name="author"             content="Alan G. Labouseur" />
@@ -12,6 +8,10 @@
    <title>
       TSOS - a browser-based virtual Operating System in TypeScript
    </title>
+
+   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
    <!-- Globals CONSTANTS and _Variables. Must included be first. -->
    <script type="text/javascript" src="distrib/globals.js"></script>
@@ -28,6 +28,7 @@
    <script type="text/javascript" src="distrib/os/canvastext.js"></script>
    <script type="text/javascript" src="distrib/os/console.js"></script>
    <script type="text/javascript" src="distrib/os/deviceDriver.js"></script>
+   <script type="text/javascript" src="distrib/os/deviceDisplay.js"></script>
    <script type="text/javascript" src="distrib/os/deviceDriverKeyboard.js"></script>
    <script type="text/javascript" src="distrib/os/queue.js"></script>
    <script type="text/javascript" src="distrib/os/shell.js"></script>
@@ -36,16 +37,15 @@
    <script type="text/javascript" src="distrib/os/memoryManager.js"></script>
    <script type="text/javascript" src="distrib/os/kernel.js"></script>
 
-
    <!-- Other Routines -->
    <script type="text/javascript" src="distrib/utils.js"></script>
    <!-- Uncomment the line below to enable GLaDOS testing. -->
-<!--   <script type="text/javascript" src="test/glados-ip2.js"></script>-->
+   <!--   <script type="text/javascript" src="test/glados-ip2.js"></script>-->
 </head>
 
 <body onload="onDocumentLoad()">
 
-   <h2>Welcome to OS</h2>
+   <h2>Just Your Average Operating System</h2>
    <h3>Status: <span id="status"></span></h3>
 
 <div id="divMain" style="width:100%;">
@@ -84,6 +84,7 @@
              disabled="disabled"
              value="Enable Single Step"
              tabindex="2"
+             width="200px"
              onclick="TSOS.Control.hostBtnEnableSingleStep(this);">
 
       <marquee behavior="scroll" loop="-10" width="30%">
@@ -111,6 +112,18 @@
          </canvas>
    </div>
 
+   <div id="memoryDisplay" style="margin-left:520px;">
+      <label>
+         Memory
+         <br>
+
+         <table class="table table-striped" name="memoryUnit"
+                id="memoryUnit"
+                bgcolor ="white"
+                style="color: black; overflow-y: scroll; display: block; height: 150px; width: 260px;"
+         ></table>
+      </label>
+   </div>
    <div id="divLog" style="margin-left:520px;">
       <label>
          Host Log
@@ -120,6 +133,18 @@
                    rows="26"
                    cols="48"
          ></textarea>
+      </label>
+   </div>
+
+   <div id="cpuDisplay" style="margin-left:520px;">
+      <label>
+         CPU
+         <br>
+         <table name="cpu"
+                id="cpu"
+                bgcolor ="white"
+                style="color: black; display: block; height: 55px; width: 148px;"
+         ></table>
       </label>
    </div>
 
@@ -135,14 +160,6 @@
       </label>
    </div>
 </div>
-
-<p class="footerText" style="clear:both;">
-   <br>
-   Copyright &copy; 2008 - 2019 No Rights Reserved.
-   <br>
-   Reproduction is inhibited without the express written consent of
-   Ted Codd, Stevie Ray Vaughan, and Ian Fleming.
-</p>
 
 </body>
 </html>

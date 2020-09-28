@@ -3,11 +3,14 @@ var TSOS;
     var MemoryManager = /** @class */ (function () {
         function MemoryManager() {
         }
-        //Load input into memory. It is in backwards!
+        //Load input into memory. It is in backwards! Its acually not tho.
         MemoryManager.prototype.loadMemory = function (usrProg) {
             for (var i = 0; i < usrProg.length; i += 3) {
+                //I'm mad at you. You load two things in glados so when my console log I thought I was wrong
+                //The pain I was caused. The betrayal. I guess it makes up for my 7 commits last project :/
+                // You 2 : me 0
+                //Concats opcode
                 var code = usrProg.charAt(i) + usrProg.charAt(i + 1);
-                console.log(code);
                 if (!_MemoryAccessor.write(code)) {
                     break;
                 }
@@ -20,27 +23,24 @@ var TSOS;
         //Execute until previous end value is hit
         //The array keeps track of the past values uses the prev index as ref
         MemoryManager.prototype.runMemory = function (progNumber) {
-            var endIndexOfCurProg = _MemoryAccessor.getMapValue(progNumber) - 1;
-            var pastEndValue;
+            var startIndexOfCurProg = _MemoryAccessor.getMapValue(progNumber);
+            var endIndex;
             //The past end value is actually the first value
             //Map = [2,4]
-            // Memory = [A9, 45, B4, 54, 0]
-            // So prog 1 would end at the first value of the prog 1
+            //Memory = [A9, 45, B4, 54, 0]
             //The only other thing to account for is if it is the first prog which ends at 0
-            //I think this works pretty cool. I don't know if this has been done(Probably) but I feel loke I am
-            //Making this much more complicated than needed but like.... She's going to work
+            //--------------------------------------------------------------------------------
+            //I thought I'd keep in the above comments as a learning experience. I somehow forgot how a stack worked. The array is not reverse
             if (progNumber !== 0) {
-                pastEndValue = _MemoryAccessor.getMapValue(progNumber);
+                endIndex = _MemoryAccessor.getMapValue(progNumber + 1);
             }
             else {
-                pastEndValue = 0;
+                endIndex = _Memory.endIndex;
             }
             //Loop through index of memory using end values so we go backwards
             //We end at the first element (Explaination above)
-            while (pastEndValue <= endIndexOfCurProg) {
-                //_MemoryAccessor.execute(endIndexOfProg);
-                endIndexOfCurProg--;
-            }
+            //We need to move back 1 of the end index
+            _MemoryAccessor.read(startIndexOfCurProg, endIndex);
         };
         return MemoryManager;
     }());

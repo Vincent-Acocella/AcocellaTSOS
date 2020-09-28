@@ -34,10 +34,10 @@ module TSOS{
         //I wanted to make a map and work off that but this was done in about 10 lines of code so like. Better?
 
         //----------------------------------------------------------------------
+        //Ahhhhh I was so young and ignorant. Why did I have that much confidence and then was wrong.
 
-        //Ahhhhh I was so young and ignorant. Why did I have that much confidence and then was wrong lol.
         public write(code: string){
-            _Memory.memoryThread.push(code);
+            _Memory.memoryThread[_Memory.endIndex] = code;
             if(_Memory.endIndex !== 256) {
                 _Memory.endIndex++;
                 return true;
@@ -49,7 +49,8 @@ module TSOS{
         //Read grabs the current input from memory and loops through it while running the opcode.
         public read(startIndex: number , endIndex: number) {
             while (startIndex < endIndex) {
-                let moveThatBus = _CPU.runOpCode(startIndex) + 1;
+
+                let moveThatBus = _CPU.fetch(startIndex);
 
                 if(moveThatBus < 0){
                     //Time to branch
@@ -59,6 +60,5 @@ module TSOS{
                 }
             }
         }
-
     }
 }

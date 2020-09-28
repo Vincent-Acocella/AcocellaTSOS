@@ -14,7 +14,7 @@ module TSOS {
             for (let i = 0; i < 256; i++) {
                 this.memoryThread[i] = "00";
             }
-            this.endIndex =0;
+            this.endIndex = 0;
         }
     }
 }

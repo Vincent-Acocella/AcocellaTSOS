@@ -29,9 +29,10 @@ const KEYBOARD_IRQ: number = 1;
 
 var _SingleStep = false;
 var _CPU:TSOS.Cpu;  // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
-
+//var _PCB = TSOS.ProcessControlBlock;
 var	_Memory:TSOS.Memory;
 var	_MemoryAccessor:TSOS.MemoryAccessor;
+var _DeviceDisplay : any = null;
 //	Software	(OS)
 var	_MemoryManager:	any	= null;
 
