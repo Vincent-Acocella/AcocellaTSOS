@@ -64,10 +64,25 @@ module TSOS{
         }
 
         public startUpPCB(){
+            let table: HTMLTableElement = <HTMLTableElement>document.getElementById("pcb");
+
+            let header = ["PID", "PC", "IR", "ACC", "X", "Y", "Z", "State", "Location"];
+            let row = table.insertRow(0);
+            for(let i = 0; i < header.length; i++){
+                let next = row.insertCell(i);
+                next.innerHTML = String(header[i]);
+            }
         }
 
         public updatePCB(){
+            let table: HTMLTableElement = <HTMLTableElement>document.getElementById("pcb");
 
+            let header = _PCB.returnPCB();
+            let row = table.insertRow(0);
+            for(let i = 0; i < header.length; i++){
+                let next = row.insertCell(i);
+                next.innerHTML = String(header[i]);
+            }
         }
 
     }

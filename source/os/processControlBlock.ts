@@ -49,5 +49,8 @@ module TSOS{
             _CPU.IR = this.IR;
             this.state = 1;
         }
+        public returnPCB(){
+            return [this.PID, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag, this.state, this.location];
+        }
     }
 }
