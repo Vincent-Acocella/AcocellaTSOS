@@ -49,12 +49,8 @@ var TSOS;
             _Kernel.krnTrace('CPU cycle');
             var moveThatBus = this.fetch(this.PC);
             if (moveThatBus < 0) {
-                var gthis = (-1 * moveThatBus) - 1 % 256;
-                var hthis = (-moveThatBus) - 1 % _Memory.endIndex;
+                this.PC = (-1 * moveThatBus) - 1 % 256;
                 //Time to branch
-                console.log(gthis);
-                console.log(hthis);
-                this.PC = hthis;
             }
             else {
                 //Increment by bytes
@@ -109,6 +105,7 @@ var TSOS;
                     break;
                 //break (which is really a system call)
                 case "00":
+                    this["break"]();
                     break;
                 //compare a byte in memory to the X reg. sets Z flag if =
                 case "EC":
@@ -169,7 +166,7 @@ var TSOS;
         };
         Cpu.prototype.loadXregCons = function (value) {
             this.bytesNeeded = 2;
-            this.Xreg = parseInt(_Memory.memoryThread[value + 1]);
+            this.Xreg = this.convToHex(_Memory.memoryThread[value + 1]);
         };
         Cpu.prototype.loadXregMem = function (value) {
             this.bytesNeeded = 3;
@@ -207,17 +204,19 @@ var TSOS;
         };
         Cpu.prototype.branchIfZ = function (value) {
             if (this.Zflag === 0) {
+                //Gets location to set the program counter to
                 this.PC = this.convToHex(_Memory.memoryThread[value + 1]);
+                //If we are branching to 0
                 if (this.PC === 0) {
                     this.bytesNeeded = -1;
                 }
                 else {
-                    //Do this to account for a branch to 0
-                    this.bytesNeeded = -(this.PC + 1);
+                    console.log(this.PC);
+                    this.bytesNeeded = (-1 * (this.PC + 1));
                 }
             }
             else {
-                this.bytesNeeded = 3;
+                this.bytesNeeded = 2;
             }
         };
         Cpu.prototype.incremVal = function (value) {
@@ -230,7 +229,11 @@ var TSOS;
                 _StdOut.putText("Only one memory segment exists currently");
             }
         };
+        Cpu.prototype["break"] = function () {
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(STOP_EXEC_IRQ, ["PID " + _PCB.PID + " has finished."]));
+        };
         Cpu.prototype.systemCall = function (code) {
+            this.bytesNeeded = 1;
             switch (_CPU.Xreg) {
                 case 1: // Print integer from y register
                     _CPU.printIntYReg();
@@ -243,8 +246,13 @@ var TSOS;
             }
         };
         Cpu.prototype.printIntYReg = function () {
+            // #$01 in X reg = print the integer stored in the Y register.
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(PRINT_YREGInt_ERQ, ["Printing int from X register"]));
         };
         Cpu.prototype.printStringYReg = function () {
+            // #$02 in X reg = print the 00-terminated string stored at the address in
+            //  the Y register.
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(STOP_EXEC_IRQ, ["Printing int from X register"]));
         };
         Cpu.prototype.returnCPU = function () {
             return [this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag];

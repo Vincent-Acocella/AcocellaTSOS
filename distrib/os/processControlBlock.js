@@ -61,6 +61,17 @@ var TSOS;
         ProcessControlBlock.prototype.returnPCB = function () {
             return [this.PID, this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag, this.state, this.location];
         };
+        ProcessControlBlock.prototype.terminate = function () {
+            _CPU.isExecuting = false;
+            if (_StdOut.currentXPosition > 0) {
+                _StdOut.clearCmdLine("");
+            }
+            _Memory.init();
+            _DeviceDisplay = new TSOS.DeviceDisplay();
+            _PCB.init();
+            _PCB.load();
+            _MemoryAccessor.progInMem = -1;
+        };
         return ProcessControlBlock;
     }());
     TSOS.ProcessControlBlock = ProcessControlBlock;

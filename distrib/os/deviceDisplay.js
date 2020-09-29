@@ -48,6 +48,9 @@ var TSOS;
         };
         DeviceDisplay.prototype.startUpCPU = function () {
             var table = document.getElementById("cpu");
+            while (table.hasChildNodes()) {
+                table.removeChild(table.firstChild);
+            }
             var header = ["PC", "IR", "ACC", "X", "Y", "Z"];
             var row = table.insertRow(0);
             for (var i = 0; i < header.length; i++) {
@@ -72,6 +75,9 @@ var TSOS;
         };
         DeviceDisplay.prototype.startUpPCB = function () {
             var table = document.getElementById("pcb");
+            while (table.hasChildNodes()) {
+                table.removeChild(table.firstChild);
+            }
             var header = ["PID", "PC", "IR", "ACC", "X", "Y", "Z", "State", "Location"];
             var row = table.insertRow(0);
             for (var i = 0; i < header.length; i++) {

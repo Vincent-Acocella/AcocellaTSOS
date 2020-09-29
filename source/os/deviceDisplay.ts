@@ -32,6 +32,7 @@ module TSOS{
 
         public startUpMemory(){
             let table: HTMLTableElement = <HTMLTableElement>document.getElementById('memoryUnit');
+
             for (let i = 0; i < _Memory.memoryThread.length / 8; i++) {
                 let row = table.insertRow(i);
                 let memAdress = i * 8;
@@ -53,6 +54,12 @@ module TSOS{
 
         public startUpCPU(){
             let table: HTMLTableElement = <HTMLTableElement>document.getElementById("cpu");
+
+            while(table.hasChildNodes())
+            {
+                table.removeChild(table.firstChild);
+            }
+
             let header = ["PC", "IR", "ACC", "X", "Y", "Z"];
 
             let row = table.insertRow(0);
@@ -67,7 +74,6 @@ module TSOS{
             }
         }
 
-
         public updateCPU(){
             let table: HTMLTableElement = <HTMLTableElement>document.getElementById("cpu");
             table.deleteRow(1);
@@ -81,6 +87,11 @@ module TSOS{
 
         public startUpPCB(){
             let table: HTMLTableElement = <HTMLTableElement>document.getElementById("pcb");
+
+            while(table.hasChildNodes())
+            {
+                table.removeChild(table.firstChild);
+            }
 
             let header = ["PID", "PC", "IR", "ACC", "X", "Y", "Z", "State", "Location"];
             let row = table.insertRow(0);

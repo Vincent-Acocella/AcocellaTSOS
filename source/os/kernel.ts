@@ -132,10 +132,11 @@ module TSOS {
                 case PRINT_YREGInt_ERQ:
                     _StdOut.putText(_CPU.Yreg);
                     break;
-                case TERMINATE_STRING:
-                    _PCB.terminate();
 
+                case STOP_EXEC_IRQ:
+                    _PCB.terminate();
                     break;
+
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
             }

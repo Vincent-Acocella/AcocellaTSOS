@@ -60,9 +60,13 @@ module TSOS{
         }
 
         public terminate(){
+            _CPU.isExecuting = false;
+            if (_StdOut.currentXPosition > 0) {
+                _StdOut.clearCmdLine("");
+            }
             _Memory.init();
-            _DeviceDisplay.reload();
-            _PCB.init()
+            _DeviceDisplay = new DeviceDisplay();
+            _PCB.init();
             _PCB.load();
             _MemoryAccessor.progInMem = -1;
         }
