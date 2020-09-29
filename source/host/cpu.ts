@@ -240,6 +240,7 @@ module TSOS {
         }
 
         public systemCall(code){
+            this.bytesNeeded = 1;
             switch (_CPU.Xreg) {
                 case 1: // Print integer from y register
                     _CPU.printIntYReg();
@@ -253,10 +254,13 @@ module TSOS {
         }
 
         private printIntYReg(){
-
+            // #$01 in X reg = print the integer stored in the Y register.
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(PRINT_YREGInt_ERQ, ["Printing int from X register"]));
         }
         private printStringYReg(){
-
+            // #$02 in X reg = print the 00-terminated string stored at the address in
+            //  the Y register.
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_STRING, ["Printing int from X register"]));
         }
 
 

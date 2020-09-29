@@ -20,9 +20,9 @@ const TIMER_IRQ: number = 0;  // Pages 23 (timer), 9 (interrupts), and 561 (inte
                               // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
 const KEYBOARD_IRQ: number = 1;
 
-const PRINT_YREG_ERQ = 2;
+const PRINT_YREGInt_ERQ = 1;
 
-const PRINT_FROM_MEM_IRQ = 3;
+const TERMINATE_STRING = 2;
 
 const STOP_EXEC_IRQ = 4;
 

@@ -59,5 +59,12 @@ module TSOS{
             return [this.PID, this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag, this.state, this.location];
         }
 
+        public terminate(){
+            _Memory.init();
+            _DeviceDisplay.reload();
+            _PCB.init()
+            _PCB.load();
+            _MemoryAccessor.progInMem = -1;
+        }
     }
 }

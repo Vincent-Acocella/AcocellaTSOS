@@ -33,7 +33,7 @@ h3 {
 #display {
   background-color:#DFDBC3;
   border: 2px solid red;
-  cursor: default;
+  cursor: url(distrib/images/cursor.cur), auto;
 }
 
 .normal_button {
