@@ -21,6 +21,9 @@ var TSOS;
                     if (index === _CPU.PC) {
                         table.rows[i].cells.item(j).style.color = "magenta";
                     }
+                    else {
+                        table.rows[i].cells.item(j).style.color = "black";
+                    }
                     index++;
                 }
             }
@@ -29,13 +32,13 @@ var TSOS;
             var table = document.getElementById('memoryUnit');
             for (var i = 0; i < _Memory.memoryThread.length / 8; i++) {
                 var row = table.insertRow(i);
-                var address = i * 8;
+                var memAdress = i * 8;
                 var first = row.insertCell(0);
                 var memUnit = "0x";
-                for (var j = 0; j < 3 - address.toString(16).length; j++) {
+                for (var j = 0; j < 3 - memAdress.toString(16).length; j++) {
                     memUnit += "0";
                 }
-                memUnit += address.toString(16);
+                memUnit += memAdress.toString(16);
                 first.innerHTML = memUnit;
                 for (var k = 1; k < 9; k++) {
                     var cell = row.insertCell(k);

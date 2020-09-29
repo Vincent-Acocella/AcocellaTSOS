@@ -34,6 +34,8 @@ var TSOS;
         };
         ProcessControlBlock.prototype.newTask = function (PID) {
             this.PID = parseInt(PID);
+            console.log(_Memory.endIndex);
+            _CPU.endOfProg = _Memory.endIndex;
             this.PC = _MemoryAccessor.getMapValue(this.PID);
             this.load();
         };
@@ -55,7 +57,6 @@ var TSOS;
             _CPU.Yreg = this.Yreg;
             _CPU.Xreg = this.Xreg;
             _CPU.IR = this.IR;
-            this.state = 1;
         };
         ProcessControlBlock.prototype.returnPCB = function () {
             return [this.PID, this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag, this.state, this.location];

@@ -67,7 +67,9 @@ var TSOS;
             // .. enable the Halt and Reset and singleStep buttons ...
             document.getElementById("btnHaltOS").disabled = false;
             document.getElementById("btnReset").disabled = false;
-            document.getElementById("singleStep").disabled = false;
+            document.getElementById("singleStepOn").disabled = false;
+            document.getElementById("singleStepOff").disabled = true;
+            document.getElementById("activeSingleStep").disabled = true;
             // .. set focus on the OS console display ...
             document.getElementById("display").focus();
             // ... Create and initialize the CPU (because it's part of the hardware)  ...
@@ -100,16 +102,16 @@ var TSOS;
             // page from its cache, which is not what we want.
         };
         Control.hostBtnEnableSingleStep = function (btn) {
-            if (_SingleStep) {
-                _SingleStep = false;
-                document.getElementById("singleStep").innerText = ("Single Step disabled");
-                document.getElementById("activeSingleStep").disabled = true;
-            }
-            else {
-                _SingleStep = true;
-                document.getElementById("singleStep").innerHTML = ("Single Step Enabled");
-                document.getElementById("activeSingleStep").disabled = false;
-            }
+            _SingleStep = true;
+            document.getElementById("singleStepOn").disabled = true;
+            document.getElementById("activeSingleStep").disabled = false;
+            document.getElementById("singleStepOff").disabled = false;
+        };
+        Control.hostBtnDisableSingleStep = function (btn) {
+            _SingleStep = false;
+            document.getElementById("singleStepOn").disabled = false;
+            document.getElementById("activeSingleStep").disabled = true;
+            document.getElementById("singleStepOff").disabled = true;
         };
         Control.takeATinyStep = function (btn) {
             _CPU.cycle();

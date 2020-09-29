@@ -79,13 +79,22 @@
              onclick="TSOS.Control.hostBtnReset_click(this);">
 
       <input type="button"
-             id = "singleStep"
-             name="singleStep"
+             id = "singleStepOn"
+             name="singleStepOn"
              disabled="disabled"
              value="Enable Single Step"
              tabindex="3"
              width="200px"
              onclick="TSOS.Control.hostBtnEnableSingleStep(this);">
+
+      <input type="button"
+             id = "singleStepOff"
+             name="singleStep"
+             disabled="disabled"
+             value="Disable"
+             tabindex="3"
+             width="200px"
+             onclick="TSOS.Control.hostBtnDisableSingleStep(this);">
 
       <input type="button"
              id = "activeSingleStep"
@@ -128,7 +137,7 @@
          <table class="table table-striped" name="memoryUnit"
                 id="memoryUnit"
                 bgcolor ="white"
-                style="color: black; overflow-y: scroll; display: block; height: 150px; width: 260px;"
+                style="color: black; overflow-y: scroll; display: block; height: 150px; width: 278px;"
          ></table>
       </label>
    </div>

@@ -28,10 +28,11 @@ module TSOS{
 
         public newTask(PID){
             this.PID = parseInt(PID);
+            console.log(_Memory.endIndex);
+            _CPU.endOfProg = _Memory.endIndex;
             this.PC = _MemoryAccessor.getMapValue(this.PID);
             this.load();
         }
-
 
         //State 0 is idle
         //1 is running
@@ -53,7 +54,6 @@ module TSOS{
             _CPU.Yreg = this.Yreg;
             _CPU.Xreg = this.Xreg;
             _CPU.IR = this.IR;
-            this.state = 1;
         }
         public returnPCB(){
             return [this.PID, this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag, this.state, this.location];

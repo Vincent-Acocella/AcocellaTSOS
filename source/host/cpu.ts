@@ -43,8 +43,8 @@ module TSOS {
             _Kernel.krnTrace('CPU cycle');
             let moveThatBus = this.fetch(this.PC);
             if(moveThatBus < 0){
+                this.PC = (-1 * moveThatBus)-1 % 256;
                 //Time to branch
-                this.PC = (-moveThatBus)-1;
             }else{
                 //Increment by bytes
                 this.PC+= moveThatBus;
@@ -53,11 +53,13 @@ module TSOS {
                 this.isExecuting = false;
                 // _PCB.state = 3;
             }
+            _PCB.save();
             _DeviceDisplay.reload();
         }
 
         public fetch(code){
             let opCode = _Memory.memoryThread[code];
+            this.IR = opCode.toString();
 
             switch(opCode){
                 //Load the accumulator with a constant
@@ -126,6 +128,7 @@ module TSOS {
 
                 //System Call
                 case "FF":
+                    this.systemCall(code);
                     break;
                 default:
             }
@@ -135,8 +138,7 @@ module TSOS {
 
         private loadAcc(value) {
             this.bytesNeeded = 2;
-            this.Acc = _Memory.memoryThread[value + 1];
-            console.log(this.Acc);
+            this.Acc  = this.convToHex(_Memory.memoryThread[value + 1]);
         }
 
         private loadAccFrmMem(value) {
@@ -145,8 +147,8 @@ module TSOS {
                 //Load accumulator from memory means that we are taking the location in memory and returning the value to the Accumulator
                 //Location 10 for example is the start position -10
                 //FIX FIX FIX
-               let numInMem = parseInt(_Memory.memoryThread[value+1]);
-               this.Acc = _Memory.memoryThread[numInMem];
+               let numInMem = this.convToHex((_Memory.memoryThread[value+1]));
+               this.Acc = this.convToHex(_Memory.memoryThread[numInMem]);
             }else{
                 _StdOut.putText("Only one memory segment exists currently");
             }
@@ -155,7 +157,7 @@ module TSOS {
         private strAccInMem(value) {
             this.bytesNeeded = 3;
             if(_Memory.memoryThread[value+2].match("00")){
-                let locationToStore = parseInt(_Memory.memoryThread[value+1]);
+                let locationToStore = this.convToHex((_Memory.memoryThread[value+1]));
                 _Memory.memoryThread[locationToStore] = this.Acc;
             }else{
                 _StdOut.putText("Only one memory segment exists currently");
@@ -165,7 +167,7 @@ module TSOS {
         private addCarry(value) {
             this.bytesNeeded = 3;
             if (_Memory.memoryThread[value + 2].match("00")) {
-                let valuetoAdd = parseInt(_Memory.memoryThread[value+1]);
+                let valuetoAdd = this.convToHex((_Memory.memoryThread[value+1]));
                 this.Acc = valuetoAdd + this.Acc;
             }else{
                 _StdOut.putText("Only one memory segment exists currently");
@@ -180,7 +182,7 @@ module TSOS {
         private loadXregMem(value) {
             this.bytesNeeded = 3;
             if (_Memory.memoryThread[value + 2].match("00")) {
-                let spotInMem = parseInt(_Memory.memoryThread[value + 1]);
+                let spotInMem = this.convToHex(_Memory.memoryThread[value + 1]);
                 this.Xreg = _Memory.memoryThread[spotInMem];
             }else{
                 _StdOut.putText("Only one memory segment exists currently");
@@ -189,14 +191,14 @@ module TSOS {
 
         private loadYregCons(value) {
             this.bytesNeeded = 2;
-            this.Yreg = parseInt(_Memory.memoryThread[value+1]);
+            this.Yreg = this.convToHex(_Memory.memoryThread[value+1]);
         }
 
         private loadYregMem(value) {
             this.bytesNeeded = 3;
             if (_Memory.memoryThread[value + 2].match("00")) {
-                let spotInMem = parseInt(_Memory.memoryThread[value + 1]);
-                this.Yreg = _Memory.memoryThread[spotInMem];
+                let spotInMem = this.convToHex(_Memory.memoryThread[value + 1]);
+                this.Yreg = this.convToHex(_Memory.memoryThread[spotInMem]);
             }else{
                 _StdOut.putText("Only one memory segment exists currently");
             }
@@ -205,7 +207,7 @@ module TSOS {
         private compXmem(value) {
             this.bytesNeeded = 3;
             if (_Memory.memoryThread[value + 2].match("00")) {
-                let spotInMem = parseInt(_Memory.memoryThread[value + 1]);
+                let spotInMem = this.convToHex(_Memory.memoryThread[value + 1]);
                 this.Zflag = (this.Xreg === spotInMem)? 1:0;
             }else{
                 _StdOut.putText("Only one memory segment exists currently");
@@ -215,7 +217,7 @@ module TSOS {
         private branchIfZ(value) {
 
             if(this.Zflag === 0){
-                this.PC = parseInt(_Memory.memoryThread[value + 1]);
+                this.PC = this.convToHex(_Memory.memoryThread[value + 1]);
                 if(this.PC === 0){
                     this.bytesNeeded = -1;
                 }else{
@@ -230,12 +232,33 @@ module TSOS {
         private incremVal(value) {
             this.bytesNeeded = 3;
             if (_Memory.memoryThread[value + 2].match("00")) {
-                let temp = parseInt(_Memory.memoryThread[value + 1]);
+                let temp = this.convToHex(_Memory.memoryThread[value + 1]);
                 _Memory.memoryThread[value+1] = temp+1;
             }else{
                 _StdOut.putText("Only one memory segment exists currently");
             }
         }
+
+        public systemCall(code){
+            switch (_CPU.Xreg) {
+                case 1: // Print integer from y register
+                    _CPU.printIntYReg();
+                    break;
+                case 2: // Print 00 terminated string from y register
+                    _CPU.printStringYReg();
+                    break;
+                default:
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(STOP_EXEC_IRQ, ["Invalid system call operation, stoping execution."]));
+            }
+        }
+
+        private printIntYReg(){
+
+        }
+        private printStringYReg(){
+
+        }
+
 
         public returnCPU(){
             return [this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag];
@@ -244,5 +267,12 @@ module TSOS {
         private finsihedProg(){
            this.isExecuting = (this.PC < this.endOfProg)? true: false;
         }
+
+
+        private convToHex(value){
+             return parseInt(value.toString(), 16);
+        }
+
+
     }
 }

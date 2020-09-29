@@ -79,7 +79,9 @@ module TSOS {
             // .. enable the Halt and Reset and singleStep buttons ...
             (<HTMLButtonElement>document.getElementById("btnHaltOS")).disabled = false;
             (<HTMLButtonElement>document.getElementById("btnReset")).disabled = false;
-            (<HTMLButtonElement>document.getElementById("singleStep")).disabled = false;
+            (<HTMLButtonElement>document.getElementById("singleStepOn")).disabled = false;
+            (<HTMLButtonElement>document.getElementById("singleStepOff")).disabled = true;
+            (<HTMLButtonElement>document.getElementById("activeSingleStep")).disabled = true;
 
             // .. set focus on the OS console display ...
             document.getElementById("display").focus();
@@ -118,15 +120,16 @@ module TSOS {
         }
 
         public static hostBtnEnableSingleStep(btn): void{
-            if(_SingleStep){
-                _SingleStep = false;
-                (<HTMLButtonElement>document.getElementById("singleStep")).innerText = ("Single Step disabled");
-                (<HTMLButtonElement>document.getElementById("activeSingleStep")).disabled = true;
-            }else{
                 _SingleStep = true;
-                (<HTMLButtonElement>document.getElementById("singleStep")).innerHTML = ("Single Step Enabled");
+                (<HTMLButtonElement>document.getElementById("singleStepOn")).disabled = true;
                 (<HTMLButtonElement>document.getElementById("activeSingleStep")).disabled = false;
-            }
+                (<HTMLButtonElement>document.getElementById("singleStepOff")).disabled = false;
+        }
+        public static hostBtnDisableSingleStep(btn): void{
+            _SingleStep = false;
+            (<HTMLButtonElement>document.getElementById("singleStepOn")).disabled = false;
+            (<HTMLButtonElement>document.getElementById("activeSingleStep")).disabled = true;
+            (<HTMLButtonElement>document.getElementById("singleStepOff")).disabled = true;
         }
 
         public static takeATinyStep(btn): void{

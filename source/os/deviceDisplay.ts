@@ -22,6 +22,8 @@ module TSOS{
                     table.rows[i].cells.item(j).style['font-weight'] = "normal";
                     if(index === _CPU.PC){
                         table.rows[i].cells.item(j).style.color = "magenta";
+                    }else{
+                        table.rows[i].cells.item(j).style.color = "black";
                     }
                     index++;
                 }
@@ -32,14 +34,15 @@ module TSOS{
             let table: HTMLTableElement = <HTMLTableElement>document.getElementById('memoryUnit');
             for (let i = 0; i < _Memory.memoryThread.length / 8; i++) {
                 let row = table.insertRow(i);
-                let address = i * 8;
+                let memAdress = i * 8;
                 let first = row.insertCell(0);
 
                 let memUnit = "0x";
-                for (let j= 0; j < 3 - address.toString(16).length; j++) {
+                for (let j= 0; j < 3 - memAdress.toString(16).length; j++) {
                     memUnit += "0";
                 }
-                memUnit += address.toString(16);
+
+                memUnit += memAdress.toString(16);
                 first.innerHTML = memUnit;
                 for (let k = 1; k < 9; k++) {
                     let cell = row.insertCell(k);
