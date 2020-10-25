@@ -16,12 +16,12 @@ var TSOS;
             this.updateSchedular();
         };
         DeviceDisplay.prototype.updateMemory = function () {
-            this.bigThread.concat(_Memory.memoryThread1, _Memory.memoryThread2, _Memory.memoryThread3);
+            this.bigThread = _Memory.memoryThread1.concat(_Memory.memoryThread2, _Memory.memoryThread3);
             var table = document.getElementById('memoryUnit');
             var index = 0;
             for (var i = 0; i < table.rows.length; i++) {
                 for (var j = 1; j < 9; j++) {
-                    table.rows[i].cells.item(j).innerHTML = this.bigThread[index].toString();
+                    table.rows[i].cells.item(j).innerHTML = this.bigThread[index];
                     table.rows[i].cells.item(j).style['font-weight'] = "normal";
                     if (index === _CPU.PC) {
                         table.rows[i].cells.item(j).style.color = "magenta";
@@ -35,6 +35,7 @@ var TSOS;
         };
         DeviceDisplay.prototype.startUpMemory = function () {
             var table = document.getElementById('memoryUnit');
+            this.bigThread = _Memory.memoryThread1.concat(_Memory.memoryThread2, _Memory);
             for (var i = 0; i < this.bigThread.length / 8; i++) {
                 var row = table.insertRow(i);
                 var memAdress = i * 8;
@@ -106,6 +107,7 @@ var TSOS;
             }
         };
         DeviceDisplay.prototype.startUpSchedular = function () {
+            //Look at schedule table
         };
         DeviceDisplay.prototype.updateSchedular = function () {
         };

@@ -8,6 +8,8 @@ var TSOS;
         MemoryManager.prototype.loadMemory = function (usrProg) {
             //Check which memory unit is availiable
             var segNum = _MemoryAccessor.getNextAvaliableMemSeg();
+            console.log("Segment Number to input into --" + segNum);
+            _Memory.endIndex = 0;
             //Write memory into desired segment
             if (segNum > 0) {
                 _MemoryAccessor.progInMem++;
@@ -19,6 +21,7 @@ var TSOS;
                         break;
                     }
                 }
+                console.log(this.stationaryThread[0]);
                 switch (segNum) {
                     case 1:
                         _Memory.memoryThread1 = this.stationaryThread.splice(0);
@@ -31,6 +34,8 @@ var TSOS;
                         break;
                     default:
                 }
+                this.stationaryThread = [];
+                //console.log(this.stationaryThread[0] + _Memory.endIndex)
                 return newProg;
             }
             else {

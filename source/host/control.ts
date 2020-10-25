@@ -65,7 +65,6 @@ module TSOS {
             // Update the log console.
             var taLog = <HTMLInputElement> document.getElementById("taHostLog");
             taLog.value = str + taLog.value;
-
             // TODO in the future: Optionally update a log database or some streaming service.
         }
 
@@ -90,7 +89,6 @@ module TSOS {
             _CPU = new Cpu();  // Note: We could simulate multi-core systems by instantiating more than one instance of the CPU here.
             _CPU.init();       // There's more to do, like dealing with scheduling and such, but this would be a start. Pretty cool.
             _Memory = new Memory();
-            _Memory.init();
             _MemoryAccessor = new MemoryAccessor();
             _DeviceDisplay = new DeviceDisplay();
 

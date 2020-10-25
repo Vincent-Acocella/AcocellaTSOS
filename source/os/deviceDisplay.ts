@@ -1,6 +1,5 @@
 module TSOS{
     export class DeviceDisplay{
-
         public bigThread = [];
             
         constructor() {
@@ -19,12 +18,12 @@ module TSOS{
         }
 
         public updateMemory(){
-            this.bigThread.concat(_Memory.memoryThread1,_Memory.memoryThread2, _Memory.memoryThread3);
+            this.bigThread = _Memory.memoryThread1.concat(_Memory.memoryThread2, _Memory.memoryThread3);
             let table: HTMLTableElement = <HTMLTableElement> document.getElementById('memoryUnit');
             let index = 0;
             for (let i = 0; i < table.rows.length; i++) {
                 for (let j = 1; j < 9; j++) {
-                    table.rows[i].cells.item(j).innerHTML = this.bigThread[index].toString();
+                    table.rows[i].cells.item(j).innerHTML = this.bigThread[index];
                     table.rows[i].cells.item(j).style['font-weight'] = "normal";
                     if(index === _CPU.PC){
                         table.rows[i].cells.item(j).style.color = "magenta";
@@ -38,6 +37,7 @@ module TSOS{
 
         public startUpMemory(){
             let table: HTMLTableElement = <HTMLTableElement>document.getElementById('memoryUnit');
+            this.bigThread = _Memory.memoryThread1.concat(_Memory.memoryThread2,_Memory);
 
             for (let i = 0; i < this.bigThread.length / 8; i++) {
                 let row = table.insertRow(i);
@@ -60,7 +60,6 @@ module TSOS{
 
         public startUpCPU(){
             let table: HTMLTableElement = <HTMLTableElement>document.getElementById("cpu");
-
             while(table.hasChildNodes())
             {
                 table.removeChild(table.firstChild);
@@ -125,6 +124,7 @@ module TSOS{
         }
 
         public startUpSchedular(){
+            //Look at schedule table
 
         }
         public updateSchedular(){
