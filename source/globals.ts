@@ -26,19 +26,24 @@ const TERMINATE_STRING = 2;
 
 const STOP_EXEC_IRQ = 4;
 
+const SWITCH_MEMORY = 5;
+
 //
 // Global Variables
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
 //
 
-
 var _SingleStep = false;
+var _RoundRobin = false;
+var readyQueue = [];
+var _Quant = 0;
 var _CPU:TSOS.Cpu;  // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
-var	_Memory:TSOS.Memory;
-var	_MemoryAccessor:TSOS.MemoryAccessor;
+var _Memory:TSOS.Memory;
+var _MemoryAccessor:TSOS.MemoryAccessor;
+var _Schedular:TSOS.Schedular;
 var _DeviceDisplay : any = null;
 //	Software	(OS)
-var	_MemoryManager:	any	= null;
+var _MemoryManager:	any= null;
 var _PCB: TSOS.ProcessControlBlock = null;
 
 var _OSclock: number = 0;  // Page 23.
@@ -66,7 +71,6 @@ var _StdOut: TSOS.Console = null;
 // UI
 var _Console: TSOS.Console;
 var _OsShell: TSOS.Shell;
-
 
 // At least this OS is not trying to kill you. (Yet.)
 var _SarcasticMode: boolean = false;

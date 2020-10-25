@@ -12,9 +12,7 @@
      ------------ */
 
 module TSOS {
-
     export class Cpu {
-
         constructor(public PC: number = 0,
                     public Acc: number = 0,
                     public Xreg: number = 0,
@@ -38,8 +36,17 @@ module TSOS {
             this.isExecuting = false;
         }
 
+        public loadCPU(PC, Acc, Xreg, Yreg, Zflag, IR, endOfProg){
+            this.PC = PC;
+            this.Acc = Acc;
+            this.Xreg = Xreg;
+            this.Yreg = Yreg;
+            this.Zflag = Zflag;
+            this.IR = IR;
+            this.endOfProg = endOfProg;
+        }
+
         public cycle(): void {
-            // _PCB.state = 1;
             _Kernel.krnTrace('CPU cycle');
             let moveThatBus = this.fetch(this.PC);
             if(moveThatBus < 0){
@@ -53,8 +60,9 @@ module TSOS {
                 this.isExecuting = false;
                 // _PCB.state = 3;
             }
-            _PCB.save();
-            _DeviceDisplay.reload();
+            _PCB.updatePCB();
+            //_DeviceDisplay.reload();
+            _Schedular.checkIfSwitch();
         }
 
         public fetch(code){
@@ -135,7 +143,6 @@ module TSOS {
             }
             return this.bytesNeeded;
         }
-
 
         private loadAcc(value) {
             this.bytesNeeded = 2;
@@ -237,11 +244,12 @@ module TSOS {
             this.bytesNeeded = 3;
             if (_Memory.memoryThread[value + 2].match("00")) {
                 let temp = this.convToHex(_Memory.memoryThread[value + 1]);
-                _Memory.memoryThread[value+1] = temp+1;
+                _Memory.memoryThread[value+1] = temp + 1;
             }else{
                 _StdOut.putText("Only one memory segment exists currently");
             }
         }
+
         private break() {
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(STOP_EXEC_IRQ, ["PID " + _PCB.PID + " has finished."]));
         }
@@ -264,12 +272,12 @@ module TSOS {
             // #$01 in X reg = print the integer stored in the Y register.
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(PRINT_YREGInt_ERQ, ["Printing int from X register"]));
         }
+
         private printStringYReg(){
             // #$02 in X reg = print the 00-terminated string stored at the address in
             //  the Y register.
-            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(STOP_EXEC_IRQ, ["Printing int from X register"]));
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_STRING, ["Printing String from Y register"]));
         }
-
 
         public returnCPU(){
             return [this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag];
@@ -279,10 +287,10 @@ module TSOS {
            this.isExecuting = (this.PC < this.endOfProg)? true: false;
         }
 
-
         private convToHex(value){
              return parseInt(value.toString(), 16);
         }
+
 
     }
 }

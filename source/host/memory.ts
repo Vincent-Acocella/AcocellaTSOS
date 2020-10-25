@@ -1,8 +1,8 @@
 module TSOS {
     export class Memory {
+        //Memory has to 768
         public memoryThread= [];
         public endIndex;
-
 
         constructor() {
             this.memoryThread = [];

@@ -117,6 +117,5 @@ module TSOS{
                 next.innerHTML = String(header[i]);
             }
         }
-
     }
 }

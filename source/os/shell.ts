@@ -110,6 +110,31 @@ module TSOS {
                 "- runCode");
             this.commandList[this.commandList.length] = sc;
 
+            sc = new ShellCommand(this.shellClearMem,
+                "clearmem",
+                "- clearmem");
+            this.commandList[this.commandList.length] = sc;
+
+            sc = new ShellCommand(this.shellRunAll,
+                "runall",
+                "- runall");
+            this.commandList[this.commandList.length] = sc;
+
+            sc = new ShellCommand(this.shellPS,
+                "ps",
+                "- ps");
+            this.commandList[this.commandList.length] = sc;
+
+            sc = new ShellCommand(this.shellKill,
+                "kill",
+                "- kill");
+            this.commandList[this.commandList.length] = sc;
+
+            sc = new ShellCommand(this.shellKillAll,
+                "killall",
+                "- clearmem");
+            this.commandList[this.commandList.length] = sc;
+
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             // Display the initial prompt.
@@ -354,8 +379,13 @@ module TSOS {
                } else {
                   // _StdOut.putText("The file you entered has the wrong amount of chars.");
                    let progNum = _MemoryManager.loadMemory(program);
-                   _StdOut.putText("Type 'run " + progNum +"' To run code");
+                   if(progNum < 0){
+                    _StdOut.putText("Memory is Full!!!!")
+                   }else{
+                    _StdOut.putText("Type 'run " + progNum +"' To run code");
                     _DeviceDisplay.updateMemory();
+                   }
+                   
                }
            }else{
                 _StdOut.putText("No Program to Load");
@@ -366,11 +396,48 @@ module TSOS {
             if(args.length > 0){
             //Run CPU
                 if(_MemoryManager.runMemory(args)){
+                    
                 }
             } else{
                 _StdOut.putText("ERROR MESSAGE GOES HERE");
             }
+        }
+        public shellClearMem(args: String[]){
+        }
 
+        //Run all programs at once
+        public shellRunAll(args: String[]){
+            _MemoryManager.runAllMemory(args);
+        }
+
+        //Display the PID and State of all processes
+        public shellPS(args: String[]){
+
+        }
+
+        //kill one process
+        public shellKill(args: String[]){
+            if(args.length > 0){
+                //Run CPU
+                   
+            } else{
+                _StdOut.putText("ERROR MESSAGE GOES HERE");
+            }
+        }
+
+        //Kill all processes
+        public shellKillAll(args: String[]){
+
+        }
+       
+        //Let The user set the Round Robin quantum
+        public shellQuantum(args: String[]){
+            if(args.length > 0){
+                _Schedular.setQuant(args);
+                _StdOut.putText("The Quantum has been set to"+ args); 
+            } else{
+                _StdOut.putText("Please enter a Quantum greater than 0");
+            }
         }
     }
 }
