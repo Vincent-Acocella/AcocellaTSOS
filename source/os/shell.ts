@@ -380,12 +380,11 @@ module TSOS {
                   // _StdOut.putText("The file you entered has the wrong amount of chars.");
                    let progNum = _MemoryManager.loadMemory(program);
                    if(progNum < 0){
-                    _StdOut.putText("Memory is Full!!!!")
+                    _StdOut.putText("Memory is Full!!!!");
                    }else{
                     _StdOut.putText("Type 'run " + progNum +"' To run code");
                     _DeviceDisplay.updateMemory();
                    }
-                   
                }
            }else{
                 _StdOut.putText("No Program to Load");
@@ -395,9 +394,7 @@ module TSOS {
         public shellRun(args: String[]){
             if(args.length > 0){
             //Run CPU
-                if(_MemoryManager.runMemory(args)){
-                    
-                }
+                _MemoryManager.runMemory(args)
             } else{
                 _StdOut.putText("ERROR MESSAGE GOES HERE");
             }

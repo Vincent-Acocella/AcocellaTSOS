@@ -24,9 +24,13 @@ var STOP_EXEC_IRQ = 4;
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
 //
 var _SingleStep = false;
+var _RoundRobin = false;
+var readyQueue = [];
+var _Quant = 0;
 var _CPU; // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
 var _Memory;
 var _MemoryAccessor;
+var _Schedular;
 var _DeviceDisplay = null;
 //	Software	(OS)
 var _MemoryManager = null;

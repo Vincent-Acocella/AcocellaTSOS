@@ -30,7 +30,6 @@ module TSOS{
         public newTask(PID){
             this.init(); 
             this.PID = parseInt(PID);
-            this.PC = _MemoryAccessor.getMapValue(this.PID);
             if(!_RoundRobin){
                 this.loadToCPU();
                 if(!_SingleStep){
@@ -38,15 +37,10 @@ module TSOS{
                 }else{
                     _StdOut.putText("Single Step is Enabled!");
                 }
-
             }else{
                 _Schedular.addToProcessScheduler();
             }
             //Instead of load we add to schudluer      
-        }
-
-        public putInReadyQueue(){
-            _Schedular.updateProcessInScheduler();
         }
 
         //State 0 is idle

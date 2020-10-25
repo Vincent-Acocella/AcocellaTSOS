@@ -1,24 +1,30 @@
 module TSOS{
     export class DeviceDisplay{
 
+        public bigThread = [];
+            
         constructor() {
             this.startUpMemory();
             this.startUpCPU();
             this.startUpPCB();
+            this.startUpSchedular();
         }
 
         public reload(){
+            this.bigThread = [];
             this.updatePCB();
             this.updateCPU();
             this.updateMemory();
+            this.updateSchedular();
         }
 
         public updateMemory(){
+            this.bigThread.concat(_Memory.memoryThread1,_Memory.memoryThread2, _Memory.memoryThread3);
             let table: HTMLTableElement = <HTMLTableElement> document.getElementById('memoryUnit');
             let index = 0;
             for (let i = 0; i < table.rows.length; i++) {
                 for (let j = 1; j < 9; j++) {
-                    table.rows[i].cells.item(j).innerHTML = _Memory.memoryThread[index].toString();
+                    table.rows[i].cells.item(j).innerHTML = this.bigThread[index].toString();
                     table.rows[i].cells.item(j).style['font-weight'] = "normal";
                     if(index === _CPU.PC){
                         table.rows[i].cells.item(j).style.color = "magenta";
@@ -33,7 +39,7 @@ module TSOS{
         public startUpMemory(){
             let table: HTMLTableElement = <HTMLTableElement>document.getElementById('memoryUnit');
 
-            for (let i = 0; i < _Memory.memoryThread.length / 8; i++) {
+            for (let i = 0; i < this.bigThread.length / 8; i++) {
                 let row = table.insertRow(i);
                 let memAdress = i * 8;
                 let first = row.insertCell(0);
@@ -116,6 +122,13 @@ module TSOS{
                 let next = row.insertCell(i);
                 next.innerHTML = String(header[i]);
             }
+        }
+
+        public startUpSchedular(){
+
+        }
+        public updateSchedular(){
+
         }
     }
 }

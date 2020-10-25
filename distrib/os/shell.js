@@ -62,6 +62,16 @@ var TSOS;
             this.commandList[this.commandList.length] = sc;
             sc = new TSOS.ShellCommand(this.shellRun, "run", "- runCode");
             this.commandList[this.commandList.length] = sc;
+            sc = new TSOS.ShellCommand(this.shellClearMem, "clearmem", "- clearmem");
+            this.commandList[this.commandList.length] = sc;
+            sc = new TSOS.ShellCommand(this.shellRunAll, "runall", "- runall");
+            this.commandList[this.commandList.length] = sc;
+            sc = new TSOS.ShellCommand(this.shellPS, "ps", "- ps");
+            this.commandList[this.commandList.length] = sc;
+            sc = new TSOS.ShellCommand(this.shellKill, "kill", "- kill");
+            this.commandList[this.commandList.length] = sc;
+            sc = new TSOS.ShellCommand(this.shellKillAll, "killall", "- clearmem");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             // Display the initial prompt.
@@ -287,8 +297,13 @@ var TSOS;
                 else {
                     // _StdOut.putText("The file you entered has the wrong amount of chars.");
                     var progNum = _MemoryManager.loadMemory(program);
-                    _StdOut.putText("Type 'run " + progNum + "' To run code");
-                    _DeviceDisplay.updateMemory();
+                    if (progNum < 0) {
+                        _StdOut.putText("Memory is Full!!!!");
+                    }
+                    else {
+                        _StdOut.putText("Type 'run " + progNum + "' To run code");
+                        _DeviceDisplay.updateMemory();
+                    }
                 }
             }
             else {
@@ -298,11 +313,41 @@ var TSOS;
         Shell.prototype.shellRun = function (args) {
             if (args.length > 0) {
                 //Run CPU
-                if (_MemoryManager.runMemory(args)) {
-                }
+                _MemoryManager.runMemory(args);
             }
             else {
                 _StdOut.putText("ERROR MESSAGE GOES HERE");
+            }
+        };
+        Shell.prototype.shellClearMem = function (args) {
+        };
+        //Run all programs at once
+        Shell.prototype.shellRunAll = function (args) {
+            _MemoryManager.runAllMemory(args);
+        };
+        //Display the PID and State of all processes
+        Shell.prototype.shellPS = function (args) {
+        };
+        //kill one process
+        Shell.prototype.shellKill = function (args) {
+            if (args.length > 0) {
+                //Run CPU
+            }
+            else {
+                _StdOut.putText("ERROR MESSAGE GOES HERE");
+            }
+        };
+        //Kill all processes
+        Shell.prototype.shellKillAll = function (args) {
+        };
+        //Let The user set the Round Robin quantum
+        Shell.prototype.shellQuantum = function (args) {
+            if (args.length > 0) {
+                _Schedular.setQuant(args);
+                _StdOut.putText("The Quantum has been set to" + args);
+            }
+            else {
+                _StdOut.putText("Please enter a Quantum greater than 0");
             }
         };
         return Shell;

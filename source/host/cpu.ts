@@ -66,7 +66,7 @@ module TSOS {
         }
 
         public fetch(code){
-            let opCode = _Memory.memoryThread[code];
+            let opCode = _MemoryManager.fetchCurrentMemory(code);
             this.IR = opCode.toString();
 
             switch(opCode){
@@ -146,17 +146,17 @@ module TSOS {
 
         private loadAcc(value) {
             this.bytesNeeded = 2;
-            this.Acc  = this.convToHex(_Memory.memoryThread[value + 1]);
+            this.Acc  = this.convToHex(_MemoryManager.fetchCurrentMemory(value + 1));
         }
 
         private loadAccFrmMem(value) {
             this.bytesNeeded = 3;
-            if(_Memory.memoryThread[value+2].match("00")){
+            if(_MemoryManager.fetchCurrentMemory(value+2).match("00")){
                 //Load accumulator from memory means that we are taking the location in memory and returning the value to the Accumulator
                 //Location 10 for example is the start position -10
                 //FIX FIX FIX
-               let numInMem = this.convToHex((_Memory.memoryThread[value+1]));
-               this.Acc = this.convToHex(_Memory.memoryThread[numInMem]);
+               let numInMem = this.convToHex(_MemoryManager.fetchCurrentMemory(value+1));
+               this.Acc = this.convToHex(_MemoryManager.fetchCurrentMemory([numInMem]));
             }else{
                 _StdOut.putText("Only one memory segment exists currently");
             }
@@ -164,9 +164,9 @@ module TSOS {
 
         private strAccInMem(value) {
             this.bytesNeeded = 3;
-            if(_Memory.memoryThread[value+2].match("00")){
-                let locationToStore = this.convToHex((_Memory.memoryThread[value+1]));
-                _Memory.memoryThread[locationToStore] = this.Acc;
+            if(_MemoryManager.fetchCurrentMemory(value+2).match("00")){
+                let locationToStore = this.convToHex(_MemoryManager.fetchCurrentMemory(value+1));
+                _MemoryManager.storeCurrentMemory(locationToStore, this.Acc);
             }else{
                 _StdOut.putText("Only one memory segment exists currently");
             }
@@ -174,8 +174,8 @@ module TSOS {
 
         private addCarry(value) {
             this.bytesNeeded = 3;
-            if (_Memory.memoryThread[value + 2].match("00")) {
-                let valuetoAdd = this.convToHex((_Memory.memoryThread[value+1]));
+            if (_MemoryManager.fetchCurrentMemory(value + 2).match("00")) {
+                let valuetoAdd = this.convToHex(_MemoryManager.fetchCurrentMemory(value+1));
                 this.Acc = valuetoAdd + this.Acc;
             }else{
                 _StdOut.putText("Only one memory segment exists currently");
@@ -184,14 +184,14 @@ module TSOS {
 
         private loadXregCons(value) {
             this.bytesNeeded = 2;
-            this.Xreg = this.convToHex(_Memory.memoryThread[value+1]);
+            this.Xreg = this.convToHex(_MemoryManager.fetchCurrentMemory(value+1));
         }
 
         private loadXregMem(value) {
             this.bytesNeeded = 3;
-            if (_Memory.memoryThread[value + 2].match("00")) {
-                let spotInMem = this.convToHex(_Memory.memoryThread[value + 1]);
-                this.Xreg = _Memory.memoryThread[spotInMem];
+            if (_MemoryManager.fetchCurrentMemory(value + 2).match("00")) {
+                let spotInMem = this.convToHex(_MemoryManager.fetchCurrentMemory(value+1));
+                 _MemoryManager.storeCurrentMemory(spotInMem, this.Xreg);
             }else{
                 _StdOut.putText("Only one memory segment exists currently");
             }
@@ -199,14 +199,14 @@ module TSOS {
 
         private loadYregCons(value) {
             this.bytesNeeded = 2;
-            this.Yreg = this.convToHex(_Memory.memoryThread[value+1]);
+            this.Yreg = this.convToHex(_MemoryManager.fetchCurrentMemory(value+1));
         }
 
         private loadYregMem(value) {
             this.bytesNeeded = 3;
-            if (_Memory.memoryThread[value + 2].match("00")) {
-                let spotInMem = this.convToHex(_Memory.memoryThread[value + 1]);
-                this.Yreg = this.convToHex(_Memory.memoryThread[spotInMem]);
+            if (_MemoryManager.fetchCurrentMemory(value + 2).match("00")) {
+                let spotInMem = this.convToHex(_MemoryManager.fetchCurrentMemory(value+1));
+                _MemoryManager.storeCurrentMemory(spotInMem, this.Yreg);
             }else{
                 _StdOut.putText("Only one memory segment exists currently");
             }
@@ -214,8 +214,8 @@ module TSOS {
 
         private compXmem(value) {
             this.bytesNeeded = 3;
-            if (_Memory.memoryThread[value + 2].match("00")) {
-                let spotInMem = this.convToHex(_Memory.memoryThread[value + 1]);
+            if (_MemoryManager.fetchCurrentMemory(value + 2).match("00")) {
+                let spotInMem = this.convToHex(_MemoryManager.fetchCurrentMemory(value+1));
                 this.Zflag = (this.Xreg === spotInMem)? 1:0;
             }else{
                 _StdOut.putText("Only one memory segment exists currently");
@@ -226,7 +226,7 @@ module TSOS {
 
             if(this.Zflag === 0){
                 //Gets location to set the program counter to
-                this.PC = this.convToHex(_Memory.memoryThread[value + 1]);
+                this.PC = this.convToHex(_MemoryManager.fetchCurrentMemory(value+1));
 
                 //If we are branching to 0
                 if(this.PC === 0){
@@ -242,9 +242,9 @@ module TSOS {
 
         private incremVal(value) {
             this.bytesNeeded = 3;
-            if (_Memory.memoryThread[value + 2].match("00")) {
-                let temp = this.convToHex(_Memory.memoryThread[value + 1]);
-                _Memory.memoryThread[value+1] = temp + 1;
+            if (_MemoryManager.fetchCurrentMemory(value + 2).match("00")) {
+                let temp = this.convToHex(_MemoryManager.fetchCurrentMemory(value+1));
+                _MemoryManager.storeCurrentMemory(value+1, temp+1);
             }else{
                 _StdOut.putText("Only one memory segment exists currently");
             }
@@ -290,7 +290,5 @@ module TSOS {
         private convToHex(value){
              return parseInt(value.toString(), 16);
         }
-
-
     }
 }

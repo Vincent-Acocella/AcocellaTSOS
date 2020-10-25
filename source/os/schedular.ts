@@ -16,10 +16,10 @@ module TSOS{
         public allProcesses = [[],[]];
         public quant = 6;
         public segInUse = [];
+        
         constructor(
             //line Up Process id with index of all processes
             //Single process is just a PCB
-           
         ){}
 
         public setQuant(value){
@@ -29,10 +29,6 @@ module TSOS{
 
         public refreshQuant(){
             this.quant =_Quant;
-        }
-
-        public updateProcessInScheduler(){
-            this.addToProcessScheduler();
         }
 
         public switchMem(){
@@ -51,16 +47,12 @@ module TSOS{
                         lookAt = 3;
                         break;
                 }
+                _MemoryAccessor.currentSegment = lookAt;
                 //Gets PID of next segment
-                let i = 0;
-                for(i; i <= _MemoryAccessor.progInMem; i++){
-                    if(this.allProcesses[i][9] === lookAt){
-                        break;
-                    }
-                }
+               
                  //Switch process
-                _PCB.state = "Waiting";
-                this.deployToCPU(i); 
+                 _PCB.state = "Waiting";
+                this.deployToCPU(this.progToSegMap(lookAt)); 
             //This is the main function of the schedular
             //First, look at quant
             //Second, see if quant was expired, if so look at queue
@@ -69,28 +61,25 @@ module TSOS{
         public addToProcessScheduler(){
             //Check this line
             this.singleProcess = _PCB.returnPCB();
-
             let PID = this.singleProcess[0];
-            for(let i = 1; i < 5; i++){
-                this.allProcesses[PID][i] = this.singleProcess[i];
-            }
+            this.allProcesses[PID] = this.singleProcess.splice(0);
             console.log(this.allProcesses[PID].toString());
         }
 
         public deployToCPU(PID){
-           this.updateProcessInScheduler();
+           this.addToProcessScheduler();
            this.allProcesses[PID][8] = "Executing";
             for(let i = 1; i < 6; i++){
                 this.singleProcess[i] = this.allProcesses[PID][i]; 
             }
-
-            _CPU.loadCPU(this.singleProcess[1], 
-            this.singleProcess[2],
-            this.singleProcess[3],
-            this.singleProcess[4],
-            this.singleProcess[5],
-            this.singleProcess[6],
-            this.singleProcess[7]);
+            _PCB.PID = PID;
+            _CPU.loadCPU(this.allProcesses[PID][1],
+                this.allProcesses[PID][2],
+                this.allProcesses[PID][3],
+                this.allProcesses[PID][4],
+                this.allProcesses[PID][5],
+                this.allProcesses[PID][6],
+                this.allProcesses[PID][7])
        }
 
     //    public removeFromScheduler(PID){
@@ -105,7 +94,7 @@ module TSOS{
        public checkIfSwitch(){
             if(_RoundRobin){
                 if( _Schedular.quant !== 0){
-                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(SWITCH_MEMORY, ["Switching Memory"]));
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TIMER_IRQ, ["Switching Memory"]));
                 }else{
                     //Decrease the quant means we are staying in the same process
                     _Schedular.quant--;
@@ -116,6 +105,15 @@ module TSOS{
         public checkIfEmpty(val){
 
 
+        }
+        public progToSegMap(lookAt){
+            let i = 0
+            for(i; i <= _MemoryAccessor.progInMem; i++){
+                if(this.allProcesses[i][9] === lookAt){
+                    return i;
+                }
+            }
+            return -1;
         }
     }
 }

@@ -26,8 +26,6 @@ const TERMINATE_STRING = 2;
 
 const STOP_EXEC_IRQ = 4;
 
-const SWITCH_MEMORY = 5;
-
 //
 // Global Variables
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.

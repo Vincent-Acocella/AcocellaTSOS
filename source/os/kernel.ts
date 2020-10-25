@@ -135,9 +135,6 @@ module TSOS {
                 case TERMINATE_STRING:
                     _StdOut.putText(_CPU.Yreg); //Print String from Y register
                     break;
-                case SWITCH_MEMORY:
-                    _Schedular.switchMem();
-                    break;
                 case STOP_EXEC_IRQ:
                     _PCB.terminate();
                     break;
@@ -150,6 +147,7 @@ module TSOS {
             // The built-in TIMER (not clock) Interrupt Service Routine (as opposed to an ISR coming from a device driver). {
             // Check multiprogramming parameters and enforce quanta here. Call the scheduler / context switch here if necessary.
             // Or do it elsewhere in the Kernel. We don't really need this.
+                _Schedular.switchMem();
         }
 
         //

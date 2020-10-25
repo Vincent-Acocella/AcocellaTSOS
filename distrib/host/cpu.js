@@ -44,8 +44,16 @@ var TSOS;
             this.bytesNeeded = 0;
             this.isExecuting = false;
         };
+        Cpu.prototype.loadCPU = function (PC, Acc, Xreg, Yreg, Zflag, IR, endOfProg) {
+            this.PC = PC;
+            this.Acc = Acc;
+            this.Xreg = Xreg;
+            this.Yreg = Yreg;
+            this.Zflag = Zflag;
+            this.IR = IR;
+            this.endOfProg = endOfProg;
+        };
         Cpu.prototype.cycle = function () {
-            // _PCB.state = 1;
             _Kernel.krnTrace('CPU cycle');
             var moveThatBus = this.fetch(this.PC);
             if (moveThatBus < 0) {
@@ -60,11 +68,12 @@ var TSOS;
                 this.isExecuting = false;
                 // _PCB.state = 3;
             }
-            _PCB.save();
-            _DeviceDisplay.reload();
+            _PCB.updatePCB();
+            //_DeviceDisplay.reload();
+            _Schedular.checkIfSwitch();
         };
         Cpu.prototype.fetch = function (code) {
-            var opCode = _Memory.memoryThread[code];
+            var opCode = _MemoryManager.fetchCurrentMemory(code);
             this.IR = opCode.toString();
             switch (opCode) {
                 //Load the accumulator with a constant
@@ -129,16 +138,16 @@ var TSOS;
         };
         Cpu.prototype.loadAcc = function (value) {
             this.bytesNeeded = 2;
-            this.Acc = this.convToHex(_Memory.memoryThread[value + 1]);
+            this.Acc = this.convToHex(_MemoryManager.fetchCurrentMemory(value + 1));
         };
         Cpu.prototype.loadAccFrmMem = function (value) {
             this.bytesNeeded = 3;
-            if (_Memory.memoryThread[value + 2].match("00")) {
+            if (_MemoryManager.fetchCurrentMemory(value + 2).match("00")) {
                 //Load accumulator from memory means that we are taking the location in memory and returning the value to the Accumulator
                 //Location 10 for example is the start position -10
                 //FIX FIX FIX
-                var numInMem = this.convToHex((_Memory.memoryThread[value + 1]));
-                this.Acc = this.convToHex(_Memory.memoryThread[numInMem]);
+                var numInMem = this.convToHex(_MemoryManager.fetchCurrentMemory(value + 1));
+                this.Acc = this.convToHex(_MemoryManager.fetchCurrentMemory([numInMem]));
             }
             else {
                 _StdOut.putText("Only one memory segment exists currently");
@@ -146,9 +155,9 @@ var TSOS;
         };
         Cpu.prototype.strAccInMem = function (value) {
             this.bytesNeeded = 3;
-            if (_Memory.memoryThread[value + 2].match("00")) {
-                var locationToStore = this.convToHex((_Memory.memoryThread[value + 1]));
-                _Memory.memoryThread[locationToStore] = this.Acc;
+            if (_MemoryManager.fetchCurrentMemory(value + 2).match("00")) {
+                var locationToStore = this.convToHex(_MemoryManager.fetchCurrentMemory(value + 1));
+                _MemoryManager.storeCurrentMemory(locationToStore, this.Acc);
             }
             else {
                 _StdOut.putText("Only one memory segment exists currently");
@@ -156,8 +165,8 @@ var TSOS;
         };
         Cpu.prototype.addCarry = function (value) {
             this.bytesNeeded = 3;
-            if (_Memory.memoryThread[value + 2].match("00")) {
-                var valuetoAdd = this.convToHex((_Memory.memoryThread[value + 1]));
+            if (_MemoryManager.fetchCurrentMemory(value + 2).match("00")) {
+                var valuetoAdd = this.convToHex(_MemoryManager.fetchCurrentMemory(value + 1));
                 this.Acc = valuetoAdd + this.Acc;
             }
             else {
@@ -166,13 +175,13 @@ var TSOS;
         };
         Cpu.prototype.loadXregCons = function (value) {
             this.bytesNeeded = 2;
-            this.Xreg = this.convToHex(_Memory.memoryThread[value + 1]);
+            this.Xreg = this.convToHex(_MemoryManager.fetchCurrentMemory(value + 1));
         };
         Cpu.prototype.loadXregMem = function (value) {
             this.bytesNeeded = 3;
-            if (_Memory.memoryThread[value + 2].match("00")) {
-                var spotInMem = this.convToHex(_Memory.memoryThread[value + 1]);
-                this.Xreg = _Memory.memoryThread[spotInMem];
+            if (_MemoryManager.fetchCurrentMemory(value + 2).match("00")) {
+                var spotInMem = this.convToHex(_MemoryManager.fetchCurrentMemory(value + 1));
+                _MemoryManager.storeCurrentMemory(spotInMem, this.Xreg);
             }
             else {
                 _StdOut.putText("Only one memory segment exists currently");
@@ -180,13 +189,13 @@ var TSOS;
         };
         Cpu.prototype.loadYregCons = function (value) {
             this.bytesNeeded = 2;
-            this.Yreg = this.convToHex(_Memory.memoryThread[value + 1]);
+            this.Yreg = this.convToHex(_MemoryManager.fetchCurrentMemory(value + 1));
         };
         Cpu.prototype.loadYregMem = function (value) {
             this.bytesNeeded = 3;
-            if (_Memory.memoryThread[value + 2].match("00")) {
-                var spotInMem = this.convToHex(_Memory.memoryThread[value + 1]);
-                this.Yreg = this.convToHex(_Memory.memoryThread[spotInMem]);
+            if (_MemoryManager.fetchCurrentMemory(value + 2).match("00")) {
+                var spotInMem = this.convToHex(_MemoryManager.fetchCurrentMemory(value + 1));
+                _MemoryManager.storeCurrentMemory(spotInMem, this.Yreg);
             }
             else {
                 _StdOut.putText("Only one memory segment exists currently");
@@ -194,8 +203,8 @@ var TSOS;
         };
         Cpu.prototype.compXmem = function (value) {
             this.bytesNeeded = 3;
-            if (_Memory.memoryThread[value + 2].match("00")) {
-                var spotInMem = this.convToHex(_Memory.memoryThread[value + 1]);
+            if (_MemoryManager.fetchCurrentMemory(value + 2).match("00")) {
+                var spotInMem = this.convToHex(_MemoryManager.fetchCurrentMemory(value + 1));
                 this.Zflag = (this.Xreg === spotInMem) ? 1 : 0;
             }
             else {
@@ -205,7 +214,7 @@ var TSOS;
         Cpu.prototype.branchIfZ = function (value) {
             if (this.Zflag === 0) {
                 //Gets location to set the program counter to
-                this.PC = this.convToHex(_Memory.memoryThread[value + 1]);
+                this.PC = this.convToHex(_MemoryManager.fetchCurrentMemory(value + 1));
                 //If we are branching to 0
                 if (this.PC === 0) {
                     this.bytesNeeded = -1;
@@ -221,9 +230,9 @@ var TSOS;
         };
         Cpu.prototype.incremVal = function (value) {
             this.bytesNeeded = 3;
-            if (_Memory.memoryThread[value + 2].match("00")) {
-                var temp = this.convToHex(_Memory.memoryThread[value + 1]);
-                _Memory.memoryThread[value + 1] = temp + 1;
+            if (_MemoryManager.fetchCurrentMemory(value + 2).match("00")) {
+                var temp = this.convToHex(_MemoryManager.fetchCurrentMemory(value + 1));
+                _MemoryManager.storeCurrentMemory(value + 1, temp + 1);
             }
             else {
                 _StdOut.putText("Only one memory segment exists currently");
@@ -252,7 +261,7 @@ var TSOS;
         Cpu.prototype.printStringYReg = function () {
             // #$02 in X reg = print the 00-terminated string stored at the address in
             //  the Y register.
-            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(STOP_EXEC_IRQ, ["Printing int from X register"]));
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_STRING, ["Printing String from Y register"]));
         };
         Cpu.prototype.returnCPU = function () {
             return [this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag];

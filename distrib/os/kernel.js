@@ -119,7 +119,10 @@ var TSOS;
                     _StdIn.handleInput();
                     break;
                 case PRINT_YREGInt_ERQ:
-                    _StdOut.putText(_CPU.Yreg);
+                    _StdOut.putText(_CPU.Yreg); //Print Int from register 
+                    break;
+                case TERMINATE_STRING:
+                    _StdOut.putText(_CPU.Yreg); //Print String from Y register
                     break;
                 case STOP_EXEC_IRQ:
                     _PCB.terminate();
@@ -132,6 +135,7 @@ var TSOS;
             // The built-in TIMER (not clock) Interrupt Service Routine (as opposed to an ISR coming from a device driver). {
             // Check multiprogramming parameters and enforce quanta here. Call the scheduler / context switch here if necessary.
             // Or do it elsewhere in the Kernel. We don't really need this.
+            _Schedular.switchMem();
         };
         //
         // System Calls... that generate software interrupts via tha Application Programming Interface library routines.

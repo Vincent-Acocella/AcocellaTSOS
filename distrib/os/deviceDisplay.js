@@ -2,21 +2,26 @@ var TSOS;
 (function (TSOS) {
     var DeviceDisplay = /** @class */ (function () {
         function DeviceDisplay() {
+            this.bigThread = [];
             this.startUpMemory();
             this.startUpCPU();
             this.startUpPCB();
+            this.startUpSchedular();
         }
         DeviceDisplay.prototype.reload = function () {
+            this.bigThread = [];
             this.updatePCB();
             this.updateCPU();
             this.updateMemory();
+            this.updateSchedular();
         };
         DeviceDisplay.prototype.updateMemory = function () {
+            this.bigThread.concat(_Memory.memoryThread1, _Memory.memoryThread2, _Memory.memoryThread3);
             var table = document.getElementById('memoryUnit');
             var index = 0;
             for (var i = 0; i < table.rows.length; i++) {
                 for (var j = 1; j < 9; j++) {
-                    table.rows[i].cells.item(j).innerHTML = _Memory.memoryThread[index].toString();
+                    table.rows[i].cells.item(j).innerHTML = this.bigThread[index].toString();
                     table.rows[i].cells.item(j).style['font-weight'] = "normal";
                     if (index === _CPU.PC) {
                         table.rows[i].cells.item(j).style.color = "magenta";
@@ -30,7 +35,7 @@ var TSOS;
         };
         DeviceDisplay.prototype.startUpMemory = function () {
             var table = document.getElementById('memoryUnit');
-            for (var i = 0; i < _Memory.memoryThread.length / 8; i++) {
+            for (var i = 0; i < this.bigThread.length / 8; i++) {
                 var row = table.insertRow(i);
                 var memAdress = i * 8;
                 var first = row.insertCell(0);
@@ -99,6 +104,10 @@ var TSOS;
                 var next = row.insertCell(i);
                 next.innerHTML = String(header[i]);
             }
+        };
+        DeviceDisplay.prototype.startUpSchedular = function () {
+        };
+        DeviceDisplay.prototype.updateSchedular = function () {
         };
         return DeviceDisplay;
     }());

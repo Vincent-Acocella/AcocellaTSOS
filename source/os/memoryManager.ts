@@ -1,30 +1,16 @@
 module TSOS{
     export class MemoryManager {
+        public stationaryThread = [];
         
         constructor() {
-            
         }
         //Load input into memory.
             public loadMemory(usrProg:string){
                 //Check which memory unit is availiable
-                let memory = [];
-                let segNum =_MemoryAccessor.getNextAvaliableMemSeg();
-                
-                switch(segNum){
-                    case 1:
-                        memory = _MemoryAccessor.memorySeg1;
-                        break;
-                    case 2:
-                        memory = _MemoryAccessor.memorySeg2;
-                        break;
-                    case 3:
-                        memory = _MemoryAccessor.memorySeg3;
-                        break;
-                    default:
-                }
+                let segNum = _MemoryAccessor.getNextAvaliableMemSeg();
 
                 //Write memory into desired segment
-                if(memory.length == 0){
+                if(segNum > 0){
                     _MemoryAccessor.progInMem++;
                     let newProg = _MemoryAccessor.progInMem;
                     for(let i = 0; i < usrProg.length; i+=3){
@@ -33,13 +19,24 @@ module TSOS{
                         if(!_MemoryAccessor.write(code)){
                             break;
                         }
-                        return newProg;
                     }
+                    switch(segNum){
+                        case 1:
+                            _Memory.memoryThread1 = this.stationaryThread.splice(0);
+                            break;
+                        case 2:
+                            _Memory.memoryThread2 = this.stationaryThread.splice(0);
+                            break;
+                        case 3:
+                            _Memory.memoryThread3 = this.stationaryThread.splice(0);
+                            break;
+                        default:
+                    }
+                    return newProg;
                 }else{
                     _StdOut.putText("NO AVALIABLE MEMORY");
                     return -1;
                 }
-             
         }
 
         //The array keeps track of the past values uses the prev index as ref
@@ -57,11 +54,37 @@ module TSOS{
             for(let i = 0; i < size; i++){
                 this.runMemory(i);
             }
+            //Look at the first segment and load it in the cpu
+            _Schedular.deployToCPU(_Schedular.progToSegMap(1));
             if(!_SingleStep){
                 _CPU.isExecuting = true;
             }else{
                 _StdOut.putText("Single Step is Enabled!");
             }
-        } 
+        }
+        
+        public fetchCurrentMemory(index): string{
+            switch(_MemoryAccessor.currentSegment){
+                case 1:
+                    return  _Memory.memoryThread1[index];
+                case 2:
+                    return  _Memory.memoryThread2[index];
+                case 3:
+                    return _Memory.memoryThread3[index];
+            }
+        }
+        public storeCurrentMemory(index, val){
+            switch(_MemoryAccessor.currentSegment){
+                case 1:
+                    _Memory.memoryThread1[index] = val;
+                    break;
+                case 2:
+                    _Memory.memoryThread2[index] = val;
+                    break;
+                case 3:
+                    _Memory.memoryThread3[index] = val;
+                    break;
+            }
+        }  
     }
 }
