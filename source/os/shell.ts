@@ -378,9 +378,9 @@ module TSOS {
                    _StdOut.putText("The file you entered is not in hexidecimal format.");
                } else {
                   // _StdOut.putText("The file you entered has the wrong amount of chars.");
-                  console.log("---------Inserting into Memory -----------------")
+                  //console.log("---------Inserting into Memory -----------------")
                    let progNum = _MemoryManager.loadMemory(program);
-                   console.log("---------      Done            -----------------")
+                   //console.log("---------      Done            -----------------")
                    if(progNum < 0){
                     _StdOut.putText("Memory is Full!!!!");
                    }else{

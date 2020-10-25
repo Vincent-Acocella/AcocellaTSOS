@@ -22,7 +22,6 @@ module TSOS{
                             break;
                         }
                     }
-                    console.log(this.stationaryThread[0]);
                     switch(segNum){
                         case 1:
                             _Memory.memoryThread1 = this.stationaryThread.splice(0);

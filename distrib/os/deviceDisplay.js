@@ -16,10 +16,11 @@ var TSOS;
             this.updateSchedular();
         };
         DeviceDisplay.prototype.updateMemory = function () {
-            this.bigThread = _Memory.memoryThread1.concat(_Memory.memoryThread2, _Memory.memoryThread3);
+            this.bigThread = [_Memory.memoryThread1, _Memory.memoryThread2, _Memory.memoryThread3];
+            console.log(this.bigThread.length);
             var table = document.getElementById('memoryUnit');
             var index = 0;
-            for (var i = 0; i < table.rows.length; i++) {
+            for (var i = 0; i < this.bigThread.length % 8; i++) {
                 for (var j = 1; j < 9; j++) {
                     table.rows[i].cells.item(j).innerHTML = this.bigThread[index];
                     table.rows[i].cells.item(j).style['font-weight'] = "normal";
@@ -35,7 +36,8 @@ var TSOS;
         };
         DeviceDisplay.prototype.startUpMemory = function () {
             var table = document.getElementById('memoryUnit');
-            this.bigThread = _Memory.memoryThread1.concat(_Memory.memoryThread2, _Memory);
+            this.bigThread = _Memory.memoryThread1.concat(_Memory.memoryThread2, _Memory.memoryThread3);
+            console.log(this.bigThread.length);
             for (var i = 0; i < this.bigThread.length / 8; i++) {
                 var row = table.insertRow(i);
                 var memAdress = i * 8;

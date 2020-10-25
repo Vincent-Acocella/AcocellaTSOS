@@ -296,9 +296,9 @@ var TSOS;
                 }
                 else {
                     // _StdOut.putText("The file you entered has the wrong amount of chars.");
-                    console.log("---------Inserting into Memory -----------------");
+                    //console.log("---------Inserting into Memory -----------------")
                     var progNum = _MemoryManager.loadMemory(program);
-                    console.log("---------      Done            -----------------");
+                    //console.log("---------      Done            -----------------")
                     if (progNum < 0) {
                         _StdOut.putText("Memory is Full!!!!");
                     }
