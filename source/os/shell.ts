@@ -385,7 +385,7 @@ module TSOS {
                     _StdOut.putText("Memory is Full!!!!");
                    }else{
                     _StdOut.putText("Type 'run " + progNum +"' To run code");
-                    _DeviceDisplay.updateMemory();
+                    //_DeviceDisplay.updateMemory();
                    }
                }
            }else{

@@ -12,6 +12,10 @@ module TSOS {
             this.endIndex = 0;
         }
 
+        public refreshMemory(){
+             this.memoryThread = [this.memoryThread1, this.memoryThread2, this.memoryThread3];
+        }
+
         public init() {
             for (let i = 0; i < 256; i++) {
                 this.memoryThread1[i] = "00";

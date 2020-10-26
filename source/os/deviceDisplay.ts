@@ -19,38 +19,72 @@ module TSOS{
         // this.bigThread = _Memory.memoryThread1.concat(_Memory.memoryThread2, _Memory.memoryThread3);
         public updateMemory(value){
             let table: HTMLTableElement = <HTMLTableElement> document.getElementById('memoryUnit');
-            let results = TSOS.Utils.bigBrainMaths(value);
-            table.rows[results[0]].cells.item(results[1]).innerHTML = results[2];
+            //let results = TSOS.Utils.bigBrainMaths(value);
 
-            // let index = 0;
-            // for (let i = 0; i < table.rows.length; i++) {
-            //     for (let j = 1; j < 9; j++) {
-            //         table.rows[i].cells.item(j).innerHTML = _Memory.memoryThread[currentSegment][index].toString();
-            //         table.rows[i].cells.item(j).style['font-weight'] = "normal";
-            //         if(index === _CPU.PC){
-            //             table.rows[i].cells.item(j).style.color = "magenta";
-            //         }else{
-            //             table.rows[i].cells.item(j).style.color = "black";
-            //         }
-            //         index++;
-            //     }
-            // }
+            let bigThread = _Memory.memoryThread1.concat(_Memory.memoryThread2,_Memory.memoryThread3);
+            let currentSegment = _MemoryManager.segNum;
+
+            //Index of the new value to be added to the table 
+            //This was just updated
+            //gets the row number
+             let rowNum = ((currentSegment-1) * 32 + Math.floor(value/8));
+             console.log(rowNum)
+             let colNum = value % 8;
+             console.log(colNum)
+             let newValue = bigThread[(currentSegment-1)* 256 + value];
+             console.log(newValue)
+
+             //copy row
+             //delete row
+             //add new cell
+             //replace row
+             let tempRow = [];
+             for(let i = 0; i< 8; i++){
+                 tempRow[i] = (colNum === i)? tempRow[i]= newValue : tempRow[i] = table.rows[rowNum].cells[i];
+             }
+             table.deleteRow(rowNum);
+             let row = table.insertRow(rowNum);
+
+             for(let i = 0; i< 8; i++){
+                row.insertCell(i).innerHTML = tempRow[i];
+             }
         }
 
         public startUpMemory(){
             let table: HTMLTableElement = <HTMLTableElement>document.getElementById('memoryUnit');
-            this.bigThread = _Memory.memoryThread1.concat(_Memory.memoryThread2,_Memory.memoryThread3);
-            console.log(_Memory.memoryThread[1].length);
+            //this.bigThread = _Memory.memoryThread1.concat(_Memory.memoryThread2,_Memory.memoryThread3);
+            //console.log(_Memory.memoryThread[1].length);
 
+            while(table.hasChildNodes())
+            {
+                table.removeChild(table.firstChild);
+            }
             //3 segments
-            let rowNumber = 0;
+            
             for(let h = 0; h < 3; h++){
-                for(let i = 0; i < _Memory.memoryThread[h].length;i=i+8){
+                let i = 0;
+                let rowNumber = h * 8;
+                // let progSize = _MemoryAccessor.getSegmentToEndOfProg(h);
+                let shift = 9;
+                // let done = false;
+
+                while(i < _Memory.memoryThread[h].length){
                     let row = table.insertRow(rowNumber);
-                    row.insertCell(0).innerHTML = "0x" + TSOS.Utils.toHex(rowNumber*8);
-                    for(let m = 1; m < 9; m++){
-                        row.insertCell(m).innerHTML =_Memory.memoryThread[h][i + m-1];
+                    row.insertCell(0).innerHTML = "0x" + TSOS.Utils.toHex(rowNumber * 8);
+
+                    // if(progSize - i < 8){
+                    //     shift = (progSize - i);
+                    //     done = true;
+                    // }
+
+                    for(let m = 1; m < shift; m++){
+                         row.insertCell(m).innerHTML = "00"
+                         i++;
                     }
+
+                    // for(shift; shift < 9; shift++){
+                    //     row.insertCell(shift).innerHTML = "00";
+                    // }
                     rowNumber++;
                 }
             }
@@ -121,10 +155,35 @@ module TSOS{
         }
 
         public startUpSchedular(){
-            //Look at schedule table
+            let table: HTMLTableElement = <HTMLTableElement>document.getElementById("processeList");
 
+            while(table.hasChildNodes())
+            {
+                table.removeChild(table.firstChild);
+            }
+
+            let header = ["PID", "PC", "IR", "ACC", "X", "Y", "Z", "State", "Location"];
+
+            let row = table.insertRow(0);
+            for(let i = 0; i < header.length; i++){
+                let next = row.insertCell(i);
+                next.innerHTML = String(header[i]);
+            }
+            //Look at schedule table
         }
         public updateSchedular(){
+            let table: HTMLTableElement = <HTMLTableElement>document.getElementById("processeList");
+
+            
+
+
+
+
+
+
+
+
+
 
         }
     }

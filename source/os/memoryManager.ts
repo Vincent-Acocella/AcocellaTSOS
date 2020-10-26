@@ -1,28 +1,32 @@
 module TSOS{
     export class MemoryManager {
         public stationaryThread = [];
+        public segNum = 0;
+        
         
         constructor() {
         }
         //Load input into memory.
             public loadMemory(usrProg:string){
                 //Check which memory unit is availiable
-                let segNum = _MemoryAccessor.getNextAvaliableMemSeg();
-                console.log("Segment Number to input into --" + segNum);
+                this.segNum = _MemoryAccessor.getNextAvaliableMemSeg();
+                console.log("Segment Number to input into --  " + this.segNum);
                 _Memory.endIndex = 0;
 
                 //Write memory into desired segment
-                if(segNum > 0){
+                if(this.segNum > 0){
                     _MemoryAccessor.progInMem++;
                     let newProg = _MemoryAccessor.progInMem;
                     for(let i = 0; i < usrProg.length; i+=3){
                         //Concats opcode
                         let code:string = usrProg.charAt(i)+usrProg.charAt(i+1);
-                        if(!_MemoryAccessor.write(code)){
-                            break;
-                        }
+                        _MemoryAccessor.write(code);
+                        _DeviceDisplay.updateMemory(_Memory.endIndex);
                     }
-                    switch(segNum){
+                    
+                    //_MemoryAccessor.setSegmentToEndOfProg(segNum, _Memory.endIndex);
+
+                    switch(this.segNum){
                         case 1:
                             _Memory.memoryThread1 = this.stationaryThread.splice(0);
                             break;
@@ -70,9 +74,9 @@ module TSOS{
         public fetchCurrentMemory(index): string{
             switch(_MemoryAccessor.currentSegment){
                 case 1:
-                    return  _Memory.memoryThread1[index];
+                    return _Memory.memoryThread1[index];
                 case 2:
-                    return  _Memory.memoryThread2[index];
+                    return _Memory.memoryThread2[index];
                 case 3:
                     return _Memory.memoryThread3[index];
             }
@@ -89,6 +93,6 @@ module TSOS{
                     _Memory.memoryThread3[index] = val;
                     break;
             }
-        }  
+        }
     }
 }

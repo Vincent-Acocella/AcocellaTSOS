@@ -3,25 +3,26 @@ var TSOS;
     var MemoryManager = /** @class */ (function () {
         function MemoryManager() {
             this.stationaryThread = [];
+            this.segNum = 0;
         }
         //Load input into memory.
         MemoryManager.prototype.loadMemory = function (usrProg) {
             //Check which memory unit is availiable
-            var segNum = _MemoryAccessor.getNextAvaliableMemSeg();
-            console.log("Segment Number to input into --" + segNum);
+            this.segNum = _MemoryAccessor.getNextAvaliableMemSeg();
+            console.log("Segment Number to input into --  " + this.segNum);
             _Memory.endIndex = 0;
             //Write memory into desired segment
-            if (segNum > 0) {
+            if (this.segNum > 0) {
                 _MemoryAccessor.progInMem++;
                 var newProg = _MemoryAccessor.progInMem;
                 for (var i = 0; i < usrProg.length; i += 3) {
                     //Concats opcode
                     var code = usrProg.charAt(i) + usrProg.charAt(i + 1);
-                    if (!_MemoryAccessor.write(code)) {
-                        break;
-                    }
+                    _MemoryAccessor.write(code);
+                    _DeviceDisplay.updateMemory(_Memory.endIndex);
                 }
-                switch (segNum) {
+                //_MemoryAccessor.setSegmentToEndOfProg(segNum, _Memory.endIndex);
+                switch (this.segNum) {
                     case 1:
                         _Memory.memoryThread1 = this.stationaryThread.splice(0);
                         break;

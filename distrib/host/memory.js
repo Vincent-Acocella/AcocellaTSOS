@@ -10,6 +10,9 @@ var TSOS;
             this.init();
             this.endIndex = 0;
         }
+        Memory.prototype.refreshMemory = function () {
+            this.memoryThread = [this.memoryThread1, this.memoryThread2, this.memoryThread3];
+        };
         Memory.prototype.init = function () {
             for (var i = 0; i < 256; i++) {
                 this.memoryThread1[i] = "00";

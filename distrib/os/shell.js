@@ -304,7 +304,7 @@ var TSOS;
                     }
                     else {
                         _StdOut.putText("Type 'run " + progNum + "' To run code");
-                        _DeviceDisplay.updateMemory();
+                        //_DeviceDisplay.updateMemory();
                     }
                 }
             }

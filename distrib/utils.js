@@ -54,16 +54,7 @@ var TSOS;
             }
             return result;
         };
-        Utils.bigBrainMaths = function (value) {
-            var bigThread = _Memory.memoryThread1.concat(_Memory.memoryThread2, _Memory.memoryThread3);
-            var currentSegment = _MemoryAccessor.currentSegment;
-            //Index of the new value to be added to the table 
-            //This was just updated
-            //gets the row number
-            var rowNum = Math.floor(((currentSegment - 1) * 32 + value) / 8);
-            var colNum = value % 8;
-            var newValue = bigThread[(currentSegment - 1) * 32 + value];
-            return [rowNum, colNum, newValue];
+        Utils.bigBrainMaths = function (index) {
         };
         return Utils;
     }());

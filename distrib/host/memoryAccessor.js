@@ -4,6 +4,7 @@ var TSOS;
         function MemoryAccessor() {
             this.progInMem = -1;
             this.currentSegment = 1;
+            this.endOfProgMap = [256, 256, 256];
         }
         MemoryAccessor.prototype.init = function () {
             _Memory.init();
@@ -36,6 +37,14 @@ var TSOS;
         };
         MemoryAccessor.prototype.segmentsInUse = function () {
             //Array of 0s and 1s 
+        };
+        MemoryAccessor.prototype.setSegmentToEndOfProg = function (seg, value) {
+            console.log(this.endOfProgMap[seg - 1]);
+            this.endOfProgMap[seg - 1] = value;
+        };
+        //1 seg is stored in 0
+        MemoryAccessor.prototype.getSegmentToEndOfProg = function (seg) {
+            return this.endOfProgMap[seg];
         };
         return MemoryAccessor;
     }());

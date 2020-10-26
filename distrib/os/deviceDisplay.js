@@ -18,53 +18,63 @@ var TSOS;
         // this.bigThread = _Memory.memoryThread1.concat(_Memory.memoryThread2, _Memory.memoryThread3);
         DeviceDisplay.prototype.updateMemory = function (value) {
             var table = document.getElementById('memoryUnit');
-            var results = TSOS.Utils.bigBrainMaths(value);
-            table.rows[results[0]].cells.item(results[1]).innerHTML = results[2];
-            // let index = 0;
-            // for (let i = 0; i < table.rows.length; i++) {
-            //     for (let j = 1; j < 9; j++) {
-            //         table.rows[i].cells.item(j).innerHTML = _Memory.memoryThread[currentSegment][index].toString();
-            //         table.rows[i].cells.item(j).style['font-weight'] = "normal";
-            //         if(index === _CPU.PC){
-            //             table.rows[i].cells.item(j).style.color = "magenta";
-            //         }else{
-            //             table.rows[i].cells.item(j).style.color = "black";
-            //         }
-            //         index++;
-            //     }
-            // }
+            //let results = TSOS.Utils.bigBrainMaths(value);
+            var bigThread = _Memory.memoryThread1.concat(_Memory.memoryThread2, _Memory.memoryThread3);
+            var currentSegment = _MemoryManager.segNum;
+            //Index of the new value to be added to the table 
+            //This was just updated
+            //gets the row number
+            var rowNum = ((currentSegment - 1) * 32 + Math.floor(value / 8));
+            console.log(rowNum);
+            var colNum = value % 8;
+            console.log(colNum);
+            var newValue = bigThread[(currentSegment - 1) * 256 + value];
+            console.log(newValue);
+            //copy row
+            //delete row
+            //add new cell
+            //replace row
+            var tempRow = [];
+            for (var i = 0; i < 8; i++) {
+                tempRow[i] = (colNum === i) ? tempRow[i] = newValue : tempRow[i] = table.rows[rowNum].cells[i];
+            }
+            table.deleteRow(rowNum);
+            var row = table.insertRow(rowNum);
+            for (var i = 0; i < 8; i++) {
+                row.insertCell(i).innerHTML = tempRow[i];
+            }
         };
         DeviceDisplay.prototype.startUpMemory = function () {
             var table = document.getElementById('memoryUnit');
-            this.bigThread = _Memory.memoryThread1.concat(_Memory.memoryThread2, _Memory.memoryThread3);
-            console.log(_Memory.memoryThread[1].length);
+            //this.bigThread = _Memory.memoryThread1.concat(_Memory.memoryThread2,_Memory.memoryThread3);
+            //console.log(_Memory.memoryThread[1].length);
+            while (table.hasChildNodes()) {
+                table.removeChild(table.firstChild);
+            }
             //3 segments
-            var rowNumber = 0;
             for (var h = 0; h < 3; h++) {
-                for (var i = 0; i < _Memory.memoryThread[h].length; i = i + 8) {
+                var i = 0;
+                var rowNumber = h * 8;
+                // let progSize = _MemoryAccessor.getSegmentToEndOfProg(h);
+                var shift = 9;
+                // let done = false;
+                while (i < _Memory.memoryThread[h].length) {
                     var row = table.insertRow(rowNumber);
                     row.insertCell(0).innerHTML = "0x" + TSOS.Utils.toHex(rowNumber * 8);
-                    for (var m = 1; m < 9; m++) {
-                        row.insertCell(m).innerHTML = _Memory.memoryThread[h][i + m - 1];
+                    // if(progSize - i < 8){
+                    //     shift = (progSize - i);
+                    //     done = true;
+                    // }
+                    for (var m = 1; m < shift; m++) {
+                        row.insertCell(m).innerHTML = "00";
+                        i++;
                     }
+                    // for(shift; shift < 9; shift++){
+                    //     row.insertCell(shift).innerHTML = "00";
+                    // }
                     rowNumber++;
                 }
             }
-            // for (let i = 0; i < 768 / 8; i++) {
-            //     let row = table.insertRow(i);
-            //     let memAdress = i * 8;
-            //     let first = row.insertCell(0);
-            //     let memUnit = "0x";
-            //     for (let j= 0; j < 3 - memAdress.toString(16).length; j++) {
-            //         memUnit += "0";
-            //     }
-            //     memUnit += memAdress.toString(16);
-            //     first.innerHTML = memUnit;
-            //     for (let k = 1; k < 9; k++) {
-            //         let cell = row.insertCell(k);
-            //         cell.innerHTML = "00";
-            //     }
-            // }
         };
         DeviceDisplay.prototype.startUpCPU = function () {
             var table = document.getElementById("cpu");
@@ -121,6 +131,16 @@ var TSOS;
             }
         };
         DeviceDisplay.prototype.startUpSchedular = function () {
+            var table = document.getElementById("processeList");
+            while (table.hasChildNodes()) {
+                table.removeChild(table.firstChild);
+            }
+            var header = ["PID", "PC", "IR", "ACC", "X", "Y", "Z", "State", "Location"];
+            var row = table.insertRow(0);
+            for (var i = 0; i < header.length; i++) {
+                var next = row.insertCell(i);
+                next.innerHTML = String(header[i]);
+            }
             //Look at schedule table
         };
         DeviceDisplay.prototype.updateSchedular = function () {
