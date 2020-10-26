@@ -19,13 +19,13 @@ module TSOS{
 
         public updateMemory(index){
 
-            let table: HTMLTableElement = <HTMLTableElement> document.getElementById('memoryUnit');
-            let currentSegment = _MemoryManager.segNum;
+            // let table: HTMLTableElement = <HTMLTableElement> document.getElementById('memoryUnit');
+            // let currentSegment = _MemoryManager.segNum;
 
-            let rowNum = ((currentSegment-1) * 32 + Math.floor(index/8));
-            console.log(rowNum);
-            let colNum = index % 8;
-            console.log(colNum);
+            // let rowNum = ((currentSegment-1) * 32 + Math.floor(index/8));
+            // console.log(rowNum);
+            // let colNum = index % 8;
+            // console.log(colNum);
             //let newValue = _Memory.memoryThread[currentSegment][index];
             //console.log("Value: " + newValue + " Is being added at Index: " + index);
 
@@ -110,10 +110,11 @@ module TSOS{
             }
         }
 
-        public updatePCB(){
+        public updatePCB(value){
             let table: HTMLTableElement = <HTMLTableElement>document.getElementById("pcb");
+
             table.deleteRow(1);
-            let header = _PCB.returnPCB();
+            let header = _Schedular.allProcesses[value];
             let row = table.insertRow(1);
             for(let i = 0; i < header.length; i++){
                 let next = row.insertCell(i);

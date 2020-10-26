@@ -20,6 +20,8 @@ var TSOS;
                     var code = usrProg.charAt(i) + usrProg.charAt(i + 1);
                     _MemoryAccessor.write(code);
                 }
+                _MemoryAccessor.setSegmentToEndOfProg(this.segNum, _Memory.endIndex);
+                _MemoryAccessor.segmentsInUseSwitch(this.segNum);
                 switch (this.segNum) {
                     case 1:
                         _Memory.memoryThread1 = this.stationaryThread.splice(0);

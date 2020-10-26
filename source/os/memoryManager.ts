@@ -3,7 +3,6 @@ module TSOS{
         public stationaryThread = [];
         public segNum = 0;
         
-        
         constructor() {
         }
         //Load input into memory.
@@ -21,8 +20,13 @@ module TSOS{
                         //Concats opcode
                         let code:string = usrProg.charAt(i)+usrProg.charAt(i+1);
                         _MemoryAccessor.write(code);
-                        
                     }
+                    
+                    //Used for the CPU
+                    _MemoryAccessor.setSegmentToEndOfProg(this.segNum, _Memory.endIndex);
+                    
+                    //Switch the segment on
+                    _MemoryAccessor.segmentsInUseSwitch(this.segNum);
 
                     switch(this.segNum){
                         case 1:
@@ -45,6 +49,9 @@ module TSOS{
                         
                     }
                     this.stationaryThread = [];
+
+                    //Sets the Program in the segment
+                    _MemoryAccessor.progToSegMap[this.segNum-1] = newProg;
                     return newProg;
                 }else{
                     _StdOut.putText("NO AVALIABLE MEMORY");
@@ -52,23 +59,24 @@ module TSOS{
                 }
         }
 
-        //The array keeps track of the past values uses the prev index as ref
         public runMemory(progNumber){
             //get the map value
-            if(progNumber <= _MemoryAccessor.progInMem){
+            if(_MemoryAccessor.foundInSegment(progNumber)){
                 _PCB.newTask(progNumber);
+            } else{
+                _StdOut.putText("Program "+ progNumber+ " was not found in memory");
             }
         }
 
         public runAllMemory(){
             _RoundRobin = true;
-            let size = _MemoryAccessor.progInMem
+            let size = _MemoryAccessor.progInMem;
             //Add all to Schedular 
             for(let i = 0; i < size; i++){
                 this.runMemory(i);
             }
             //Look at the first segment and load it in the cpu
-            _Schedular.deployToCPU(_Schedular.progToSegMap(1));
+            _Schedular.deployToCPU(_MemoryAccessor.progToSegMap[0]);
             if(!_SingleStep){
                 _CPU.isExecuting = true;
             }else{

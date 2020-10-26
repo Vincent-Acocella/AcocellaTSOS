@@ -4,6 +4,7 @@ module TSOS{
         public currentSegment = 1;
         public segsInUse = [false,false,false];
         public endOfProgMap = [256,256,256];
+        public progToSegMap = [-1,-1,-1];
         constructor() {
         }
 
@@ -24,11 +25,11 @@ module TSOS{
         }
 
         public getNextAvaliableMemSeg(){
-            if(_Memory.memoryThread1[0] == "00"){
+            if(!this.segsInUse[0]){
                 return 1;
-            }else if(_Memory.memoryThread2[0] == "00"){
+            }else if(!this.segsInUse[1]){
                 return 2;
-            }else if(_Memory.memoryThread3[0] == "00"){
+            }else if(!this.segsInUse[2]){
                 return 3;
             }else{
                 return -1;
@@ -41,13 +42,23 @@ module TSOS{
         }
 
         public setSegmentToEndOfProg(seg, value){
-            console.log(this.endOfProgMap[seg-1])
+            console.log("Setting the Segment: "+ seg+ "To the value of : " + value);
             this.endOfProgMap[seg-1] = value;
         }
 
         //1 seg is stored in 0
         public getSegmentToEndOfProg(seg){
-             return this.endOfProgMap[seg];
+            console.log("Returning the value: "+  this.endOfProgMap[seg-1] +  "for the Segment: "+ seg);
+             return this.endOfProgMap[seg-1];
+        }
+
+        public foundInSegment(prog){
+            for(let i = 0; i< this.progToSegMap.length; i++){
+                if(this.progToSegMap[i] = prog){
+                    return i +1;
+                }
+            }
+            return -1;;
         }
     }
 }

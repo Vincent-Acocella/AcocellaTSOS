@@ -47,8 +47,10 @@ module TSOS {
         }
 
         public cycle(): void {
+            console.log("Current end of proh as recognized by the CPU: " + this.endOfProg);
             _Kernel.krnTrace('CPU cycle');
             let moveThatBus = this.fetch(this.PC);
+
             if(moveThatBus < 0){
                 this.PC = (-1 * moveThatBus) -1 % 256;
                 //Time to branch
@@ -56,12 +58,17 @@ module TSOS {
                 //Increment by bytes
                 this.PC+= moveThatBus;
             }
+
             if(this.PC > this.endOfProg){
                 this.isExecuting = false;
                 // _PCB.state = 3;
             }
+
             _PCB.updatePCB();
-            _DeviceDisplay.updateMemory(this.PC);
+            _DeviceDisplay.updatePCB();
+            _DeviceDisplay.updateCPU();
+
+            // _DeviceDisplay.updateMemory(this.PC);
             if(_RoundRobin){
                 _Schedular.checkIfSwitch();
             }

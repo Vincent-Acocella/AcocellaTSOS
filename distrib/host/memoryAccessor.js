@@ -41,12 +41,13 @@ var TSOS;
             //Array of 0s and 1s 
         };
         MemoryAccessor.prototype.setSegmentToEndOfProg = function (seg, value) {
-            console.log(this.endOfProgMap[seg - 1]);
+            console.log("Setting the Segment: " + seg + "To the value of : " + value);
             this.endOfProgMap[seg - 1] = value;
         };
         //1 seg is stored in 0
         MemoryAccessor.prototype.getSegmentToEndOfProg = function (seg) {
-            return this.endOfProgMap[seg];
+            console.log("Returning the value: " + this.endOfProgMap[seg - 1] + "for the Segment: " + seg);
+            return this.endOfProgMap[seg - 1];
         };
         return MemoryAccessor;
     }());

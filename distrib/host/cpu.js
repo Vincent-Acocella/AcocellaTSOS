@@ -54,6 +54,7 @@ var TSOS;
             this.endOfProg = endOfProg;
         };
         Cpu.prototype.cycle = function () {
+            console.log("Current end of proh as recognized by the CPU: " + this.endOfProg);
             _Kernel.krnTrace('CPU cycle');
             var moveThatBus = this.fetch(this.PC);
             if (moveThatBus < 0) {
@@ -69,7 +70,9 @@ var TSOS;
                 // _PCB.state = 3;
             }
             _PCB.updatePCB();
-            _DeviceDisplay.updateMemory(this.PC);
+            _DeviceDisplay.updatePCB();
+            _DeviceDisplay.updateCPU();
+            // _DeviceDisplay.updateMemory(this.PC);
             if (_RoundRobin) {
                 _Schedular.checkIfSwitch();
             }

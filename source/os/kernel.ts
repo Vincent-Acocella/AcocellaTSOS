@@ -85,6 +85,7 @@ module TSOS {
                     var interrupt = _KernelInterruptQueue.dequeue();
                     this.krnInterruptHandler(interrupt.irq, interrupt.params);
                 } else if (_CPU.isExecuting) {
+                    console.log("And here we Go");
                     // If there are no interrupts then run one CPU cycle if there is anything being processed.
                     // if (_PCB.state === 2) {
                     //_PCB.load();

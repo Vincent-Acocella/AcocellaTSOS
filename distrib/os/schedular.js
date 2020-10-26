@@ -76,7 +76,7 @@ var TSOS;
                 _Schedular.quant--;
             }
         };
-        Schedular.prototype.checkIfSegmentIsInUse = function (PID) {
+        Schedular.prototype.checkSegmentIsInUse = function (PID) {
             //Where it's located
             //true if used
             return _MemoryAccessor.segsInUse[this.allProcesses[PID][9]];

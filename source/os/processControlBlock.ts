@@ -30,17 +30,13 @@ module TSOS{
         public newTask(PID){
             this.init(); 
             this.PID = parseInt(PID);
-            if(!_RoundRobin){
-                this.loadToCPU();
-                if(!_SingleStep){
-                    _CPU.isExecuting = true;
-                }else{
-                    _StdOut.putText("Single Step is Enabled!");
-                }
-            }else{
-                _Schedular.processesInSchedular++;
-                _Schedular.addToProcessScheduler();
-            }
+            this.location = _MemoryAccessor.foundInSegment(PID)
+            this.endOfProg = _MemoryAccessor.getSegmentToEndOfProg(this.location);
+            console.log("End of Program: " + this.endOfProg);
+            _CPU.isExecuting = true;
+            this.loadToCPU();
+            _Schedular.processesInSchedular++;
+            _Schedular.addToProcessScheduler();
             //Instead of load we add to schudluer      
         }
 
@@ -65,6 +61,7 @@ module TSOS{
             _CPU.Zflag = this.Zflag;
             _CPU.Yreg = this.Yreg;
             _CPU.Xreg = this.Xreg;
+            _CPU.endOfProg = this.endOfProg;
         }
 
         public returnPCB(){

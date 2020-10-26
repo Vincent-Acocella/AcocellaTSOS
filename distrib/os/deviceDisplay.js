@@ -16,12 +16,12 @@ var TSOS;
             this.updateSchedular();
         };
         DeviceDisplay.prototype.updateMemory = function (index) {
-            var table = document.getElementById('memoryUnit');
-            var currentSegment = _MemoryManager.segNum;
-            var rowNum = ((currentSegment - 1) * 32 + Math.floor(index / 8));
-            console.log(rowNum);
-            var colNum = index % 8;
-            console.log(colNum);
+            // let table: HTMLTableElement = <HTMLTableElement> document.getElementById('memoryUnit');
+            // let currentSegment = _MemoryManager.segNum;
+            // let rowNum = ((currentSegment-1) * 32 + Math.floor(index/8));
+            // console.log(rowNum);
+            // let colNum = index % 8;
+            // console.log(colNum);
             //let newValue = _Memory.memoryThread[currentSegment][index];
             //console.log("Value: " + newValue + " Is being added at Index: " + index);
             // table.rows[rowNum].cells.item(colNum).innerHTML = newValue.toString();

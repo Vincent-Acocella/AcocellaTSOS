@@ -36,14 +36,11 @@ var TSOS;
         ProcessControlBlock.prototype.newTask = function (PID) {
             this.init();
             this.PID = parseInt(PID);
+            this.endOfProg = _MemoryAccessor.getSegmentToEndOfProg(_MemoryAccessor.currentSegment);
+            console.log("End of Program: " + this.endOfProg);
             if (!_RoundRobin) {
+                _CPU.isExecuting = true;
                 this.loadToCPU();
-                if (!_SingleStep) {
-                    _CPU.isExecuting = true;
-                }
-                else {
-                    _StdOut.putText("Single Step is Enabled!");
-                }
             }
             else {
                 _Schedular.processesInSchedular++;
@@ -70,6 +67,7 @@ var TSOS;
             _CPU.Zflag = this.Zflag;
             _CPU.Yreg = this.Yreg;
             _CPU.Xreg = this.Xreg;
+            _CPU.endOfProg = this.endOfProg;
         };
         ProcessControlBlock.prototype.returnPCB = function () {
             return [this.PID, this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag, this.state, this.location];
