@@ -46,6 +46,7 @@ var TSOS;
                 }
             }
             else {
+                _Schedular.processesInSchedular++;
                 _Schedular.addToProcessScheduler();
             }
             //Instead of load we add to schudluer      

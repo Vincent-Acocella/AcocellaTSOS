@@ -47,7 +47,19 @@ h3 {
   text-align: center;
 }
 
-.memoryDisplay{
-  position: absolute;
-  left: 0;
+.leftCol{
+  float: left;
+  margin: 0 2.5%;
+  width: 23.33%;
+  min-width: 500px;
+  padding-bottom: 5rem;
 }
+
+.rightCol{
+  float: left;
+  width: 23.33%;
+  margin: 0 2.5%;
+}
+
+
+

@@ -38,6 +38,7 @@ module TSOS{
                     _StdOut.putText("Single Step is Enabled!");
                 }
             }else{
+                _Schedular.processesInSchedular++;
                 _Schedular.addToProcessScheduler();
             }
             //Instead of load we add to schudluer      

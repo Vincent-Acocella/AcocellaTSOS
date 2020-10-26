@@ -13,13 +13,13 @@ var TSOS;
             // 4 = YReg
             // 5 = ZReg
             // 6 = IR
-            // 7 = endOfProg
             // 8 = state
             // 9 = location
             this.singleProcess = [];
             this.allProcesses = [[], []];
             this.quant = 6;
             this.segInUse = [];
+            this.processesInSchedular = 0;
         }
         Schedular.prototype.setQuant = function (value) {
             _Quant = value;
@@ -67,13 +67,6 @@ var TSOS;
             _PCB.PID = PID;
             _CPU.loadCPU(this.allProcesses[PID][1], this.allProcesses[PID][2], this.allProcesses[PID][3], this.allProcesses[PID][4], this.allProcesses[PID][5], this.allProcesses[PID][6], this.allProcesses[PID][7]);
         };
-        //    public removeFromScheduler(PID){
-        //         this.allProcesses[PID][0] = _PCB.init();
-        //    }
-        //    public removeAllFromScheduler(){
-        //     for (let i = 0; i <= _MemoryAccessor.progInMem; i++)  
-        //         this.removeFromScheduler(i);
-        //    }
         Schedular.prototype.checkIfSwitch = function () {
             if (_Schedular.quant !== 0) {
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TIMER_IRQ, ["Switching Memory"]));
@@ -83,7 +76,10 @@ var TSOS;
                 _Schedular.quant--;
             }
         };
-        Schedular.prototype.checkIfEmpty = function (val) {
+        Schedular.prototype.checkIfSegmentIsInUse = function (PID) {
+            //Where it's located
+            //true if used
+            return _MemoryAccessor.segsInUse[this.allProcesses[PID][9]];
         };
         Schedular.prototype.progToSegMap = function (lookAt) {
             var i = 0;
@@ -93,6 +89,18 @@ var TSOS;
                 }
             }
             return -1;
+        };
+        Schedular.prototype.programEnded = function (PID) {
+            this.allProcesses[PID][8] = "Terminated";
+            _MemoryAccessor.segmentsInUseSwitch(this.allProcesses[PID][9]);
+        };
+        Schedular.prototype.kill = function (PID) {
+            this.allProcesses[PID][8] = "Terminated";
+        };
+        Schedular.prototype.killAll = function () {
+            for (var i = 0; i < this.processesInSchedular; i++) {
+                this.kill(i);
+            }
         };
         return Schedular;
     }());

@@ -305,6 +305,7 @@ var TSOS;
                     else {
                         _StdOut.putText("Type 'run " + progNum + "' To run code");
                         //_DeviceDisplay.updateMemory();
+                        //_DeviceDisplay.startUpMemory();
                     }
                 }
             }
@@ -322,6 +323,8 @@ var TSOS;
             }
         };
         Shell.prototype.shellClearMem = function (args) {
+            _Memory.init();
+            _StdOut.putText("Memory Cleared");
         };
         //Run all programs at once
         Shell.prototype.shellRunAll = function (args) {
@@ -329,10 +332,14 @@ var TSOS;
         };
         //Display the PID and State of all processes
         Shell.prototype.shellPS = function (args) {
+            for (var i = 0; i < _Schedular.processesInSchedular; i++) {
+                _StdOut.putText(_Schedular.allProcesses[i][0]);
+            }
         };
         //kill one process
         Shell.prototype.shellKill = function (args) {
             if (args.length > 0) {
+                _Schedular.kill(args);
                 //Run CPU
             }
             else {
@@ -341,6 +348,7 @@ var TSOS;
         };
         //Kill all processes
         Shell.prototype.shellKillAll = function (args) {
+            _Schedular.killAll();
         };
         //Let The user set the Round Robin quantum
         Shell.prototype.shellQuantum = function (args) {

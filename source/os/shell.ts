@@ -386,6 +386,7 @@ module TSOS {
                    }else{
                     _StdOut.putText("Type 'run " + progNum +"' To run code");
                     //_DeviceDisplay.updateMemory();
+                    //_DeviceDisplay.startUpMemory();
                    }
                }
            }else{
@@ -402,6 +403,8 @@ module TSOS {
             }
         }
         public shellClearMem(args: String[]){
+            _Memory.init();
+            _StdOut.putText("Memory Cleared");
         }
 
         //Run all programs at once
@@ -411,12 +414,15 @@ module TSOS {
 
         //Display the PID and State of all processes
         public shellPS(args: String[]){
-
+            for(let i = 0; i < _Schedular.processesInSchedular; i++){
+                _StdOut.putText(_Schedular.allProcesses[i][0]);
+            }
         }
 
         //kill one process
         public shellKill(args: String[]){
             if(args.length > 0){
+                _Schedular.kill(args);
                 //Run CPU
                    
             } else{
@@ -426,6 +432,7 @@ module TSOS {
 
         //Kill all processes
         public shellKillAll(args: String[]){
+            _Schedular.killAll();
 
         }
        

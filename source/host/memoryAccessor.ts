@@ -2,6 +2,7 @@ module TSOS{
     export class MemoryAccessor{
         public progInMem = -1;
         public currentSegment = 1;
+        public segsInUse = [false,false,false];
         public endOfProgMap = [256,256,256];
         constructor() {
         }
@@ -34,9 +35,9 @@ module TSOS{
             }
         }
 
-        public segmentsInUse(){
+        public segmentsInUseSwitch(seg){
+            this.segsInUse[seg]= !this.segsInUse[seg]
             //Array of 0s and 1s 
-
         }
 
         public setSegmentToEndOfProg(seg, value){

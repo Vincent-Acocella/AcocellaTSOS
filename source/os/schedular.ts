@@ -9,13 +9,13 @@ module TSOS{
         // 4 = YReg
         // 5 = ZReg
         // 6 = IR
-        // 7 = endOfProg
         // 8 = state
         // 9 = location
         public singleProcess = [];
         public allProcesses = [[],[]];
         public quant = 6;
         public segInUse = [];
+        public processesInSchedular = 0;
         
         constructor(
             //line Up Process id with index of all processes
@@ -72,6 +72,7 @@ module TSOS{
             for(let i = 1; i < 6; i++){
                 this.singleProcess[i] = this.allProcesses[PID][i]; 
             }
+
             _PCB.PID = PID;
             _CPU.loadCPU(this.allProcesses[PID][1],
                 this.allProcesses[PID][2],
@@ -82,15 +83,6 @@ module TSOS{
                 this.allProcesses[PID][7])
        }
 
-    //    public removeFromScheduler(PID){
-    //         this.allProcesses[PID][0] = _PCB.init();
-    //    }
-
-    //    public removeAllFromScheduler(){
-    //     for (let i = 0; i <= _MemoryAccessor.progInMem; i++)  
-    //         this.removeFromScheduler(i);
-    //    }
-
        public checkIfSwitch(){
             if( _Schedular.quant !== 0){
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TIMER_IRQ, ["Switching Memory"]));
@@ -100,9 +92,12 @@ module TSOS{
             }
         }
 
-        public checkIfEmpty(val){
-
+        public checkIfSegmentIsInUse(PID){
+            //Where it's located
+            //true if used
+            return _MemoryAccessor.segsInUse[this.allProcesses[PID][9]];
         }
+        
         public progToSegMap(lookAt){
             let i = 0
             for(i; i <= _MemoryAccessor.progInMem; i++){
@@ -111,6 +106,21 @@ module TSOS{
                 }
             }
             return -1;
+        }
+
+        public programEnded(PID){
+            this.allProcesses[PID][8] = "Terminated";
+            _MemoryAccessor.segmentsInUseSwitch(this.allProcesses[PID][9]);
+        }
+
+        public kill(PID){
+            this.allProcesses[PID][8] = "Terminated";
+
+        }
+        public killAll(){
+            for(let i = 0; i < this.processesInSchedular; i++){
+                this.kill(i);
+            }
         }
     }
 }

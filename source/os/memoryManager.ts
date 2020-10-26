@@ -21,10 +21,8 @@ module TSOS{
                         //Concats opcode
                         let code:string = usrProg.charAt(i)+usrProg.charAt(i+1);
                         _MemoryAccessor.write(code);
-                        _DeviceDisplay.updateMemory(_Memory.endIndex);
+                        
                     }
-                    
-                    //_MemoryAccessor.setSegmentToEndOfProg(segNum, _Memory.endIndex);
 
                     switch(this.segNum){
                         case 1:
@@ -38,8 +36,15 @@ module TSOS{
                             break;
                         default:
                     }
+
+                    console.log("Memory end index:  " + _Memory.endIndex);
+                    for(let i = 0; i< _Memory.endIndex; i++){
+                        if(i % 9 !== 0){
+                            _DeviceDisplay.updateMemory(i);
+                        }
+                        
+                    }
                     this.stationaryThread = [];
-                    //console.log(this.stationaryThread[0] + _Memory.endIndex)
                     return newProg;
                 }else{
                     _StdOut.putText("NO AVALIABLE MEMORY");

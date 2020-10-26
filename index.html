@@ -50,8 +50,8 @@
    <h2>Just Your Average Operating System</h2>
    <h3>Status: <span id="status"></span></h3>
 
-<div id="divMain" style="width:100%;">
 
+<div id="divMain"> 
    <div id="divButtonBar" style="margin:4px;">
       <input type="button"
              id = "btnStartOS"
@@ -111,7 +111,95 @@
                <span id="dt"></span>
          </i>
       </marquee>
+
    </div>
+   <div class = "leftCol">
+      <div id="divConsole" style="margin:4px; width:500px; height:500px;">
+         <canvas id="display"
+            width="500"
+            height="500"
+            tabindex="3">
+         </canvas>
+      </div>
+
+      <div>
+         <label>
+            CPU
+            <br>
+            <table name="cpu"
+                  id="cpu"
+                  bgcolor ="white"
+                  style="color: black; display: block; height: 55px; width: 160px;"
+            ></table>
+         </label>
+      </div>
+
+      <div id="procConBl">
+         <label>
+            Process
+            <br>
+            <table name="pcb"
+                   id="pcb"
+                   bgcolor ="white"
+                   style="color: black; display: block; height: 55px; width: 290px;"
+            ></table>
+         </label>
+      </div>
+  
+
+      <div>
+         <label>
+            Processes
+            <br>
+            <table name="processeList"
+                  id="processeList"
+                  bgcolor ="white"
+                  style="color: black; display: block; height: 100px; width: 300px;"
+            ></table>
+         </label>
+      </div>
+
+   </div>
+
+   <div class = rightCol>
+
+      <div id="hostLog">
+         <label>
+            Host Log
+            <br>
+            <textarea name="taHostLog"
+                     id  ="taHostLog"
+                     rows="26"
+                     cols="48"
+            ></textarea>
+         </label>
+      </div>
+   
+      <div id="divUserProgramInput">
+         <label>
+            User Program Input
+            <br>
+            <textarea name="taProgramInput"
+                      id  ="taProgramInput"
+                      rows="8"
+                      cols="48"
+            ></textarea>
+         </label>
+      </div>
+
+      <div>
+         <label>
+            Memory
+            <br>
+            <table class="table table-striped" name="memoryUnit"
+                  id= "memoryUnit"
+                  bgcolor = "white"
+                  style="color: black; overflow-y: scroll; display: block; height: 150px; width: 278px;"
+            ></table>
+         </label>
+      </div>
+   </div>
+
    
    <script>
       var dt = document.getElementById('dt');
@@ -122,90 +210,5 @@
       setInterval(getCurrentDateTime, 1000);
    </script>
 
-   <div id="divConsole" style="margin:4px; width:500px; height:500px; float:left;">
-         <canvas id="display"
-            width="500"
-            height="500"
-            tabindex="3">
-         </canvas>
-   </div>
-
-   <div id="memoryDisplay" style="margin-left:520px;">
-      <label>
-         Memory
-         <br>
-
-         <table class="table table-striped" name="memoryUnit"
-                id= "memoryUnit"
-                bgcolor = "white"
-                style="color: black; overflow-y: scroll; display: block; height: 150px; width: 278px;"
-         ></table>
-
-      </label>
-   </div>
-
-   <div id="divLog" style="margin-left:520px;">
-      <label>
-         Host Log
-         <br>
-         <textarea name="taHostLog"
-                   id  ="taHostLog"
-                   rows="26"
-                   cols="48"
-         ></textarea>
-      </label>
-   </div>
-
-   <div id="cpuDisplay" style="margin-left:520px;">
-      <label>
-         CPU
-         <br>
-         <table name="cpu"
-                id="cpu"
-                bgcolor ="white"
-                style="color: black; display: block; height: 55px; width: 160px;"
-         ></table>
-      </label>
-   </div>
-
-   <div id="procConBl" style="margin-left:520px;">
-      <label>
-         Process
-         <br>
-         <table name="pcb"
-                id="pcb"
-                bgcolor ="white"
-                style="color: black; display: block; height: 55px; width: 290px;"
-         ></table>
-      </label>
-   </div>
-
-   <div id="divUserProgramInput" style="margin-left:520px;">
-      <label>
-         User Program Input
-         <br>
-         <textarea name="taProgramInput"
-                   id  ="taProgramInput"
-                   rows="8"
-                   cols="48"
-         ></textarea>
-      </label>
-   </div>
-
-
-
-   <div id="processes" style="margin-left:520px;">
-      <label>
-         Processes
-         <br>
-         <table name="processeList"
-                id="processeList"
-                bgcolor ="white"
-                style="color: black; display: block; height: 55px; width: 300px;"
-         ></table>
-      </label>
-   </div>
-
-</div>
 </body>
 </html>
