@@ -43,5 +43,35 @@ module TSOS {
             }
             return retVal;
         }
+
+        public static toHex(num) {
+            return Utils.padStart(num.toString(16).toUpperCase(), "0", 2);
+        }
+
+        public static padStart(str, padWith, padTo) {
+            var result = str;
+            for (var i = 0; i < padTo - str.length; i++) {
+                result = padWith + result;
+            }
+            return result;
+        }
+
+        public static bigBrainMaths(value){
+            let bigThread = _Memory.memoryThread1.concat(_Memory.memoryThread2,_Memory.memoryThread3);
+            let currentSegment = _MemoryAccessor.currentSegment;
+
+            //Index of the new value to be added to the table 
+            //This was just updated
+            //gets the row number
+             let rowNum = Math.floor(((currentSegment-1)*32 + value)/8);
+             let colNum = value % 8;
+             let newValue = bigThread[(currentSegment-1)*32 + value];
+
+             return [rowNum, colNum, newValue];
+
+
+        } 
+
+
     }
 }

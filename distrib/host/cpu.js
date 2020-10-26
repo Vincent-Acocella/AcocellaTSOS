@@ -69,8 +69,10 @@ var TSOS;
                 // _PCB.state = 3;
             }
             _PCB.updatePCB();
-            _DeviceDisplay.reload();
-            _Schedular.checkIfSwitch();
+            _DeviceDisplay.updateMemory(this.PC);
+            if (_RoundRobin) {
+                _Schedular.checkIfSwitch();
+            }
         };
         Cpu.prototype.fetch = function (code) {
             var opCode = _MemoryManager.fetchCurrentMemory(code);

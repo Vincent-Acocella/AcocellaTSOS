@@ -12,47 +12,59 @@ var TSOS;
             this.bigThread = [];
             this.updatePCB();
             this.updateCPU();
-            this.updateMemory();
+            //this.updateMemory();
             this.updateSchedular();
         };
-        DeviceDisplay.prototype.updateMemory = function () {
-            this.bigThread = [_Memory.memoryThread1, _Memory.memoryThread2, _Memory.memoryThread3];
-            console.log(this.bigThread.length);
+        // this.bigThread = _Memory.memoryThread1.concat(_Memory.memoryThread2, _Memory.memoryThread3);
+        DeviceDisplay.prototype.updateMemory = function (value) {
             var table = document.getElementById('memoryUnit');
-            var index = 0;
-            for (var i = 0; i < this.bigThread.length % 8; i++) {
-                for (var j = 1; j < 9; j++) {
-                    table.rows[i].cells.item(j).innerHTML = this.bigThread[index];
-                    table.rows[i].cells.item(j).style['font-weight'] = "normal";
-                    if (index === _CPU.PC) {
-                        table.rows[i].cells.item(j).style.color = "magenta";
-                    }
-                    else {
-                        table.rows[i].cells.item(j).style.color = "black";
-                    }
-                    index++;
-                }
-            }
+            var results = TSOS.Utils.bigBrainMaths(value);
+            table.rows[results[0]].cells.item(results[1]).innerHTML = results[2];
+            // let index = 0;
+            // for (let i = 0; i < table.rows.length; i++) {
+            //     for (let j = 1; j < 9; j++) {
+            //         table.rows[i].cells.item(j).innerHTML = _Memory.memoryThread[currentSegment][index].toString();
+            //         table.rows[i].cells.item(j).style['font-weight'] = "normal";
+            //         if(index === _CPU.PC){
+            //             table.rows[i].cells.item(j).style.color = "magenta";
+            //         }else{
+            //             table.rows[i].cells.item(j).style.color = "black";
+            //         }
+            //         index++;
+            //     }
+            // }
         };
         DeviceDisplay.prototype.startUpMemory = function () {
             var table = document.getElementById('memoryUnit');
             this.bigThread = _Memory.memoryThread1.concat(_Memory.memoryThread2, _Memory.memoryThread3);
-            console.log(this.bigThread.length);
-            for (var i = 0; i < this.bigThread.length / 8; i++) {
-                var row = table.insertRow(i);
-                var memAdress = i * 8;
-                var first = row.insertCell(0);
-                var memUnit = "0x";
-                for (var j = 0; j < 3 - memAdress.toString(16).length; j++) {
-                    memUnit += "0";
-                }
-                memUnit += memAdress.toString(16);
-                first.innerHTML = memUnit;
-                for (var k = 1; k < 9; k++) {
-                    var cell = row.insertCell(k);
-                    cell.innerHTML = "00";
+            console.log(_Memory.memoryThread[1].length);
+            //3 segments
+            var rowNumber = 0;
+            for (var h = 0; h < 3; h++) {
+                for (var i = 0; i < _Memory.memoryThread[h].length; i = i + 8) {
+                    var row = table.insertRow(rowNumber);
+                    row.insertCell(0).innerHTML = "0x" + TSOS.Utils.toHex(rowNumber * 8);
+                    for (var m = 1; m < 9; m++) {
+                        row.insertCell(m).innerHTML = _Memory.memoryThread[h][i + m - 1];
+                    }
+                    rowNumber++;
                 }
             }
+            // for (let i = 0; i < 768 / 8; i++) {
+            //     let row = table.insertRow(i);
+            //     let memAdress = i * 8;
+            //     let first = row.insertCell(0);
+            //     let memUnit = "0x";
+            //     for (let j= 0; j < 3 - memAdress.toString(16).length; j++) {
+            //         memUnit += "0";
+            //     }
+            //     memUnit += memAdress.toString(16);
+            //     first.innerHTML = memUnit;
+            //     for (let k = 1; k < 9; k++) {
+            //         let cell = row.insertCell(k);
+            //         cell.innerHTML = "00";
+            //     }
+            // }
         };
         DeviceDisplay.prototype.startUpCPU = function () {
             var table = document.getElementById("cpu");

@@ -92,18 +92,15 @@ module TSOS{
     //    }
 
        public checkIfSwitch(){
-            if(_RoundRobin){
-                if( _Schedular.quant !== 0){
-                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TIMER_IRQ, ["Switching Memory"]));
-                }else{
-                    //Decrease the quant means we are staying in the same process
-                    _Schedular.quant--;
-                }
+            if( _Schedular.quant !== 0){
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TIMER_IRQ, ["Switching Memory"]));
+            }else{
+                //Decrease the quant means we are staying in the same process
+                _Schedular.quant--;
             }
         }
 
         public checkIfEmpty(val){
-
 
         }
         public progToSegMap(lookAt){

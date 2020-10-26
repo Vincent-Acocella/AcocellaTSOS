@@ -13,49 +13,45 @@ module TSOS{
             this.bigThread = [];
             this.updatePCB();
             this.updateCPU();
-            this.updateMemory();
+            //this.updateMemory();
             this.updateSchedular();
         }
-
-        public updateMemory(){
-            this.bigThread = [_Memory.memoryThread1, _Memory.memoryThread2, _Memory.memoryThread3];
-            console.log(this.bigThread.length);
+        // this.bigThread = _Memory.memoryThread1.concat(_Memory.memoryThread2, _Memory.memoryThread3);
+        public updateMemory(value){
             let table: HTMLTableElement = <HTMLTableElement> document.getElementById('memoryUnit');
-            let index = 0;
-            for (let i = 0; i < this.bigThread.length % 8; i++) {
+            let results = TSOS.Utils.bigBrainMaths(value);
+            table.rows[results[0]].cells.item(results[1]).innerHTML = results[2];
 
-                for (let j = 1; j < 9; j++) {
-                    table.rows[i].cells.item(j).innerHTML = this.bigThread[index];
-                    table.rows[i].cells.item(j).style['font-weight'] = "normal";
-                    if(index === _CPU.PC){
-                        table.rows[i].cells.item(j).style.color = "magenta";
-                    }else{
-                        table.rows[i].cells.item(j).style.color = "black";
-                    }
-                    index++;
-                }
-            }
+            // let index = 0;
+            // for (let i = 0; i < table.rows.length; i++) {
+            //     for (let j = 1; j < 9; j++) {
+            //         table.rows[i].cells.item(j).innerHTML = _Memory.memoryThread[currentSegment][index].toString();
+            //         table.rows[i].cells.item(j).style['font-weight'] = "normal";
+            //         if(index === _CPU.PC){
+            //             table.rows[i].cells.item(j).style.color = "magenta";
+            //         }else{
+            //             table.rows[i].cells.item(j).style.color = "black";
+            //         }
+            //         index++;
+            //     }
+            // }
         }
 
         public startUpMemory(){
             let table: HTMLTableElement = <HTMLTableElement>document.getElementById('memoryUnit');
-            this.bigThread = _Memory.memoryThread1.concat( _Memory.memoryThread2, _Memory.memoryThread3);
-            console.log(this.bigThread.length)
-            for (let i = 0; i < this.bigThread.length / 8; i++) {
-                let row = table.insertRow(i);
-                let memAdress = i * 8;
-                let first = row.insertCell(0);
+            this.bigThread = _Memory.memoryThread1.concat(_Memory.memoryThread2,_Memory.memoryThread3);
+            console.log(_Memory.memoryThread[1].length);
 
-                let memUnit = "0x";
-                for (let j= 0; j < 3 - memAdress.toString(16).length; j++) {
-                    memUnit += "0";
-                }
-
-                memUnit += memAdress.toString(16);
-                first.innerHTML = memUnit;
-                for (let k = 1; k < 9; k++) {
-                    let cell = row.insertCell(k);
-                    cell.innerHTML = "00";
+            //3 segments
+            let rowNumber = 0;
+            for(let h = 0; h < 3; h++){
+                for(let i = 0; i < _Memory.memoryThread[h].length;i=i+8){
+                    let row = table.insertRow(rowNumber);
+                    row.insertCell(0).innerHTML = "0x" + TSOS.Utils.toHex(rowNumber*8);
+                    for(let m = 1; m < 9; m++){
+                        row.insertCell(m).innerHTML =_Memory.memoryThread[h][i + m-1];
+                    }
+                    rowNumber++;
                 }
             }
         }
@@ -68,7 +64,6 @@ module TSOS{
             }
 
             let header = ["PC", "IR", "ACC", "X", "Y", "Z"];
-
             let row = table.insertRow(0);
             for(let i = 0; i < header.length; i++){
                 let next = row.insertCell(i);

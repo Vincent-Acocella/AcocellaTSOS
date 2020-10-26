@@ -4,6 +4,7 @@ module TSOS {
         public memoryThread1 = [];
         public memoryThread2 = [];
         public memoryThread3 = [];
+        public memoryThread = [];
         public endIndex;
 
         constructor() {
@@ -17,6 +18,7 @@ module TSOS {
                 this.memoryThread2[i] = "00";
                 this.memoryThread3[i] = "00";
             }
+            this.memoryThread = [this.memoryThread1, this.memoryThread2, this.memoryThread3];
             this.endIndex = 0;
         }
     }

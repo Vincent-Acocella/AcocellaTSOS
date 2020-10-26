@@ -6,6 +6,7 @@ var TSOS;
             this.memoryThread1 = [];
             this.memoryThread2 = [];
             this.memoryThread3 = [];
+            this.memoryThread = [];
             this.init();
             this.endIndex = 0;
         }
@@ -15,6 +16,7 @@ var TSOS;
                 this.memoryThread2[i] = "00";
                 this.memoryThread3[i] = "00";
             }
+            this.memoryThread = [this.memoryThread1, this.memoryThread2, this.memoryThread3];
             this.endIndex = 0;
         };
         return Memory;
