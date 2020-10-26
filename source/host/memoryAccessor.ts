@@ -3,7 +3,6 @@ module TSOS{
         public progInMem = -1;
         public currentSegment = 1;
         public segsInUse = [false,false,false];
-        public endOfProgMap = [256,256,256];
         public progToSegMap = [-1,-1,-1];
         constructor() {
         }
@@ -41,17 +40,6 @@ module TSOS{
             //Array of 0s and 1s 
         }
 
-        public setSegmentToEndOfProg(seg, value){
-            console.log("Setting the Segment: "+ seg+ "To the value of : " + value);
-            this.endOfProgMap[seg-1] = value;
-        }
-
-        //1 seg is stored in 0
-        public getSegmentToEndOfProg(seg){
-            console.log("Returning the value: "+  this.endOfProgMap[seg-1] +  "for the Segment: "+ seg);
-             return this.endOfProgMap[seg-1];
-        }
-
         public foundInSegment(prog){
             for(let i = 0; i< this.progToSegMap.length; i++){
                 if(this.progToSegMap[i] = prog){
@@ -60,5 +48,6 @@ module TSOS{
             }
             return -1;;
         }
+
     }
 }

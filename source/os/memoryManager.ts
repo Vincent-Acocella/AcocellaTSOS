@@ -23,8 +23,9 @@ module TSOS{
                     }
                     
                     //Used for the CPU
-                    _MemoryAccessor.setSegmentToEndOfProg(this.segNum, _Memory.endIndex);
-                    
+                    _PCB.endOfProg = _Memory.endIndex;
+                    _PCB.location = this.segNum;
+
                     //Switch the segment on
                     _MemoryAccessor.segmentsInUseSwitch(this.segNum);
 
@@ -40,18 +41,23 @@ module TSOS{
                             break;
                         default:
                     }
+                    
 
-                    console.log("Memory end index:  " + _Memory.endIndex);
-                    for(let i = 0; i< _Memory.endIndex; i++){
-                        if(i % 9 !== 0){
-                            _DeviceDisplay.updateMemory(i);
-                        }
+                    // console.log("Memory end index:  " + _Memory.endIndex);
+                    // for(let i = 0; i< _Memory.endIndex; i++){
+                    //     if(i % 9 !== 0){
+                    //         _DeviceDisplay.updateMemory(i);
+                    //     }
                         
-                    }
+                    // }
+
                     this.stationaryThread = [];
 
                     //Sets the Program in the segment
                     _MemoryAccessor.progToSegMap[this.segNum-1] = newProg;
+                    
+                    _PCB.newTask(newProg,_Memory.endIndex, this.segNum);
+                    
                     return newProg;
                 }else{
                     _StdOut.putText("NO AVALIABLE MEMORY");
@@ -62,7 +68,7 @@ module TSOS{
         public runMemory(progNumber){
             //get the map value
             if(_MemoryAccessor.foundInSegment(progNumber)){
-                _PCB.newTask(progNumber);
+                _CPU.isExecuting = true;
             } else{
                 _StdOut.putText("Program "+ progNumber+ " was not found in memory");
             }
@@ -76,12 +82,7 @@ module TSOS{
                 this.runMemory(i);
             }
             //Look at the first segment and load it in the cpu
-            _Schedular.deployToCPU(_MemoryAccessor.progToSegMap[0]);
-            if(!_SingleStep){
-                _CPU.isExecuting = true;
-            }else{
-                _StdOut.putText("Single Step is Enabled!");
-            }
+            _Schedular.deployToCPU();
         }
         
         public fetchCurrentMemory(index): string{

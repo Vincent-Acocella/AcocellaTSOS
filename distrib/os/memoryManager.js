@@ -20,7 +20,10 @@ var TSOS;
                     var code = usrProg.charAt(i) + usrProg.charAt(i + 1);
                     _MemoryAccessor.write(code);
                 }
-                _MemoryAccessor.setSegmentToEndOfProg(this.segNum, _Memory.endIndex);
+                //Used for the CPU
+                _PCB.endOfProg = _Memory.endIndex;
+                _PCB.location = this.segNum;
+                //Switch the segment on
                 _MemoryAccessor.segmentsInUseSwitch(this.segNum);
                 switch (this.segNum) {
                     case 1:
@@ -34,13 +37,16 @@ var TSOS;
                         break;
                     default:
                 }
-                console.log("Memory end index:  " + _Memory.endIndex);
-                for (var i = 0; i < _Memory.endIndex; i++) {
-                    if (i % 9 !== 0) {
-                        _DeviceDisplay.updateMemory(i);
-                    }
-                }
+                // console.log("Memory end index:  " + _Memory.endIndex);
+                // for(let i = 0; i< _Memory.endIndex; i++){
+                //     if(i % 9 !== 0){
+                //         _DeviceDisplay.updateMemory(i);
+                //     }
+                // }
                 this.stationaryThread = [];
+                //Sets the Program in the segment
+                _MemoryAccessor.progToSegMap[this.segNum - 1] = newProg;
+                _PCB.newTask(newProg, _Memory.endIndex, this.segNum);
                 return newProg;
             }
             else {
@@ -48,11 +54,13 @@ var TSOS;
                 return -1;
             }
         };
-        //The array keeps track of the past values uses the prev index as ref
         MemoryManager.prototype.runMemory = function (progNumber) {
             //get the map value
-            if (progNumber <= _MemoryAccessor.progInMem) {
-                _PCB.newTask(progNumber);
+            if (_MemoryAccessor.foundInSegment(progNumber)) {
+                _CPU.isExecuting = true;
+            }
+            else {
+                _StdOut.putText("Program " + progNumber + " was not found in memory");
             }
         };
         MemoryManager.prototype.runAllMemory = function () {
@@ -63,13 +71,7 @@ var TSOS;
                 this.runMemory(i);
             }
             //Look at the first segment and load it in the cpu
-            _Schedular.deployToCPU(_Schedular.progToSegMap(1));
-            if (!_SingleStep) {
-                _CPU.isExecuting = true;
-            }
-            else {
-                _StdOut.putText("Single Step is Enabled!");
-            }
+            _Schedular.deployToCPU();
         };
         MemoryManager.prototype.fetchCurrentMemory = function (index) {
             switch (_MemoryAccessor.currentSegment) {

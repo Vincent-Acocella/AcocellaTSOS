@@ -5,7 +5,7 @@ var TSOS;
             this.progInMem = -1;
             this.currentSegment = 1;
             this.segsInUse = [false, false, false];
-            this.endOfProgMap = [256, 256, 256];
+            this.progToSegMap = [-1, -1, -1];
         }
         MemoryAccessor.prototype.init = function () {
             _Memory.init();
@@ -23,13 +23,13 @@ var TSOS;
             }
         };
         MemoryAccessor.prototype.getNextAvaliableMemSeg = function () {
-            if (_Memory.memoryThread1[0] == "00") {
+            if (!this.segsInUse[0]) {
                 return 1;
             }
-            else if (_Memory.memoryThread2[0] == "00") {
+            else if (!this.segsInUse[1]) {
                 return 2;
             }
-            else if (_Memory.memoryThread3[0] == "00") {
+            else if (!this.segsInUse[2]) {
                 return 3;
             }
             else {
@@ -40,14 +40,14 @@ var TSOS;
             this.segsInUse[seg] = !this.segsInUse[seg];
             //Array of 0s and 1s 
         };
-        MemoryAccessor.prototype.setSegmentToEndOfProg = function (seg, value) {
-            console.log("Setting the Segment: " + seg + "To the value of : " + value);
-            this.endOfProgMap[seg - 1] = value;
-        };
-        //1 seg is stored in 0
-        MemoryAccessor.prototype.getSegmentToEndOfProg = function (seg) {
-            console.log("Returning the value: " + this.endOfProgMap[seg - 1] + "for the Segment: " + seg);
-            return this.endOfProgMap[seg - 1];
+        MemoryAccessor.prototype.foundInSegment = function (prog) {
+            for (var i = 0; i < this.progToSegMap.length; i++) {
+                if (this.progToSegMap[i] = prog) {
+                    return i + 1;
+                }
+            }
+            return -1;
+            ;
         };
         return MemoryAccessor;
     }());

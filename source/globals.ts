@@ -38,11 +38,12 @@ var _Quant = 0;
 var _CPU:TSOS.Cpu;  // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
 var _Memory:TSOS.Memory;
 var _MemoryAccessor:TSOS.MemoryAccessor;
-var _Schedular:TSOS.Schedular;
+
 var _DeviceDisplay : any = null;
 //	Software	(OS)
 var _MemoryManager:	any= null;
 var _PCB: TSOS.ProcessControlBlock = null;
+var _Schedular:TSOS.Schedular;
 
 var _OSclock: number = 0;  // Page 23.
 

@@ -5,12 +5,12 @@ var TSOS;
             this.bigThread = [];
             this.startUpMemory();
             this.startUpCPU();
-            this.startUpPCB();
+            //this.startUpPCB();
             this.startUpSchedular();
         }
         DeviceDisplay.prototype.reload = function () {
             this.bigThread = [];
-            this.updatePCB();
+            //this.updatePCB();
             this.updateCPU();
             //this.updateMemory();
             this.updateSchedular();
@@ -73,33 +73,34 @@ var TSOS;
                 next.innerHTML = String(header[i]);
             }
         };
-        DeviceDisplay.prototype.startUpPCB = function () {
-            var table = document.getElementById("pcb");
-            while (table.hasChildNodes()) {
-                table.removeChild(table.firstChild);
-            }
-            var header = ["PID", "PC", "IR", "ACC", "X", "Y", "Z", "State", "Location"];
-            var row = table.insertRow(0);
-            for (var i = 0; i < header.length; i++) {
-                var next = row.insertCell(i);
-                next.innerHTML = String(header[i]);
-            }
-            var row2 = table.insertRow(1);
-            for (var i = 0; i < header.length; i++) {
-                var next = row2.insertCell(i);
-                next.innerHTML = "0";
-            }
-        };
-        DeviceDisplay.prototype.updatePCB = function () {
-            var table = document.getElementById("pcb");
-            table.deleteRow(1);
-            var header = _PCB.returnPCB();
-            var row = table.insertRow(1);
-            for (var i = 0; i < header.length; i++) {
-                var next = row.insertCell(i);
-                next.innerHTML = String(header[i]);
-            }
-        };
+        // public startUpPCB(){
+        //     let table: HTMLTableElement = <HTMLTableElement>document.getElementById("pcb");
+        //     while(table.hasChildNodes())
+        //     {
+        //         table.removeChild(table.firstChild);
+        //     }
+        //     let header = ["PID", "PC", "IR", "ACC", "X", "Y", "Z", "State", "Location"];
+        //     let row = table.insertRow(0);
+        //     for(let i = 0; i < header.length; i++){
+        //         let next = row.insertCell(i);
+        //         next.innerHTML = String(header[i]);
+        //     }
+        //     let row2 = table.insertRow(1);
+        //     for(let i = 0; i < header.length; i++){
+        //         let next = row2.insertCell(i);
+        //         next.innerHTML = "0";
+        //     }
+        // }
+        // public updatePCB(value){
+        //     let table: HTMLTableElement = <HTMLTableElement>document.getElementById("pcb");
+        //     table.deleteRow(1);
+        //     let header = _Schedular.allProcesses[value];
+        //     let row = table.insertRow(1);
+        //     for(let i = 0; i < header.length; i++){
+        //         let next = row.insertCell(i);
+        //         next.innerHTML = String(header[i]);
+        //     }
+        // }
         DeviceDisplay.prototype.startUpSchedular = function () {
             var table = document.getElementById("processeList");
             while (table.hasChildNodes()) {

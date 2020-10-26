@@ -28,25 +28,19 @@ var TSOS;
             this.Acc = 0;
             this.Xreg = 0;
             this.Yreg = 0;
-            this.IR = "";
-            this.state = "";
+            this.IR = "00";
+            this.state = "ready";
             this.location = 0;
             this.Zflag = 0;
         };
-        ProcessControlBlock.prototype.newTask = function (PID) {
+        ProcessControlBlock.prototype.newTask = function (PID, endOfProg, location) {
             this.init();
             this.PID = parseInt(PID);
-            this.endOfProg = _MemoryAccessor.getSegmentToEndOfProg(_MemoryAccessor.currentSegment);
-            console.log("End of Program: " + this.endOfProg);
-            if (!_RoundRobin) {
-                _CPU.isExecuting = true;
-                this.loadToCPU();
-            }
-            else {
-                _Schedular.processesInSchedular++;
-                _Schedular.addToProcessScheduler();
-            }
-            //Instead of load we add to schudluer      
+            this.location = location;
+            console.log(this.location);
+            this.endOfProg = endOfProg;
+            console.log(_Schedular.allProcesses[0][0].toString());
+            _Schedular.addToProcessScheduler();
         };
         //State 0 is idle
         //1 is running

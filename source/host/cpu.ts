@@ -61,6 +61,7 @@ module TSOS {
 
             if(this.PC > this.endOfProg){
                 this.isExecuting = false;
+                _Schedular.terminateCurrentProcess();
                 // _PCB.state = 3;
             }
 
@@ -68,8 +69,7 @@ module TSOS {
             _DeviceDisplay.updatePCB();
             _DeviceDisplay.updateCPU();
 
-            // _DeviceDisplay.updateMemory(this.PC);
-            if(_RoundRobin){
+            if(_Schedular.readyQueue.length !== 1){
                 _Schedular.checkIfSwitch();
             }
         }

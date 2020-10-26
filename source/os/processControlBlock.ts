@@ -21,23 +21,19 @@ module TSOS{
             this.Acc = 0;
             this.Xreg = 0;
             this.Yreg = 0;
-            this.IR = "";
-            this.state = "";
+            this.IR = "00";
+            this.state = "ready";
             this.location = 0;
             this.Zflag = 0;
         }
 
-        public newTask(PID){
+        public newTask(PID, endOfProg, location){
             this.init(); 
             this.PID = parseInt(PID);
-            this.location = _MemoryAccessor.foundInSegment(PID)
-            this.endOfProg = _MemoryAccessor.getSegmentToEndOfProg(this.location);
-            console.log("End of Program: " + this.endOfProg);
-            _CPU.isExecuting = true;
-            this.loadToCPU();
-            _Schedular.processesInSchedular++;
-            _Schedular.addToProcessScheduler();
-            //Instead of load we add to schudluer      
+            this.location = location;
+            console.log(this.location);
+            this.endOfProg = endOfProg;
+            _Schedular.addToProcessScheduler();  
         }
 
         //State 0 is idle

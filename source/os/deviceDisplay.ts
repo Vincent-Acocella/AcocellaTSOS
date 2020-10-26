@@ -5,13 +5,13 @@ module TSOS{
         constructor() {
             this.startUpMemory();
             this.startUpCPU();
-            this.startUpPCB();
+            //this.startUpPCB();
             this.startUpSchedular();
         }
 
         public reload(){
             this.bigThread = [];
-            this.updatePCB();
+            //this.updatePCB();
             this.updateCPU();
             //this.updateMemory();
             this.updateSchedular();
@@ -88,39 +88,39 @@ module TSOS{
             }
         }
 
-        public startUpPCB(){
-            let table: HTMLTableElement = <HTMLTableElement>document.getElementById("pcb");
+        // public startUpPCB(){
+        //     let table: HTMLTableElement = <HTMLTableElement>document.getElementById("pcb");
 
-            while(table.hasChildNodes())
-            {
-                table.removeChild(table.firstChild);
-            }
+        //     while(table.hasChildNodes())
+        //     {
+        //         table.removeChild(table.firstChild);
+        //     }
 
-            let header = ["PID", "PC", "IR", "ACC", "X", "Y", "Z", "State", "Location"];
-            let row = table.insertRow(0);
-            for(let i = 0; i < header.length; i++){
-                let next = row.insertCell(i);
-                next.innerHTML = String(header[i]);
-            }
+        //     let header = ["PID", "PC", "IR", "ACC", "X", "Y", "Z", "State", "Location"];
+        //     let row = table.insertRow(0);
+        //     for(let i = 0; i < header.length; i++){
+        //         let next = row.insertCell(i);
+        //         next.innerHTML = String(header[i]);
+        //     }
 
-            let row2 = table.insertRow(1);
-            for(let i = 0; i < header.length; i++){
-                let next = row2.insertCell(i);
-                next.innerHTML = "0";
-            }
-        }
+        //     let row2 = table.insertRow(1);
+        //     for(let i = 0; i < header.length; i++){
+        //         let next = row2.insertCell(i);
+        //         next.innerHTML = "0";
+        //     }
+        // }
 
-        public updatePCB(value){
-            let table: HTMLTableElement = <HTMLTableElement>document.getElementById("pcb");
+        // public updatePCB(value){
+        //     let table: HTMLTableElement = <HTMLTableElement>document.getElementById("pcb");
 
-            table.deleteRow(1);
-            let header = _Schedular.allProcesses[value];
-            let row = table.insertRow(1);
-            for(let i = 0; i < header.length; i++){
-                let next = row.insertCell(i);
-                next.innerHTML = String(header[i]);
-            }
-        }
+        //     table.deleteRow(1);
+        //     let header = _Schedular.allProcesses[value];
+        //     let row = table.insertRow(1);
+        //     for(let i = 0; i < header.length; i++){
+        //         let next = row.insertCell(i);
+        //         next.innerHTML = String(header[i]);
+        //     }
+        // }
 
         public startUpSchedular(){
             let table: HTMLTableElement = <HTMLTableElement>document.getElementById("processeList");

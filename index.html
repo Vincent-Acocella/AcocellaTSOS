@@ -24,6 +24,8 @@
    <script type="text/javascript" src="distrib/host/memoryAccessor.js"></script>
 
    <!-- Virtual OS Routines: Make sure Kernel code is last, since it needs those above it. -->
+   
+   <script type="text/javascript" src="distrib/os/memoryManager.js"></script>
    <script type="text/javascript" src="distrib/os/interrupt.js"></script>
    <script type="text/javascript" src="distrib/os/canvastext.js"></script>
    <script type="text/javascript" src="distrib/os/console.js"></script>
@@ -32,11 +34,12 @@
    <script type="text/javascript" src="distrib/os/deviceDriverKeyboard.js"></script>
    <script type="text/javascript" src="distrib/os/queue.js"></script>
    <script type="text/javascript" src="distrib/os/processControlBlock.js"></script>
+   <script type="text/javascript" src="distrib/os/schedular.js"></script>
    <script type="text/javascript" src="distrib/os/shell.js"></script>
    <script type="text/javascript" src="distrib/os/shellCommand.js"></script>
    <script type="text/javascript" src="distrib/os/userCommand.js"></script>
-   <script type="text/javascript" src="distrib/os/memoryManager.js"></script>
-   <script type="text/javascript" src="distrib/os/schedular.js"></script>
+   
+   
    <script type="text/javascript" src="distrib/os/kernel.js"></script>
 
    <!-- Other Routines -->
@@ -134,7 +137,7 @@
          </label>
       </div>
 
-      <div id="procConBl">
+      <!-- <div id="procConBl">
          <label>
             Process
             <br>
@@ -144,7 +147,7 @@
                    style="color: black; display: block; height: 55px; width: 290px;"
             ></table>
          </label>
-      </div>
+      </div> -->
   
 
       <div>
