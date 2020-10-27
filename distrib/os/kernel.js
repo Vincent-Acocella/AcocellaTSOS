@@ -120,9 +120,17 @@ var TSOS;
                     _StdIn.handleInput();
                     break;
                 case PRINT_YREGInt_ERQ:
-                    _StdOut.putText(_CPU.Yreg); //Print Int from register 
+                    _StdOut.putText(_CPU.Yreg.toString()); //Print Int from register 
                     break;
                 case TERMINATE_STRING:
+                    // let output = "";
+                    // let address = _CPU.Yreg;
+                    // let value = TSOS.Utils.toHex(_MemoryAccessor.read(_CPU.PCB.memorySegment, address));
+                    // while (value !== 0) {
+                    //     output += String.fromCharCode(value);
+                    //     value = parseInt(_MemoryAccessor.read(_CPU.PCB.memorySegment, ++address), 16);
+                    // }
+                    // _StdOut.putText(output);
                     _StdOut.putText(_CPU.Yreg); //Print String from Y register
                     break;
                 case STOP_EXEC_IRQ:

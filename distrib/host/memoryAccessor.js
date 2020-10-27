@@ -24,12 +24,18 @@ var TSOS;
         };
         MemoryAccessor.prototype.getNextAvaliableMemSeg = function () {
             if (!this.segsInUse[0]) {
+                this.segsInUse[0] = true;
+                console.log("SEGMENT SHOULD BE EQUAL TO 1");
                 return 1;
             }
             else if (!this.segsInUse[1]) {
+                this.segsInUse[1] = true;
+                console.log("SEGMENT SHOULD BE EQUAL TO 2");
                 return 2;
             }
             else if (!this.segsInUse[2]) {
+                console.log("SEGMENT SHOULD BE EQUAL TO 3");
+                this.segsInUse[2] = true;
                 return 3;
             }
             else {
@@ -48,6 +54,11 @@ var TSOS;
             }
             return -1;
             ;
+        };
+        MemoryAccessor.prototype.iterateProgsInMem = function () {
+            this.progInMem++;
+            console.log("Prog is iterated to: " + this.progInMem);
+            return this.progInMem;
         };
         return MemoryAccessor;
     }());

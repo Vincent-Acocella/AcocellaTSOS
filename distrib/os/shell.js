@@ -324,6 +324,7 @@ var TSOS;
         };
         Shell.prototype.shellClearMem = function (args) {
             _Memory.init();
+            _MemoryAccessor.segsInUse = [false, false, false];
             _StdOut.putText("Memory Cleared");
         };
         //Run all programs at once
@@ -333,7 +334,8 @@ var TSOS;
         //Display the PID and State of all processes
         Shell.prototype.shellPS = function (args) {
             for (var i = 0; i < _Schedular.processesInSchedular; i++) {
-                _StdOut.putText(_Schedular.allProcesses[i][0]);
+                _StdOut.putText("Process ID : " + _Schedular.allProcesses[i][0] + " State: " + _Schedular.allProcesses[i][7]);
+                _StdOut.advanceLine();
             }
         };
         //kill one process

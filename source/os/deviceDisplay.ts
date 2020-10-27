@@ -5,31 +5,34 @@ module TSOS{
         constructor() {
             this.startUpMemory();
             this.startUpCPU();
-            //this.startUpPCB();
             this.startUpSchedular();
         }
 
         public reload(){
             this.bigThread = [];
             //this.updatePCB();
-            this.updateCPU();
+            //his.updateCPU();
             //this.updateMemory();
-            this.updateSchedular();
+           // this.updateSchedular();
         }
 
-        public updateMemory(index){
+        public updateMemory(index, seg){
+            //index is the spot in memory
+            let table: HTMLTableElement = <HTMLTableElement> document.getElementById('memoryUnit');
+            let rowNum = ((seg-1) * 32 + Math.floor(index/8));
+            let colNum = index % 8;
+            let newValue = _Memory.memoryThread[_MemoryAccessor.currentSegment];
 
-            // let table: HTMLTableElement = <HTMLTableElement> document.getElementById('memoryUnit');
-            // let currentSegment = _MemoryManager.segNum;
+            table.deleteRow(rowNum);
+            let row = table.insertRow(rowNum);
 
-            // let rowNum = ((currentSegment-1) * 32 + Math.floor(index/8));
-            // console.log(rowNum);
-            // let colNum = index % 8;
-            // console.log(colNum);
-            //let newValue = _Memory.memoryThread[currentSegment][index];
-            //console.log("Value: " + newValue + " Is being added at Index: " + index);
-
-           // table.rows[rowNum].cells.item(colNum).innerHTML = newValue.toString();
+            for(let i = rowNum; i < rowNum + 8; i++ ){
+                if(i === colNum){
+                    row.insertCell(i).innerHTML = newValue;
+                }else{
+                    row.insertCell(i).innerHTML = _Memory.memoryThread[rowNum][i];
+                }  
+            }
         }
 
         public startUpMemory(){
@@ -88,40 +91,6 @@ module TSOS{
             }
         }
 
-        // public startUpPCB(){
-        //     let table: HTMLTableElement = <HTMLTableElement>document.getElementById("pcb");
-
-        //     while(table.hasChildNodes())
-        //     {
-        //         table.removeChild(table.firstChild);
-        //     }
-
-        //     let header = ["PID", "PC", "IR", "ACC", "X", "Y", "Z", "State", "Location"];
-        //     let row = table.insertRow(0);
-        //     for(let i = 0; i < header.length; i++){
-        //         let next = row.insertCell(i);
-        //         next.innerHTML = String(header[i]);
-        //     }
-
-        //     let row2 = table.insertRow(1);
-        //     for(let i = 0; i < header.length; i++){
-        //         let next = row2.insertCell(i);
-        //         next.innerHTML = "0";
-        //     }
-        // }
-
-        // public updatePCB(value){
-        //     let table: HTMLTableElement = <HTMLTableElement>document.getElementById("pcb");
-
-        //     table.deleteRow(1);
-        //     let header = _Schedular.allProcesses[value];
-        //     let row = table.insertRow(1);
-        //     for(let i = 0; i < header.length; i++){
-        //         let next = row.insertCell(i);
-        //         next.innerHTML = String(header[i]);
-        //     }
-        // }
-
         public startUpSchedular(){
             let table: HTMLTableElement = <HTMLTableElement>document.getElementById("processeList");
 
@@ -129,6 +98,7 @@ module TSOS{
             {
                 table.removeChild(table.firstChild);
             }
+
             let header = ["PID", "PC", "ACC", "X", "Y", "Z", "IR", "State", "Location"];
 
             let row = table.insertRow(0);
@@ -137,16 +107,22 @@ module TSOS{
                 next.innerHTML = String(header[i]);
             }
 
+            for(let i = 1; i < 8; i++){
+                let row = table.insertRow(i)
+                for(let j = 0; j < header.length; j++){
+                    row.insertCell(j).innerHTML = "";
+                }
+            }
             //Look at schedule table
         }
-        public updateSchedular(){
+
+        public updateSchedular(PID){
             let table: HTMLTableElement = <HTMLTableElement>document.getElementById("processeList");
-            for(let i = 1; i < _Schedular.processesInSchedular; i++){
-                table.deleteRow(i);
-                let row = table.insertRow(i);
-                for(let j = 0; j < 9; j++){
-                    row.insertCell(j).innerHTML = _Schedular.allProcesses[i][j];
-                }
+            console.log()
+            table.deleteRow(PID+1);
+            let row = table.insertRow(PID+1);
+            for(let j = 0; j < 9; j++){
+                row.insertCell(j).innerHTML = _Schedular.allProcesses[PID][j];
             }
         }
     }

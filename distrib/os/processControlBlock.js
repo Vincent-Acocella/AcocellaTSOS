@@ -1,7 +1,7 @@
 var TSOS;
 (function (TSOS) {
     var ProcessControlBlock = /** @class */ (function () {
-        function ProcessControlBlock(PID, PC, Acc, Xreg, Yreg, Zflag, IR, endOfProg, state, location) {
+        function ProcessControlBlock(PID, PC, Acc, Xreg, Yreg, Zflag, IR, state, location, endOfProg) {
             if (PID === void 0) { PID = 0; }
             if (PC === void 0) { PC = 0; }
             if (Acc === void 0) { Acc = 0; }
@@ -9,9 +9,9 @@ var TSOS;
             if (Yreg === void 0) { Yreg = 0; }
             if (Zflag === void 0) { Zflag = 0; }
             if (IR === void 0) { IR = ""; }
-            if (endOfProg === void 0) { endOfProg = 0; }
             if (state === void 0) { state = "none"; }
             if (location === void 0) { location = 0; }
+            if (endOfProg === void 0) { endOfProg = 0; }
             this.PID = PID;
             this.PC = PC;
             this.Acc = Acc;
@@ -19,9 +19,9 @@ var TSOS;
             this.Yreg = Yreg;
             this.Zflag = Zflag;
             this.IR = IR;
-            this.endOfProg = endOfProg;
             this.state = state;
             this.location = location;
+            this.endOfProg = endOfProg;
         }
         ProcessControlBlock.prototype.init = function () {
             this.PC = 0;
@@ -37,9 +37,7 @@ var TSOS;
             this.init();
             this.PID = parseInt(PID);
             this.location = location;
-            console.log(this.location);
             this.endOfProg = endOfProg;
-            console.log(_Schedular.allProcesses[0][0].toString());
             _Schedular.addToProcessScheduler();
         };
         //State 0 is idle
@@ -64,7 +62,7 @@ var TSOS;
             _CPU.endOfProg = this.endOfProg;
         };
         ProcessControlBlock.prototype.returnPCB = function () {
-            return [this.PID, this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag, this.state, this.location];
+            return [this.PID, this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag, this.state, this.location, this.endOfProg];
         };
         ProcessControlBlock.prototype.addToPCB = function (PID, PC, Zflag, Yreg, Xreg, IR) {
             this.PID = PID;

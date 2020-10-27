@@ -5,26 +5,31 @@ var TSOS;
             this.bigThread = [];
             this.startUpMemory();
             this.startUpCPU();
-            //this.startUpPCB();
             this.startUpSchedular();
         }
         DeviceDisplay.prototype.reload = function () {
             this.bigThread = [];
             //this.updatePCB();
-            this.updateCPU();
+            //his.updateCPU();
             //this.updateMemory();
-            this.updateSchedular();
+            // this.updateSchedular();
         };
-        DeviceDisplay.prototype.updateMemory = function (index) {
-            // let table: HTMLTableElement = <HTMLTableElement> document.getElementById('memoryUnit');
-            // let currentSegment = _MemoryManager.segNum;
-            // let rowNum = ((currentSegment-1) * 32 + Math.floor(index/8));
-            // console.log(rowNum);
-            // let colNum = index % 8;
-            // console.log(colNum);
-            //let newValue = _Memory.memoryThread[currentSegment][index];
-            //console.log("Value: " + newValue + " Is being added at Index: " + index);
-            // table.rows[rowNum].cells.item(colNum).innerHTML = newValue.toString();
+        DeviceDisplay.prototype.updateMemory = function (index, seg) {
+            //index is the spot in memory
+            var table = document.getElementById('memoryUnit');
+            var rowNum = ((seg - 1) * 32 + Math.floor(index / 8));
+            var colNum = index % 8;
+            var newValue = _Memory.memoryThread[_MemoryAccessor.currentSegment];
+            table.deleteRow(rowNum);
+            var row = table.insertRow(rowNum);
+            for (var i = rowNum; i < rowNum + 8; i++) {
+                if (i === colNum) {
+                    row.insertCell(i).innerHTML = newValue;
+                }
+                else {
+                    row.insertCell(i).innerHTML = _Memory.memoryThread[rowNum][i];
+                }
+            }
         };
         DeviceDisplay.prototype.startUpMemory = function () {
             var table = document.getElementById('memoryUnit');
@@ -73,34 +78,6 @@ var TSOS;
                 next.innerHTML = String(header[i]);
             }
         };
-        // public startUpPCB(){
-        //     let table: HTMLTableElement = <HTMLTableElement>document.getElementById("pcb");
-        //     while(table.hasChildNodes())
-        //     {
-        //         table.removeChild(table.firstChild);
-        //     }
-        //     let header = ["PID", "PC", "IR", "ACC", "X", "Y", "Z", "State", "Location"];
-        //     let row = table.insertRow(0);
-        //     for(let i = 0; i < header.length; i++){
-        //         let next = row.insertCell(i);
-        //         next.innerHTML = String(header[i]);
-        //     }
-        //     let row2 = table.insertRow(1);
-        //     for(let i = 0; i < header.length; i++){
-        //         let next = row2.insertCell(i);
-        //         next.innerHTML = "0";
-        //     }
-        // }
-        // public updatePCB(value){
-        //     let table: HTMLTableElement = <HTMLTableElement>document.getElementById("pcb");
-        //     table.deleteRow(1);
-        //     let header = _Schedular.allProcesses[value];
-        //     let row = table.insertRow(1);
-        //     for(let i = 0; i < header.length; i++){
-        //         let next = row.insertCell(i);
-        //         next.innerHTML = String(header[i]);
-        //     }
-        // }
         DeviceDisplay.prototype.startUpSchedular = function () {
             var table = document.getElementById("processeList");
             while (table.hasChildNodes()) {
@@ -112,16 +89,20 @@ var TSOS;
                 var next = row.insertCell(i);
                 next.innerHTML = String(header[i]);
             }
+            for (var i = 1; i < 8; i++) {
+                var row_1 = table.insertRow(i);
+                for (var j = 0; j < header.length; j++) {
+                    row_1.insertCell(j).innerHTML = "";
+                }
+            }
             //Look at schedule table
         };
-        DeviceDisplay.prototype.updateSchedular = function () {
+        DeviceDisplay.prototype.updateSchedular = function (PID) {
             var table = document.getElementById("processeList");
-            for (var i = 1; i < _Schedular.processesInSchedular; i++) {
-                table.deleteRow(i);
-                var row = table.insertRow(i);
-                for (var j = 0; j < 9; j++) {
-                    row.insertCell(j).innerHTML = _Schedular.allProcesses[i][j];
-                }
+            table.deleteRow(PID + 1);
+            var row = table.insertRow(PID + 1);
+            for (var j = 0; j < 9; j++) {
+                row.insertCell(j).innerHTML = _Schedular.allProcesses[PID][j];
             }
         };
         return DeviceDisplay;

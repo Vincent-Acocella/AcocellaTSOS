@@ -10,9 +10,9 @@ module TSOS{
                     public Yreg: number = 0,
                     public Zflag: number = 0,
                     public IR: string = "",
-                    public endOfProg: number =0,  
                     public state: string = "none",
-                    public location: number = 0
+                    public location: number = 0,
+                    public endOfProg: number = 0
                     ) {
         }
 
@@ -31,8 +31,8 @@ module TSOS{
             this.init(); 
             this.PID = parseInt(PID);
             this.location = location;
-            console.log(this.location);
             this.endOfProg = endOfProg;
+        
             _Schedular.addToProcessScheduler();  
         }
 
@@ -61,7 +61,7 @@ module TSOS{
         }
 
         public returnPCB(){
-            return [this.PID, this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag, this.state, this.location];
+            return [this.PID, this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag, this.state, this.location, this.endOfProg];
         }
 
         public addToPCB(PID: number, PC:number, Zflag:number, Yreg:number, Xreg:number, IR:string){

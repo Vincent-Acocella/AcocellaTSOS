@@ -4,20 +4,22 @@ module TSOS{
         //across
         // 0 = progNumber
         // 1 = PC
-        // 2 = ACC
-        // 3 = Xreg
-        // 4 = YReg
-        // 5 = ZReg
-        // 6 = IR
-        // 8 = state
-        // 9 = location
+        // 2 = IR
+        // 3 = ACC
+        // 4 = Xreg
+        // 5 = YReg
+        // 6 = ZReg
+        // 7 = state
+        // 8 = location
+        // 9 =  end of prog
+
+        //this.PID, this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag, this.state, this.location, this.endOfProg
         public singleProcess = [];
         public allProcesses = [[],[]];
         public quant = 6;
         public segInUse = [];
         public processesInSchedular = 0;
         public readyQueue = [];
-        public readyPointer = -1;
         
         constructor(
             //line Up Process id with index of all processes
@@ -32,19 +34,19 @@ module TSOS{
             this.quant =_Quant;
         }
 
-
         public switchMem(){
-            //get current segment
-            //Go to the next segment 
-            this.refreshQuant();
-
-            if(this.readyQueue[this.readyPointer]){
+            
+            if(this.readyQueue.length > 0){
+                this.queueReadyQueue(this.dequeueReadyQueue());
+                this.refreshQuant();
                 //Gets PID of next segment
                  //Switch process
                  _PCB.state = "Waiting";
+
                 this.deployToCPU(); 
             }else{
-                //Done
+                _StdOut.putText("All processes Complete");
+                _CPU.isExecuting = false;
             }
             //This is the main function of the schedular
             //First, look at quant
@@ -52,17 +54,18 @@ module TSOS{
         }
 
         public addToProcessScheduler(){
-            this.singleProcess = _PCB.returnPCB();
+            this.processesInSchedular++;
+            this.singleProcess = _PCB.returnPCB().splice(0);
             let PID = this.singleProcess[0];
             this.allProcesses[PID] = this.singleProcess.splice(0);
-            console.log(this.allProcesses[PID].toString());
-            this.readyQueue[this.readyPointer+1] = PID;
-            _DeviceDisplay.updateSchedular();
+        
+            //Adds to ready queue
+            this.queueReadyQueue(PID);
+            _DeviceDisplay.updateSchedular(PID);
         }
 
         public deployToCPU(){
-
-            let PID = this.readyQueue[this.readyPointer];
+            let PID = this.readyQueue[0];
             this.allProcesses[PID][8] = "Executing";
 
             _DeviceDisplay.updateSchedular();
@@ -72,20 +75,18 @@ module TSOS{
                 this.allProcesses[PID][4],
                 this.allProcesses[PID][5],
                 this.allProcesses[PID][6],
-                this.allProcesses[PID][7])
+                this.allProcesses[PID][7],
+                this.allProcesses[PID][9])
+                _DeviceDisplay.updateSchedular(PID);
         }
 
        public checkIfSwitch(){
-
             if( _Schedular.quant === 0){
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TIMER_IRQ, ["Switching Memory"]));
             }else{
-                //killed
                     _Schedular.quant--;
-                //Decrease the quant means we are staying in the same process
             }
         }
-
         public programEnded(PID){
 
             this.allProcesses[PID][8] = "Terminated";
@@ -94,21 +95,50 @@ module TSOS{
         }
 
         public kill(PID){
+            let flag = false;
+            let i = 0;
+
+            while(i < this.readyQueue.length && !flag){
+                let temp = this.dequeueReadyQueue(); 
+                if (PID === temp){
+                    flag = true;
+                }else{
+                    this.queueReadyQueue(temp);
+                    i++;
+                }
+            }
+
+            //Put it back into order
+            for(let j = 0; j < i; j++){
+                this.queueReadyQueue(this.dequeueReadyQueue());
+            }
             this.allProcesses[PID][8] = "Terminated";
         }
 
         public killAll(){
-            for(let i = 0; i < this.processesInSchedular; i++){
-                this.kill(i);
+            for(let i = 0; i < this.readyQueue.length; i++){
+                this.allProcesses[this.readyQueue[i]][8] = "terminated";
+                this.dequeueReadyQueue();
             }
         }
 
-        public terminateCurrentProcess(){
-            this.allProcesses[this.readyQueue[0]][8] = "Terminated";
-            if(this.readyQueue[1]){
-                this.readyQueue[0] = this.readyQueue[1];
-                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TIMER_IRQ, ["Switching Memory"]));
+        public queueReadyQueue(value){
+            this.readyQueue.push(value);
+        } 
+
+        public dequeueReadyQueue(){
+            let retVal = null;
+            if (this.readyQueue.length > 0) {
+                retVal = this.readyQueue.shift();
             }
+            return retVal;
+        }
+
+        public terminateCurrentProcess(){
+            this.allProcesses[this.readyQueue[0]][8] = "Complete";
+            this.dequeueReadyQueue();
+            _DeviceDisplay[this.dequeueReadyQueue()];
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TIMER_IRQ, ["Switching Memory"]));
         }
     }
 }

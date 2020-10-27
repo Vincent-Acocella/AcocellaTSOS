@@ -2,7 +2,7 @@ module TSOS{
     export class MemoryAccessor{
         public progInMem = -1;
         public currentSegment = 1;
-        public segsInUse = [false,false,false];
+        public segsInUse = [false, false, false];
         public progToSegMap = [-1,-1,-1];
         constructor() {
         }
@@ -25,11 +25,20 @@ module TSOS{
 
         public getNextAvaliableMemSeg(){
             if(!this.segsInUse[0]){
+                this.segsInUse[0] = true;
+                console.log("SEGMENT SHOULD BE EQUAL TO 1");
                 return 1;
+
             }else if(!this.segsInUse[1]){
+                this.segsInUse[1] = true;
+                console.log("SEGMENT SHOULD BE EQUAL TO 2");
                 return 2;
+
             }else if(!this.segsInUse[2]){
+                console.log("SEGMENT SHOULD BE EQUAL TO 3");
+                this.segsInUse[2] = true;
                 return 3;
+
             }else{
                 return -1;
             }
@@ -48,6 +57,10 @@ module TSOS{
             }
             return -1;;
         }
-
+        public iterateProgsInMem(){
+            this.progInMem++
+            console.log("Prog is iterated to: "+ this.progInMem);
+            return this.progInMem;
+        }
     }
 }

@@ -405,6 +405,7 @@ module TSOS {
         }
         public shellClearMem(args: String[]){
             _Memory.init();
+            _MemoryAccessor.segsInUse = [false,false,false];
             _StdOut.putText("Memory Cleared");
         }
 
@@ -416,7 +417,8 @@ module TSOS {
         //Display the PID and State of all processes
         public shellPS(args: String[]){
             for(let i = 0; i < _Schedular.processesInSchedular; i++){
-                _StdOut.putText(_Schedular.allProcesses[i][0]);
+                _StdOut.putText( "Process ID : "+ _Schedular.allProcesses[i][0] + " State: " + _Schedular.allProcesses[i][7]);
+                _StdOut.advanceLine();
             }
         }
 

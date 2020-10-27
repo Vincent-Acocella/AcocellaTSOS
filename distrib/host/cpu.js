@@ -13,7 +13,7 @@
 var TSOS;
 (function (TSOS) {
     var Cpu = /** @class */ (function () {
-        function Cpu(PC, Acc, Xreg, Yreg, Zflag, IR, endOfProg, bytesNeeded, isExecuting) {
+        function Cpu(PC, Acc, Xreg, Yreg, Zflag, IR, endOfProg, location, bytesNeeded, isExecuting) {
             if (PC === void 0) { PC = 0; }
             if (Acc === void 0) { Acc = 0; }
             if (Xreg === void 0) { Xreg = 0; }
@@ -21,6 +21,7 @@ var TSOS;
             if (Zflag === void 0) { Zflag = 0; }
             if (IR === void 0) { IR = "0"; }
             if (endOfProg === void 0) { endOfProg = 0; }
+            if (location === void 0) { location = 0; }
             if (bytesNeeded === void 0) { bytesNeeded = 0; }
             if (isExecuting === void 0) { isExecuting = false; }
             this.PC = PC;
@@ -30,6 +31,7 @@ var TSOS;
             this.Zflag = Zflag;
             this.IR = IR;
             this.endOfProg = endOfProg;
+            this.location = location;
             this.bytesNeeded = bytesNeeded;
             this.isExecuting = isExecuting;
         }
@@ -41,16 +43,18 @@ var TSOS;
             this.Zflag = 0;
             this.IR = "";
             this.endOfProg = 0;
+            this.location = 0;
             this.bytesNeeded = 0;
             this.isExecuting = false;
         };
-        Cpu.prototype.loadCPU = function (PC, Acc, Xreg, Yreg, Zflag, IR, endOfProg) {
+        Cpu.prototype.loadCPU = function (PC, IR, Acc, Xreg, Yreg, Zflag, location, endOfProg) {
             this.PC = PC;
             this.Acc = Acc;
             this.Xreg = Xreg;
             this.Yreg = Yreg;
             this.Zflag = Zflag;
             this.IR = IR;
+            this.location = location;
             this.endOfProg = endOfProg;
         };
         Cpu.prototype.cycle = function () {
@@ -66,15 +70,16 @@ var TSOS;
                 this.PC += moveThatBus;
             }
             if (this.PC > this.endOfProg) {
-                this.isExecuting = false;
                 _Schedular.terminateCurrentProcess();
                 // _PCB.state = 3;
             }
-            _PCB.updatePCB();
-            _DeviceDisplay.updatePCB();
-            _DeviceDisplay.updateCPU();
-            if (_Schedular.readyQueue.length !== 1) {
-                _Schedular.checkIfSwitch();
+            else {
+                _PCB.updatePCB();
+                _DeviceDisplay.updateSchedular(this.PC);
+                _DeviceDisplay.updateCPU();
+                if (_Schedular.readyQueue.length !== 1) {
+                    _Schedular.checkIfSwitch();
+                }
             }
         };
         Cpu.prototype.fetch = function (code) {
@@ -148,9 +153,6 @@ var TSOS;
         Cpu.prototype.loadAccFrmMem = function (value) {
             this.bytesNeeded = 3;
             if (_MemoryManager.fetchCurrentMemory(value + 2).match("00")) {
-                //Load accumulator from memory means that we are taking the location in memory and returning the value to the Accumulator
-                //Location 10 for example is the start position -10
-                //FIX FIX FIX
                 var numInMem = this.convToHex(_MemoryManager.fetchCurrentMemory(value + 1));
                 this.Acc = this.convToHex(_MemoryManager.fetchCurrentMemory([numInMem]));
             }
@@ -269,7 +271,7 @@ var TSOS;
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_STRING, ["Printing String from Y register"]));
         };
         Cpu.prototype.returnCPU = function () {
-            return [this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag];
+            return [this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag, this.endOfProg, this.location];
         };
         Cpu.prototype.finsihedProg = function () {
             this.isExecuting = (this.PC < this.endOfProg) ? true : false;

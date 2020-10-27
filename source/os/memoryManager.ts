@@ -14,9 +14,9 @@ module TSOS{
 
                 //Write memory into desired segment
                 if(this.segNum > 0){
-                    _MemoryAccessor.progInMem++;
-                    let newProg = _MemoryAccessor.progInMem;
-                    for(let i = 0; i < usrProg.length; i+=3){
+                    
+                    let newProg = _MemoryAccessor.iterateProgsInMem();
+                    for(let i = 0; i < usrProg.length; i += 3){
                         //Concats opcode
                         let code:string = usrProg.charAt(i)+usrProg.charAt(i+1);
                         _MemoryAccessor.write(code);
@@ -25,9 +25,6 @@ module TSOS{
                     //Used for the CPU
                     _PCB.endOfProg = _Memory.endIndex;
                     _PCB.location = this.segNum;
-
-                    //Switch the segment on
-                    _MemoryAccessor.segmentsInUseSwitch(this.segNum);
 
                     switch(this.segNum){
                         case 1:
@@ -41,15 +38,6 @@ module TSOS{
                             break;
                         default:
                     }
-                    
-
-                    // console.log("Memory end index:  " + _Memory.endIndex);
-                    // for(let i = 0; i< _Memory.endIndex; i++){
-                    //     if(i % 9 !== 0){
-                    //         _DeviceDisplay.updateMemory(i);
-                    //     }
-                        
-                    // }
 
                     this.stationaryThread = [];
 
@@ -61,6 +49,7 @@ module TSOS{
                     return newProg;
                 }else{
                     _StdOut.putText("NO AVALIABLE MEMORY");
+                    _StdOut.advanceLine();
                     return -1;
                 }
         }
@@ -76,37 +65,8 @@ module TSOS{
 
         public runAllMemory(){
             _RoundRobin = true;
-            let size = _MemoryAccessor.progInMem;
-            //Add all to Schedular 
-            for(let i = 0; i < size; i++){
-                this.runMemory(i);
-            }
             //Look at the first segment and load it in the cpu
             _Schedular.deployToCPU();
-        }
-        
-        public fetchCurrentMemory(index): string{
-            switch(_MemoryAccessor.currentSegment){
-                case 1:
-                    return _Memory.memoryThread1[index];
-                case 2:
-                    return _Memory.memoryThread2[index];
-                case 3:
-                    return _Memory.memoryThread3[index];
-            }
-        }
-        public storeCurrentMemory(index, val){
-            switch(_MemoryAccessor.currentSegment){
-                case 1:
-                    _Memory.memoryThread1[index] = val;
-                    break;
-                case 2:
-                    _Memory.memoryThread2[index] = val;
-                    break;
-                case 3:
-                    _Memory.memoryThread3[index] = val;
-                    break;
-            }
         }
     }
 }

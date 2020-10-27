@@ -20,6 +20,7 @@ module TSOS {
                     public Zflag: number = 0,
                     public IR: string = "0",
                     public endOfProg = 0,
+                    public location = 0,
                     public bytesNeeded = 0,
                     public isExecuting: boolean = false) {
         }
@@ -32,19 +33,22 @@ module TSOS {
             this.Zflag = 0;
             this.IR = "";
             this.endOfProg = 0;
+            this.location = 0;
             this.bytesNeeded = 0;
             this.isExecuting = false;
         }
 
-        public loadCPU(PC, Acc, Xreg, Yreg, Zflag, IR, endOfProg){
+        public loadCPU(PC, IR, Acc, Xreg, Yreg, Zflag, location, endOfProg){
             this.PC = PC;
             this.Acc = Acc;
             this.Xreg = Xreg;
             this.Yreg = Yreg;
             this.Zflag = Zflag;
             this.IR = IR;
+            this.location = location
             this.endOfProg = endOfProg;
         }
+       
 
         public cycle(): void {
             console.log("Current end of proh as recognized by the CPU: " + this.endOfProg);
@@ -60,17 +64,16 @@ module TSOS {
             }
 
             if(this.PC > this.endOfProg){
-                this.isExecuting = false;
                 _Schedular.terminateCurrentProcess();
                 // _PCB.state = 3;
-            }
+            }else{
+                _PCB.updatePCB(); 
+                _DeviceDisplay.updateSchedular(this.PC);
+                _DeviceDisplay.updateCPU();
 
-            _PCB.updatePCB();
-            _DeviceDisplay.updatePCB();
-            _DeviceDisplay.updateCPU();
-
-            if(_Schedular.readyQueue.length !== 1){
-                _Schedular.checkIfSwitch();
+                if(_Schedular.readyQueue.length !== 1){
+                    _Schedular.checkIfSwitch();
+                }
             }
         }
 
@@ -161,9 +164,6 @@ module TSOS {
         private loadAccFrmMem(value) {
             this.bytesNeeded = 3;
             if(_MemoryManager.fetchCurrentMemory(value+2).match("00")){
-                //Load accumulator from memory means that we are taking the location in memory and returning the value to the Accumulator
-                //Location 10 for example is the start position -10
-                //FIX FIX FIX
                let numInMem = this.convToHex(_MemoryManager.fetchCurrentMemory(value+1));
                this.Acc = this.convToHex(_MemoryManager.fetchCurrentMemory([numInMem]));
             }else{
@@ -289,7 +289,7 @@ module TSOS {
         }
 
         public returnCPU(){
-            return [this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag];
+            return [this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag, this.endOfProg, this.location];
         }
 
         private finsihedProg(){
