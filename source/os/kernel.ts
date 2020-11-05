@@ -134,7 +134,7 @@ module TSOS {
                     break;
 
                 case STOP_EXEC_IRQ:
-                    _PCB.terminate();
+                    //_PCB.terminate();
                     break;
 
                 default:

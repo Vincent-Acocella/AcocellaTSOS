@@ -2,16 +2,23 @@ var TSOS;
 (function (TSOS) {
     var Memory = /** @class */ (function () {
         function Memory() {
+            this.memorySegment0 = [];
+            this.memorySegment1 = [];
+            this.memorySegment2 = [];
             this.memoryThread = [];
+            this.memorySegment0 = [];
+            this.memorySegment1 = [];
+            this.memorySegment2 = [];
             this.memoryThread = [];
-            this.endIndex = 0;
             this.init();
         }
         Memory.prototype.init = function () {
             for (var i = 0; i < 256; i++) {
-                this.memoryThread[i] = "00";
+                this.memorySegment0[i] = "00";
+                this.memorySegment1[i] = "00";
+                this.memorySegment2[i] = "00";
             }
-            this.endIndex = 0;
+            this.memoryThread = [this.memorySegment0, this.memorySegment1, this.memorySegment2];
         };
         return Memory;
     }());

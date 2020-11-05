@@ -1,20 +1,25 @@
 module TSOS {
     export class Memory {
-        public memoryThread= [];
-        public endIndex;
-
+        public memorySegment0 = [];
+        public memorySegment1 = [];
+        public memorySegment2 = [];
+        public memoryThread = [];
 
         constructor() {
+            this.memorySegment0 = [];
+            this.memorySegment1 = [];
+            this.memorySegment2 = [];
             this.memoryThread = [];
-            this.endIndex = 0;
             this.init();
         }
 
         public init() {
             for (let i = 0; i < 256; i++) {
-                this.memoryThread[i] = "00";
+                this.memorySegment0[i] = "00";
+                this.memorySegment1[i] = "00";
+                this.memorySegment2[i] = "00";
             }
-            this.endIndex = 0;
+            this.memoryThread = [this.memorySegment0, this.memorySegment1, this.memorySegment2];
         }
     }
 }

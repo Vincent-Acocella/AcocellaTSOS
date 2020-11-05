@@ -62,9 +62,22 @@ var TSOS;
             this.commandList[this.commandList.length] = sc;
             sc = new TSOS.ShellCommand(this.shellRun, "run", "- runCode");
             this.commandList[this.commandList.length] = sc;
-            // ps  - list the running processes and their IDs
-            // kill <id> - kills the specified process id.
-            // Display the initial prompt.
+            /*
+                Complete all from below
+    
+            */
+            sc = new TSOS.ShellCommand(this.shellRunAll, "runall", "- runCode");
+            this.commandList[this.commandList.length] = sc;
+            sc = new TSOS.ShellCommand(this.shellClearMem, "clearmem", "- runCode");
+            this.commandList[this.commandList.length] = sc;
+            sc = new TSOS.ShellCommand(this.shellPS, "ps", "- runCode");
+            this.commandList[this.commandList.length] = sc;
+            sc = new TSOS.ShellCommand(this.shellKillAll, "killall", "- runCode");
+            this.commandList[this.commandList.length] = sc;
+            sc = new TSOS.ShellCommand(this.shellKill, "kill", "- runCode");
+            this.commandList[this.commandList.length] = sc;
+            sc = new TSOS.ShellCommand(this.shellQuantum, "quantum", "- runCode");
+            this.commandList[this.commandList.length] = sc;
         };
         Shell.prototype.putPrompt = function () {
             _StdOut.putText(this.promptStr);
@@ -281,14 +294,20 @@ var TSOS;
             if (program.length > 0) {
                 //removes sequential space
                 program = program.replace(/\s+/g, " ").trim();
-                if (!program.match(/^[a-fA-F0-9\s]+$/)) {
-                    _StdOut.putText("The file you entered is not in hexidecimal format.");
+                if (!program.match(/^[a-fA-F0-9\s]+$/) && !(program.length > 256)) {
+                    _StdOut.putText("The file you entered is not in appropriete format.");
+                    _StdOut.advanceLine();
+                    _StdOut.putText("Input greater than 256 or hexidecimal format");
                 }
                 else {
-                    // _StdOut.putText("The file you entered has the wrong amount of chars.");
                     var progNum = _MemoryManager.loadMemory(program);
-                    _StdOut.putText("Type 'run " + progNum + "' To run code");
-                    _DeviceDisplay.updateMemory();
+                    if (progNum < 0) {
+                        _StdOut.putText("No avaliable memory for use");
+                    }
+                    else {
+                        _StdOut.putText("Type 'run " + progNum + "' To run code");
+                        _DeviceDisplay.updateMemory();
+                    }
                 }
             }
             else {
@@ -304,6 +323,18 @@ var TSOS;
             else {
                 _StdOut.putText("ERROR MESSAGE GOES HERE");
             }
+        };
+        Shell.prototype.shellRunAll = function () {
+        };
+        Shell.prototype.shellClearMem = function () {
+        };
+        Shell.prototype.shellPS = function () {
+        };
+        Shell.prototype.shellKillAll = function () {
+        };
+        Shell.prototype.shellKill = function () {
+        };
+        Shell.prototype.shellQuantum = function () {
         };
         return Shell;
     }());

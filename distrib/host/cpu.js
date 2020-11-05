@@ -242,7 +242,7 @@ var TSOS;
                     _CPU.printStringYReg();
                     break;
                 default:
-                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(STOP_EXEC_IRQ, ["Invalid system call operation, stoping execution."]));
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_STRING, ["Invalid system call operation, stoping execution."]));
             }
         };
         Cpu.prototype.printIntYReg = function () {
@@ -252,13 +252,10 @@ var TSOS;
         Cpu.prototype.printStringYReg = function () {
             // #$02 in X reg = print the 00-terminated string stored at the address in
             //  the Y register.
-            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(STOP_EXEC_IRQ, ["Printing int from X register"]));
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_STRING, ["Printing int from X register"]));
         };
         Cpu.prototype.returnCPU = function () {
             return [this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag];
-        };
-        Cpu.prototype.finsihedProg = function () {
-            this.isExecuting = (this.PC < this.endOfProg) ? true : false;
         };
         Cpu.prototype.convToHex = function (value) {
             return parseInt(value.toString(), 16);

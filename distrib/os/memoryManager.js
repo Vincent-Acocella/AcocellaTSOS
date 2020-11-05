@@ -2,30 +2,44 @@ var TSOS;
 (function (TSOS) {
     var MemoryManager = /** @class */ (function () {
         function MemoryManager() {
+            this.avaliableMemory = [];
+            this.currentMemorySegment = 0;
+            this.avaliableMemory = [true, true, true];
         }
-        //Load input into memory. It is in backwards! Its acually not tho!!!!!!!!
+        //LOAD MEMORY INTO SELECTED SEGMENT
         MemoryManager.prototype.loadMemory = function (usrProg) {
-            var startIndex = _Memory.endIndex;
-            for (var i = 0; i < usrProg.length; i += 3) {
-                //I'm mad at you. You load two things in glados so when my console log I thought I was wrong
-                //The pain I was caused. The betrayal. I guess it makes up for my 7 commits last project :/
-                // You 2 : me 0
-                //Concats opcode
-                var code = usrProg.charAt(i) + usrProg.charAt(i + 1);
-                if (!_MemoryAccessor.write(code)) {
-                    break;
+            //Need a function that returns the current segment for use
+            var segment = this.deployNextSegmentForUse();
+            if (segment < 0) {
+                return -1;
+            }
+            else {
+                var index = 0;
+                this.avaliableMemory[segment] = false;
+                for (var i = 0; i < usrProg.length; i += 3) {
+                    var code = usrProg.charAt(i) + usrProg.charAt(i + 1);
+                    _MemoryAccessor.write(code, segment, index);
+                    index++;
+                }
+                _DeviceDisplay.startUpMemory();
+                _MemoryAccessor.nextProgInMem++;
+                return _MemoryAccessor.nextProgInMem;
+            }
+        };
+        MemoryManager.prototype.runMemory = function (progNumber) {
+            // if(progNumber <= _MemoryAccessor.progInMem){
+            //     _PCB.newTask(progNumber);
+            //     _CPU.isExecuting = true;
+            // }
+        };
+        //Checks for avaliable mem and if there is, mark it as in use
+        MemoryManager.prototype.deployNextSegmentForUse = function () {
+            for (var i = 0; i < 3; i++) {
+                if (this.avaliableMemory[i]) {
+                    return i;
                 }
             }
-            return _MemoryAccessor.updateMap(startIndex);
-        };
-        //Execute until previous end value is hit
-        //The array keeps track of the past values uses the prev index as ref
-        MemoryManager.prototype.runMemory = function (progNumber) {
-            //get the map value
-            if (progNumber <= _MemoryAccessor.progInMem) {
-                _PCB.newTask(progNumber);
-                _CPU.isExecuting = true;
-            }
+            return -1;
         };
         return MemoryManager;
     }());

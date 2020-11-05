@@ -4,36 +4,30 @@ module TSOS{
         constructor() {
             this.startUpMemory();
             this.startUpCPU();
-            this.startUpPCB();
+            //this.startUpPCB();
         }
 
         public reload(){
-            this.updatePCB();
+          //  this.updatePCB();
             this.updateCPU();
-            this.updateMemory();
         }
 
-        public updateMemory(){
-            let table: HTMLTableElement = <HTMLTableElement> document.getElementById('memoryUnit');
-            let index = 0;
-            for (let i = 0; i < table.rows.length; i++) {
-                for (let j = 1; j < 9; j++) {
-                    table.rows[i].cells.item(j).innerHTML = _Memory.memoryThread[index].toString();
-                    table.rows[i].cells.item(j).style['font-weight'] = "normal";
-                    if(index === _CPU.PC){
-                        table.rows[i].cells.item(j).style.color = "magenta";
-                    }else{
-                        table.rows[i].cells.item(j).style.color = "black";
-                    }
-                    index++;
-                }
-            }
+        public updateMemory(segment, PC){
+
         }
 
         public startUpMemory(){
             let table: HTMLTableElement = <HTMLTableElement>document.getElementById('memoryUnit');
+            let stringMemory = _Memory.memoryThread[0].concat(_Memory.memoryThread[1],_Memory.memoryThread[2]);
 
-            for (let i = 0; i < _Memory.memoryThread.length / 8; i++) {
+                 while(table.hasChildNodes())
+            {
+                table.removeChild(table.firstChild);
+            }
+
+            let index = 0;
+            let numberOfRows = stringMemory.length / 8;
+            for (let i = 0; i < numberOfRows; i++) {
                 let row = table.insertRow(i);
                 let memAdress = i * 8;
                 let first = row.insertCell(0);
@@ -42,12 +36,13 @@ module TSOS{
                 for (let j= 0; j < 3 - memAdress.toString(16).length; j++) {
                     memUnit += "0";
                 }
-
                 memUnit += memAdress.toString(16);
                 first.innerHTML = memUnit;
+
                 for (let k = 1; k < 9; k++) {
                     let cell = row.insertCell(k);
-                    cell.innerHTML = "00";
+                    cell.innerHTML = stringMemory[index];
+                    index++;
                 }
             }
         }
@@ -85,38 +80,38 @@ module TSOS{
             }
         }
 
-        public startUpPCB(){
-            let table: HTMLTableElement = <HTMLTableElement>document.getElementById("pcb");
+        // public startUpPCB(){
+        //     let table: HTMLTableElement = <HTMLTableElement>document.getElementById("pcb");
 
-            while(table.hasChildNodes())
-            {
-                table.removeChild(table.firstChild);
-            }
+        //     while(table.hasChildNodes())
+        //     {
+        //         table.removeChild(table.firstChild);
+        //     }
 
-            let header = ["PID", "PC", "IR", "ACC", "X", "Y", "Z", "State", "Location"];
-            let row = table.insertRow(0);
-            for(let i = 0; i < header.length; i++){
-                let next = row.insertCell(i);
-                next.innerHTML = String(header[i]);
-            }
+        //     let header = ["PID", "PC", "IR", "ACC", "X", "Y", "Z", "State", "Location"];
+        //     let row = table.insertRow(0);
+        //     for(let i = 0; i < header.length; i++){
+        //         let next = row.insertCell(i);
+        //         next.innerHTML = String(header[i]);
+        //     }
 
-            let row2 = table.insertRow(1);
-            for(let i = 0; i < header.length; i++){
-                let next = row2.insertCell(i);
-                next.innerHTML = "0";
-            }
-        }
+        //     let row2 = table.insertRow(1);
+        //     for(let i = 0; i < header.length; i++){
+        //         let next = row2.insertCell(i);
+        //         next.innerHTML = "0";
+        //     }
+        // }
 
-        public updatePCB(){
-            let table: HTMLTableElement = <HTMLTableElement>document.getElementById("pcb");
-            table.deleteRow(1);
-            let header = _PCB.returnPCB();
-            let row = table.insertRow(1);
-            for(let i = 0; i < header.length; i++){
-                let next = row.insertCell(i);
-                next.innerHTML = String(header[i]);
-            }
-        }
+        // public updatePCB(){
+        //     let table: HTMLTableElement = <HTMLTableElement>document.getElementById("pcb");
+        //     table.deleteRow(1);
+        //     let header = _PCB.returnPCB();
+        //     let row = table.insertRow(1);
+        //     for(let i = 0; i < header.length; i++){
+        //         let next = row.insertCell(i);
+        //         next.innerHTML = String(header[i]);
+        //     }
+        // }
 
     }
 }

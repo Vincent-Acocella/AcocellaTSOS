@@ -4,33 +4,23 @@ var TSOS;
         function DeviceDisplay() {
             this.startUpMemory();
             this.startUpCPU();
-            this.startUpPCB();
+            //this.startUpPCB();
         }
         DeviceDisplay.prototype.reload = function () {
-            this.updatePCB();
+            //  this.updatePCB();
             this.updateCPU();
-            this.updateMemory();
         };
-        DeviceDisplay.prototype.updateMemory = function () {
-            var table = document.getElementById('memoryUnit');
-            var index = 0;
-            for (var i = 0; i < table.rows.length; i++) {
-                for (var j = 1; j < 9; j++) {
-                    table.rows[i].cells.item(j).innerHTML = _Memory.memoryThread[index].toString();
-                    table.rows[i].cells.item(j).style['font-weight'] = "normal";
-                    if (index === _CPU.PC) {
-                        table.rows[i].cells.item(j).style.color = "magenta";
-                    }
-                    else {
-                        table.rows[i].cells.item(j).style.color = "black";
-                    }
-                    index++;
-                }
-            }
+        DeviceDisplay.prototype.updateMemory = function (segment, PC) {
         };
         DeviceDisplay.prototype.startUpMemory = function () {
             var table = document.getElementById('memoryUnit');
-            for (var i = 0; i < _Memory.memoryThread.length / 8; i++) {
+            var stringMemory = _Memory.memoryThread[0].concat(_Memory.memoryThread[1], _Memory.memoryThread[2]);
+            while (table.hasChildNodes()) {
+                table.removeChild(table.firstChild);
+            }
+            var index = 0;
+            var numberOfRows = stringMemory.length / 8;
+            for (var i = 0; i < numberOfRows; i++) {
                 var row = table.insertRow(i);
                 var memAdress = i * 8;
                 var first = row.insertCell(0);
@@ -42,7 +32,8 @@ var TSOS;
                 first.innerHTML = memUnit;
                 for (var k = 1; k < 9; k++) {
                     var cell = row.insertCell(k);
-                    cell.innerHTML = "00";
+                    cell.innerHTML = stringMemory[index];
+                    index++;
                 }
             }
         };
@@ -67,33 +58,6 @@ var TSOS;
             var table = document.getElementById("cpu");
             table.deleteRow(1);
             var header = _CPU.returnCPU();
-            var row = table.insertRow(1);
-            for (var i = 0; i < header.length; i++) {
-                var next = row.insertCell(i);
-                next.innerHTML = String(header[i]);
-            }
-        };
-        DeviceDisplay.prototype.startUpPCB = function () {
-            var table = document.getElementById("pcb");
-            while (table.hasChildNodes()) {
-                table.removeChild(table.firstChild);
-            }
-            var header = ["PID", "PC", "IR", "ACC", "X", "Y", "Z", "State", "Location"];
-            var row = table.insertRow(0);
-            for (var i = 0; i < header.length; i++) {
-                var next = row.insertCell(i);
-                next.innerHTML = String(header[i]);
-            }
-            var row2 = table.insertRow(1);
-            for (var i = 0; i < header.length; i++) {
-                var next = row2.insertCell(i);
-                next.innerHTML = "0";
-            }
-        };
-        DeviceDisplay.prototype.updatePCB = function () {
-            var table = document.getElementById("pcb");
-            table.deleteRow(1);
-            var header = _PCB.returnPCB();
             var row = table.insertRow(1);
             for (var i = 0; i < header.length; i++) {
                 var next = row.insertCell(i);

@@ -28,9 +28,8 @@ module TSOS{
 
         public newTask(PID){
             this.PID = parseInt(PID);
-            console.log(_Memory.endIndex);
-            _CPU.endOfProg = _Memory.endIndex;
-            this.PC = _MemoryAccessor.getMapValue(this.PID);
+            //_CPU.endOfProg = _Memory.endIndex;
+            //this.PC = _MemoryAccessor.getMapValue(this.PID);
             this.load();
         }
 
@@ -57,18 +56,6 @@ module TSOS{
         }
         public returnPCB(){
             return [this.PID, this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag, this.state, this.location];
-        }
-
-        public terminate(){
-            _CPU.isExecuting = false;
-            if (_StdOut.currentXPosition > 0) {
-                _StdOut.clearCmdLine("");
-            }
-            _Memory.init();
-            _DeviceDisplay = new DeviceDisplay();
-            _PCB.init();
-            _PCB.load();
-            _MemoryAccessor.progInMem = -1;
         }
     }
 }

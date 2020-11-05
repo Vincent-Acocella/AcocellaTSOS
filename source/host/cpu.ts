@@ -256,7 +256,7 @@ module TSOS {
                     _CPU.printStringYReg();
                     break;
                 default:
-                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(STOP_EXEC_IRQ, ["Invalid system call operation, stoping execution."]));
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_STRING, ["Invalid system call operation, stoping execution."]));
             }
         }
 
@@ -267,18 +267,12 @@ module TSOS {
         private printStringYReg(){
             // #$02 in X reg = print the 00-terminated string stored at the address in
             //  the Y register.
-            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(STOP_EXEC_IRQ, ["Printing int from X register"]));
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_STRING, ["Printing int from X register"]));
         }
-
 
         public returnCPU(){
             return [this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag];
         }
-
-        private finsihedProg(){
-           this.isExecuting = (this.PC < this.endOfProg)? true: false;
-        }
-
 
         private convToHex(value){
              return parseInt(value.toString(), 16);

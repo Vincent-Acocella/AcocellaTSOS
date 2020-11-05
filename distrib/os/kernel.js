@@ -122,7 +122,7 @@ var TSOS;
                     _StdOut.putText(_CPU.Yreg);
                     break;
                 case STOP_EXEC_IRQ:
-                    _PCB.terminate();
+                    //_PCB.terminate();
                     break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
