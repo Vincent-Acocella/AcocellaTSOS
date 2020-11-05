@@ -4,17 +4,15 @@ module TSOS{
         constructor() {
             this.startUpMemory();
             this.startUpCPU();
-            //this.startUpPCB();
+            this.startUpSchedular();
         }
 
-        public reload(){
-          //  this.updatePCB();
-            this.updateCPU();
-        }
+        // public updateMemory(segment, PC, value){
+        //     let newIndex = _MemoryAccessor.read(PC,segment);
 
-        public updateMemory(segment, PC){
+        //     //Change the new index value
 
-        }
+        // }
 
         public startUpMemory(){
             let table: HTMLTableElement = <HTMLTableElement>document.getElementById('memoryUnit');
@@ -48,6 +46,7 @@ module TSOS{
         }
 
         public startUpCPU(){
+
             let table: HTMLTableElement = <HTMLTableElement>document.getElementById("cpu");
 
             while(table.hasChildNodes())
@@ -66,6 +65,7 @@ module TSOS{
             for(let j = 0; j < header.length; j++){
                 let next = row2.insertCell(j);
                 next.innerHTML = "0";
+
             }
         }
 
@@ -79,6 +79,40 @@ module TSOS{
                 next.innerHTML = String(header[i]);
             }
         }
+
+        public startUpSchedular(){
+
+            let table: HTMLTableElement = <HTMLTableElement>document.getElementById("processeList");
+
+            while(table.hasChildNodes())
+            {
+                table.removeChild(table.firstChild);
+            }
+
+            let header = ["PID", "PC", "ACC", "X", "Y", "Z", "IR", "State", "Location"];
+
+            let row = table.insertRow(0);
+            for(let i = 0; i < header.length; i++){
+                let next = row.insertCell(i);
+                next.innerHTML = String(header[i]);
+            }
+
+            for(let i = 1; i < 8; i++){
+                let row = table.insertRow(i)
+                for(let j = 0; j < header.length; j++){
+                    row.insertCell(j).innerHTML = "";
+                    // row.removeChild(row.cells.item(1))
+                }
+            }
+            //Look at schedule table
+        }
+
+        public updateSchedular(PID){
+            
+        }
+        
+
+        
 
         // public startUpPCB(){
         //     let table: HTMLTableElement = <HTMLTableElement>document.getElementById("pcb");

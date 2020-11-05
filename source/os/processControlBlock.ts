@@ -2,6 +2,17 @@ module TSOS{
 
     export class ProcessControlBlock{
 
+        // 0 = progNumber
+        // 1 = PC
+        // 2 = IR
+        // 3 = ACC
+        // 4 = Xreg
+        // 5 = YReg
+        // 6 = ZReg
+        // 7 = state
+        // 8 = location
+        // 9 = end of prog
+
         constructor(
                     public PID: number = 0,
                     public PC: number = 0,
@@ -9,9 +20,10 @@ module TSOS{
                     public Xreg: number = 0,
                     public Yreg: number = 0,
                     public IR: string = "",
-                    public state: number = 0,
-                    public location: string = "memory",
-                    public Zflag: number = 0) {
+                    public state: string = "",
+                    public location: number = -1,
+                    public Zflag: number = 0,
+                    public endIndex: number = 0) {
         }
 
         public init(): void {
@@ -21,31 +33,20 @@ module TSOS{
             this.Xreg = 0;
             this.Yreg = 0;
             this.IR = "";
-            this.state = 0;
-            this.location = "memory";
+            this.state = "Unknown";
+            this.location = -1;
             this.Zflag = 0;
+            this.endIndex = 0;
         }
 
-        public newTask(PID){
+        public newTask(PID, segment, index){
             this.PID = parseInt(PID);
-            //_CPU.endOfProg = _Memory.endIndex;
-            //this.PC = _MemoryAccessor.getMapValue(this.PID);
-            this.load();
+            this.location = segment;
+            this.endIndex = index;
+            this.state = "ready";
+            _Schedular.addProccess(PID);
         }
 
-        //State 0 is idle
-        //1 is running
-        //2 is holding
-        //3 Complete (Done) Back to 1 and clear
-
-        public save(){
-            this.PC = _CPU.PC;
-            this.Zflag = _CPU.Zflag;
-            this.Yreg = _CPU.Yreg;
-            this.Xreg = _CPU.Xreg;
-            this.IR = _CPU.IR;
-            this.state = 2;
-        }
 
         public load(){
             _CPU.PC = this.PC;

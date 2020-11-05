@@ -407,8 +407,18 @@ module TSOS {
 
         public shellRun(args: String[]){
             if(args.length > 0){
+
+                let segment = _MemoryAccessor.getProgFromSegMap(args)
+                if(segment < 0){
+                    _StdOut.putText("Could not run program.... not in memory");
+                }else{
+
+                   // _PCB.newTask(args,segment);
+
+                }
+
             //Run CPU
-                if(_MemoryManager.runMemory(args)){
+            if(_MemoryManager.runMemory(args)){
                 }
             } else{
                 _StdOut.putText("ERROR MESSAGE GOES HERE");

@@ -53,7 +53,7 @@ module TSOS {
                 this.isExecuting = false;
                 // _PCB.state = 3;
             }
-            _PCB.save();
+           // _PCB.save();
             _DeviceDisplay.reload();
         }
 

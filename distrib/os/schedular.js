@@ -14,9 +14,19 @@ var TSOS;
             // 8 = location
             // 9 =  end of prog
             this.readyQueue = new TSOS.Queue;
+            this.allProcesses = [];
             this.quant = _Quant;
         }
         Schedular.prototype.init = function () {
+        };
+        Schedular.prototype.addProccess = function (_a) {
+            var PID = _a.PID;
+            //Prolly no work
+            this.allProcesses[PID] = _PCB.returnPCB();
+            console.log(this.allProcesses);
+        };
+        Schedular.prototype.deployToPCB = function (PID) {
+            this.allProcesses[PID];
         };
         Schedular.prototype.setQuant = function (value) {
             _Quant = value;

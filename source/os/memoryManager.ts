@@ -22,9 +22,13 @@ module TSOS{
                         _MemoryAccessor.write(code, segment, index); 
                         index++;
                 }
-
-                _DeviceDisplay.startUpMemory();
+                
                 _MemoryAccessor.nextProgInMem++
+                _PCB.newTask(_MemoryAccessor.nextProgInMem, segment, index);
+
+                //Set the map from program to segment
+                _MemoryAccessor.setSegtoMemMap(_MemoryAccessor.nextProgInMem, segment);
+                _DeviceDisplay.startUpMemory();
                 return _MemoryAccessor.nextProgInMem ;
             }  
         }

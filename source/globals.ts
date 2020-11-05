@@ -38,8 +38,9 @@ var	_Memory:TSOS.Memory;
 var	_MemoryAccessor:TSOS.MemoryAccessor;
 var _DeviceDisplay : any = null;
 //	Software	(OS)
-var	_MemoryManager:	any	= null;
+var _MemoryManager:	any	= null;
 var _PCB: TSOS.ProcessControlBlock = null;
+var _Schedular: TSOS.Schedular = null;
 
 var _OSclock: number = 0;  // Page 23.
 

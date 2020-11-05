@@ -4,14 +4,12 @@ var TSOS;
         function DeviceDisplay() {
             this.startUpMemory();
             this.startUpCPU();
-            //this.startUpPCB();
+            this.startUpSchedular();
         }
-        DeviceDisplay.prototype.reload = function () {
-            //  this.updatePCB();
-            this.updateCPU();
-        };
-        DeviceDisplay.prototype.updateMemory = function (segment, PC) {
-        };
+        // public updateMemory(segment, PC, value){
+        //     let newIndex = _MemoryAccessor.read(PC,segment);
+        //     //Change the new index value
+        // }
         DeviceDisplay.prototype.startUpMemory = function () {
             var table = document.getElementById('memoryUnit');
             var stringMemory = _Memory.memoryThread[0].concat(_Memory.memoryThread[1], _Memory.memoryThread[2]);
@@ -63,6 +61,28 @@ var TSOS;
                 var next = row.insertCell(i);
                 next.innerHTML = String(header[i]);
             }
+        };
+        DeviceDisplay.prototype.startUpSchedular = function () {
+            var table = document.getElementById("processeList");
+            while (table.hasChildNodes()) {
+                table.removeChild(table.firstChild);
+            }
+            var header = ["PID", "PC", "ACC", "X", "Y", "Z", "IR", "State", "Location"];
+            var row = table.insertRow(0);
+            for (var i = 0; i < header.length; i++) {
+                var next = row.insertCell(i);
+                next.innerHTML = String(header[i]);
+            }
+            for (var i = 1; i < 8; i++) {
+                var row_1 = table.insertRow(i);
+                for (var j = 0; j < header.length; j++) {
+                    row_1.insertCell(j).innerHTML = "";
+                    // row.removeChild(row.cells.item(1))
+                }
+            }
+            //Look at schedule table
+        };
+        DeviceDisplay.prototype.updateSchedular = function (PID) {
         };
         return DeviceDisplay;
     }());

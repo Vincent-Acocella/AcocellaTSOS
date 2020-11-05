@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/Vincent-Acocella/TSOS-2019-master#readme",
   "dependencies": {
-    "bootstrap": "^4.5.2"
+    "bootstrap": "^4.5.2",
+    "nodemon": "^2.0.6"
   }
 }

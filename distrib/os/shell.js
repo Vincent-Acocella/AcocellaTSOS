@@ -316,6 +316,13 @@ var TSOS;
         };
         Shell.prototype.shellRun = function (args) {
             if (args.length > 0) {
+                var segment = _MemoryAccessor.getProgFromSegMap(args);
+                if (segment < 0) {
+                    _StdOut.putText("Could not run program.... not in memory");
+                }
+                else {
+                    // _PCB.newTask(args,segment);
+                }
                 //Run CPU
                 if (_MemoryManager.runMemory(args)) {
                 }

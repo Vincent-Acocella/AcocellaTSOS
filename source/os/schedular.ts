@@ -13,12 +13,23 @@ module TSOS{
         // 9 =  end of prog
 
         public readyQueue = new Queue;
+        public allProcesses = [];
         public quant = _Quant;
         constructor(){
         }
 
         public init(){
            
+        }
+
+        public addProccess({PID}){
+            //Prolly no work
+            this.allProcesses[PID] = _PCB.returnPCB();
+            console.log(this.allProcesses);
+        }
+
+        public deployToPCB(PID){
+            this.allProcesses[PID]
         }
 
         public setQuant(value){
