@@ -19,11 +19,11 @@ var TSOS;
         }
         Schedular.prototype.init = function () {
         };
-        Schedular.prototype.addProccess = function (_a) {
-            var PID = _a.PID;
+        Schedular.prototype.addProccess = function (PID) {
             //Prolly no work
+            console.log("PID being sent to display: " + PID);
             this.allProcesses[PID] = _PCB.returnPCB();
-            console.log(this.allProcesses);
+            _DeviceDisplay.updateSchedular(PID);
         };
         Schedular.prototype.deployToPCB = function (PID) {
             this.allProcesses[PID];

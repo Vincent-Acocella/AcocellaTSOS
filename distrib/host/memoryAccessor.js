@@ -10,7 +10,7 @@ var TSOS;
         };
         //Write from pysical memory to logical
         MemoryAccessor.prototype.write = function (code, segement, index) {
-            console.log("AT Segment: " + segement + " and index " + index + " ====" + code);
+            //console.log("AT Segment: " + segement + " and index " + index + " ====" + code);
             _Memory.memoryThread[segement][index] = code;
             //Chnage for single entry?
             // _DeviceDisplay.updateMemory();

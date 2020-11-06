@@ -96,24 +96,21 @@ module TSOS{
                 let next = row.insertCell(i);
                 next.innerHTML = String(header[i]);
             }
-
-            for(let i = 1; i < 8; i++){
-                let row = table.insertRow(i)
-                for(let j = 0; j < header.length; j++){
-                    row.insertCell(j).innerHTML = "";
-                    // row.removeChild(row.cells.item(1))
-                }
-            }
             //Look at schedule table
         }
 
         public updateSchedular(PID){
-            
+            let table: HTMLTableElement = <HTMLTableElement>document.getElementById("processeList");
+
+            table.deleteRow(PID);
+            let row = table.insertRow(PID);
+            console.log(_Schedular.allProcesses.length);
+
+            for(let i = 0; i < 9; i++){
+                row.insertCell(i).innerHTML = _Schedular.allProcesses[i];
+            }
         }
         
-
-        
-
         // public startUpPCB(){
         //     let table: HTMLTableElement = <HTMLTableElement>document.getElementById("pcb");
 

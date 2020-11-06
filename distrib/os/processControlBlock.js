@@ -46,11 +46,12 @@ var TSOS;
             this.endIndex = 0;
         };
         ProcessControlBlock.prototype.newTask = function (PID, segment, index) {
-            this.PID = parseInt(PID);
+            var tempPID = parseInt(PID);
+            this.PID = tempPID;
             this.location = segment;
             this.endIndex = index;
             this.state = "ready";
-            _Schedular.addProccess(PID);
+            _Schedular.addProccess(tempPID);
         };
         ProcessControlBlock.prototype.load = function () {
             _CPU.PC = this.PC;

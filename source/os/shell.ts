@@ -396,7 +396,7 @@ module TSOS {
                     _StdOut.putText("No avaliable memory for use");
                    }else{
                     _StdOut.putText("Type 'run " + progNum +"' To run code");
-                    _DeviceDisplay.updateMemory();
+                    //_DeviceDisplay.updateMemory();
                    }
                    
                }

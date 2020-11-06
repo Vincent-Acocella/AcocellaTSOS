@@ -40,11 +40,12 @@ module TSOS{
         }
 
         public newTask(PID, segment, index){
-            this.PID = parseInt(PID);
+            let tempPID = parseInt(PID);
+            this.PID = tempPID;
             this.location = segment;
             this.endIndex = index;
             this.state = "ready";
-            _Schedular.addProccess(PID);
+            _Schedular.addProccess(tempPID);
         }
 
 
