@@ -55,6 +55,7 @@ module TSOS{
             _CPU.Xreg = this.Xreg;
             _CPU.IR = this.IR;
         }
+        
         public returnPCB(){
             return [this.PID, this.PC,this.Acc, this.Xreg, this.Yreg, this.Zflag, this.IR, this.state, this.location];
         }

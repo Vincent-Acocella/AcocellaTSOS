@@ -377,9 +377,6 @@ module TSOS {
             _Kernel.krnTrapError("AHHHHHHHHHHHHHHH WHY MUST YOU CAUSE ME HARM FOR A DAMN TEST YOU BASTARD");
         }
 
-        //Add	a	shell	command	called	load	to	validate	the	user	code	in	the	HTML5	
-        //text	area	(id=	“taProgramInput”).	Only	hex	digits	and	spaces	are	valid.
-        //A-F 0-9
         public shellLoad(args: String[]){
             let program = (<HTMLInputElement>document.getElementById("taProgramInput")).value;
 
@@ -406,47 +403,63 @@ module TSOS {
         }
 
         public shellRun(args: String[]){
-            if(args.length > 0){
 
+            //Check to see if it is already running 
+            if(args.length > 0){
                 let segment = _MemoryAccessor.getProgFromSegMap(args)
                 if(segment < 0){
                     _StdOut.putText("Could not run program.... not in memory");
                 }else{
 
-                   // _PCB.newTask(args,segment);
-
+                    //Put in ready queue 
+                   _CPU.isExecuting = true;
+                   _Schedular.readyQueue.enqueue((args))
                 }
 
             //Run CPU
-            if(_MemoryManager.runMemory(args)){
-                }
+            // if(_MemoryManager.runMemory(args)){
+            //     }
+
             } else{
                 _StdOut.putText("ERROR MESSAGE GOES HERE");
             }
         }
 
         public shellRunAll(){
+            //Get programs and add them to the ready queue
+            //Take all programs in memory and add them to the ready queue
 
         }
 
         public shellClearMem(){
+            //Get the programs by segment
+            //Change their state to terminated
+            // clear memory
 
         }
 
         public shellPS(){
+            //Display allProcesses
 
         }
 
         public shellKillAll(){
+            // leave in memory but terminate all processes
 
         }
 
         public shellKill(){
+            //leave in memory but kill process
 
         }
 
-        public shellQuantum(){
-
+        public shellQuantum(args:string){
+            //Chnage quantum
+            //check for int?
+            if(args.length > 0){
+                _Quant = parseInt(args)
+                _StdOut.putText("The Quantum has been changed to: " + args)
+            }
         }
     }
 }

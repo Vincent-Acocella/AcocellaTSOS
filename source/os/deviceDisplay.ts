@@ -103,7 +103,6 @@ module TSOS{
                     row.insertCell(j).innerHTML = _Schedular.allProcesses[i-1][j];
                 }
             }
-            //Look at schedule table
         }
 
         // public updateSchedular(PID){
@@ -123,39 +122,5 @@ module TSOS{
         //         row.insertCell(i).innerHTML = _Schedular.allProcesses[i];
         //     }
         // }
-        
-        // public startUpPCB(){
-        //     let table: HTMLTableElement = <HTMLTableElement>document.getElementById("pcb");
-
-        //     while(table.hasChildNodes())
-        //     {
-        //         table.removeChild(table.firstChild);
-        //     }
-
-        //     let header = ["PID", "PC", "IR", "ACC", "X", "Y", "Z", "State", "Location"];
-        //     let row = table.insertRow(0);
-        //     for(let i = 0; i < header.length; i++){
-        //         let next = row.insertCell(i);
-        //         next.innerHTML = String(header[i]);
-        //     }
-
-        //     let row2 = table.insertRow(1);
-        //     for(let i = 0; i < header.length; i++){
-        //         let next = row2.insertCell(i);
-        //         next.innerHTML = "0";
-        //     }
-        // }
-
-        // public updatePCB(){
-        //     let table: HTMLTableElement = <HTMLTableElement>document.getElementById("pcb");
-        //     table.deleteRow(1);
-        //     let header = _PCB.returnPCB();
-        //     let row = table.insertRow(1);
-        //     for(let i = 0; i < header.length; i++){
-        //         let next = row.insertCell(i);
-        //         next.innerHTML = String(header[i]);
-        //     }
-        // }
-
     }
 }
