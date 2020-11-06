@@ -96,20 +96,33 @@ module TSOS{
                 let next = row.insertCell(i);
                 next.innerHTML = String(header[i]);
             }
+
+            for(let i = 1; i < _MemoryAccessor.nextProgInMem + 2; i++){
+                let row = table.insertRow(i);
+                for(let j = 0; j < header.length; j++){
+                    row.insertCell(j).innerHTML = _Schedular.allProcesses[i-1][j];
+                }
+            }
             //Look at schedule table
         }
 
-        public updateSchedular(PID){
-            let table: HTMLTableElement = <HTMLTableElement>document.getElementById("processeList");
+        // public updateSchedular(PID){
+        //     let table: HTMLTableElement = <HTMLTableElement> document.getElementById("processeList");
 
-            table.deleteRow(PID);
-            let row = table.insertRow(PID);
-            console.log(_Schedular.allProcesses.length);
+        //     if(_MemoryAccessor.nextProgInMem > 0){
+        //         table.deleteRow(PID+1);
+        //     }
 
-            for(let i = 0; i < 9; i++){
-                row.insertCell(i).innerHTML = _Schedular.allProcesses[i];
-            }
-        }
+        //     console.log( "Insert into row: " + (PID + 1));
+
+        //     let row = table.insertRow(PID+1);
+        //     console.log(_Schedular.allProcesses.length);
+
+        //     for(let i = 0; i < 9; i++){
+        //         console.log(_Schedular.allProcesses[i])
+        //         row.insertCell(i).innerHTML = _Schedular.allProcesses[i];
+        //     }
+        // }
         
         // public startUpPCB(){
         //     let table: HTMLTableElement = <HTMLTableElement>document.getElementById("pcb");

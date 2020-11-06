@@ -17,7 +17,7 @@ var TSOS;
             if (Acc === void 0) { Acc = 0; }
             if (Xreg === void 0) { Xreg = 0; }
             if (Yreg === void 0) { Yreg = 0; }
-            if (IR === void 0) { IR = ""; }
+            if (IR === void 0) { IR = "x"; }
             if (state === void 0) { state = ""; }
             if (location === void 0) { location = -1; }
             if (Zflag === void 0) { Zflag = 0; }
@@ -39,7 +39,7 @@ var TSOS;
             this.Acc = 0;
             this.Xreg = 0;
             this.Yreg = 0;
-            this.IR = "";
+            this.IR = "x";
             this.state = "Unknown";
             this.location = -1;
             this.Zflag = 0;
@@ -51,7 +51,7 @@ var TSOS;
             this.location = segment;
             this.endIndex = index;
             this.state = "ready";
-            _Schedular.addProccess(tempPID);
+            _Schedular.addProccess(PID);
         };
         ProcessControlBlock.prototype.load = function () {
             _CPU.PC = this.PC;
@@ -61,7 +61,7 @@ var TSOS;
             _CPU.IR = this.IR;
         };
         ProcessControlBlock.prototype.returnPCB = function () {
-            return [this.PID, this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag, this.state, this.location];
+            return [this.PID, this.PC, this.Acc, this.Xreg, this.Yreg, this.Zflag, this.IR, this.state, this.location];
         };
         return ProcessControlBlock;
     }());

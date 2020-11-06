@@ -19,7 +19,7 @@ module TSOS{
                     public Acc: number = 0,
                     public Xreg: number = 0,
                     public Yreg: number = 0,
-                    public IR: string = "",
+                    public IR: string = "x",
                     public state: string = "",
                     public location: number = -1,
                     public Zflag: number = 0,
@@ -32,7 +32,7 @@ module TSOS{
             this.Acc = 0;
             this.Xreg = 0;
             this.Yreg = 0;
-            this.IR = "";
+            this.IR = "x";
             this.state = "Unknown";
             this.location = -1;
             this.Zflag = 0;
@@ -45,9 +45,8 @@ module TSOS{
             this.location = segment;
             this.endIndex = index;
             this.state = "ready";
-            _Schedular.addProccess(tempPID);
+            _Schedular.addProccess(PID);
         }
-
 
         public load(){
             _CPU.PC = this.PC;
@@ -57,7 +56,7 @@ module TSOS{
             _CPU.IR = this.IR;
         }
         public returnPCB(){
-            return [this.PID, this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag, this.state, this.location];
+            return [this.PID, this.PC,this.Acc, this.Xreg, this.Yreg, this.Zflag, this.IR, this.state, this.location];
         }
     }
 }

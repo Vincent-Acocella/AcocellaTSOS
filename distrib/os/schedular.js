@@ -20,10 +20,8 @@ var TSOS;
         Schedular.prototype.init = function () {
         };
         Schedular.prototype.addProccess = function (PID) {
-            //Prolly no work
-            console.log("PID being sent to display: " + PID);
             this.allProcesses[PID] = _PCB.returnPCB();
-            _DeviceDisplay.updateSchedular(PID);
+            _DeviceDisplay.startUpSchedular();
         };
         Schedular.prototype.deployToPCB = function (PID) {
             this.allProcesses[PID];

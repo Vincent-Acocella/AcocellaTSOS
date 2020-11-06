@@ -23,14 +23,12 @@ module TSOS{
         }
 
         public addProccess(PID){
-            //Prolly no work
-            console.log("PID being sent to display: " + PID);
             this.allProcesses[PID] = _PCB.returnPCB();
-            _DeviceDisplay.updateSchedular(PID);
+            _DeviceDisplay.startUpSchedular();
         }
 
         public deployToPCB(PID){
-            this.allProcesses[PID]
+            this.allProcesses[PID];
         }
 
         public setQuant(value){

@@ -73,16 +73,13 @@ var TSOS;
                 var next = row.insertCell(i);
                 next.innerHTML = String(header[i]);
             }
-            //Look at schedule table
-        };
-        DeviceDisplay.prototype.updateSchedular = function (PID) {
-            var table = document.getElementById("processeList");
-            table.deleteRow(PID);
-            var row = table.insertRow(PID);
-            console.log(_Schedular.allProcesses.length);
-            for (var i = 0; i < 9; i++) {
-                row.insertCell(i).innerHTML = _Schedular.allProcesses[i];
+            for (var i = 1; i < _MemoryAccessor.nextProgInMem + 2; i++) {
+                var row_1 = table.insertRow(i);
+                for (var j = 0; j < header.length; j++) {
+                    row_1.insertCell(j).innerHTML = _Schedular.allProcesses[i - 1][j];
+                }
             }
+            //Look at schedule table
         };
         return DeviceDisplay;
     }());
