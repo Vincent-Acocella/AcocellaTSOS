@@ -9,9 +9,7 @@ module TSOS{
 
         // public updateMemory(segment, PC, value){
         //     let newIndex = _MemoryAccessor.read(PC,segment);
-
         //     //Change the new index value
-
         // }
 
         public startUpMemory(){
@@ -105,22 +103,18 @@ module TSOS{
             }
         }
 
-        // public updateSchedular(PID){
-        //     let table: HTMLTableElement = <HTMLTableElement> document.getElementById("processeList");
+        public startReadyQueue(){
+            let table: HTMLTableElement = <HTMLTableElement> document.getElementById("readyQ");
 
-        //     if(_MemoryAccessor.nextProgInMem > 0){
-        //         table.deleteRow(PID+1);
-        //     }
+            while(table.hasChildNodes())
+            {
+                table.removeChild(table.firstChild);
+            }
 
-        //     console.log( "Insert into row: " + (PID + 1));
+            let row = table.insertRow(0);
 
-        //     let row = table.insertRow(PID+1);
-        //     console.log(_Schedular.allProcesses.length);
+             row.insertCell(0).innerHTML = _Schedular.readyQueue.toString();
 
-        //     for(let i = 0; i < 9; i++){
-        //         console.log(_Schedular.allProcesses[i])
-        //         row.insertCell(i).innerHTML = _Schedular.allProcesses[i];
-        //     }
-        // }
+        }
     }
 }

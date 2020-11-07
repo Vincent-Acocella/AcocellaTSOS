@@ -46,6 +46,46 @@ module TSOS{
             console.log("Switching ready queue");
         }
 
+
+        public addToReadyQueue(PID){
+
+            if(this.alreadyExistsInQueue(PID)){
+                this.readyQueue.enqueue(PID);
+                _CPU.isExecuting = true;
+            }else{
+                _StdOut.putText("Program " + PID + " is already in the ready queue");
+            }
+        }
+
+        public addAllToReadyQueue(){
+
+            //3 is the number of segments in memory
+           for(let i = 0; i < 3; i++){
+               let prog = _MemoryAccessor.programToSegmentMap[i];
+               if(prog > -1){
+                    if(!this.alreadyExistsInQueue(prog)){
+                    this.readyQueue.enqueue(prog);
+                    }else{
+                        _StdOut.putText("Program " + i + " is already in the ready queue");
+                    }
+                }   
+           }
+           if(this.readyQueue.getSize() > 0){
+            _CPU.isExecuting = true;
+           }else{
+               _StdOut.putText("No programs to execute");
+           }
+        }
+
+        public alreadyExistsInQueue(prog){
+
+            for(let i = 0; i < this.readyQueue.getSize(); i++){
+                if(this.readyQueue[i].matches(prog))
+                return true;
+            }
+            return false;
+        }
+
         // public checkIfSwitch(){
         //     if( this.quant === 0){
         //         _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TIMER_IRQ, ["Switching Memory"]));

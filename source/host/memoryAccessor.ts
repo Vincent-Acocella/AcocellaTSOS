@@ -2,7 +2,7 @@ module TSOS{
 
     export class MemoryAccessor{
         public nextProgInMem = -1;
-        programToSegmentMap = [];
+        programToSegmentMap = [-1,-1,-1];
 
         constructor() {
         }

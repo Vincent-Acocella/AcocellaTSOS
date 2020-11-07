@@ -404,31 +404,29 @@ module TSOS {
 
         public shellRun(args: String[]){
 
-            //Check to see if it is already running 
+            
             if(args.length > 0){
+
                 let segment = _MemoryAccessor.getProgFromSegMap(args)
+                //Checks to see if the program exists in memory
                 if(segment < 0){
+
                     _StdOut.putText("Could not run program.... not in memory");
                 }else{
-
                     //Put in ready queue 
-                   _CPU.isExecuting = true;
-                   _Schedular.readyQueue.enqueue((args))
+                   _Schedular.addProccess(args);
                 }
 
-            //Run CPU
-            // if(_MemoryManager.runMemory(args)){
-            //     }
 
             } else{
-                _StdOut.putText("ERROR MESSAGE GOES HERE");
+                _StdOut.putText("Please input a program");
             }
         }
 
         public shellRunAll(){
             //Get programs and add them to the ready queue
             //Take all programs in memory and add them to the ready queue
-
+            _Schedular.addAllToReadyQueue();
         }
 
         public shellClearMem(){
