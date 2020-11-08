@@ -23,7 +23,7 @@ module TSOS{
                         index++;
                 }
                 
-                _MemoryAccessor.nextProgInMem++
+                _MemoryAccessor.nextProgInMem++;
                 _PCB.newTask(_MemoryAccessor.nextProgInMem, segment, index);
 
                 //Set the map from program to segment
@@ -34,6 +34,14 @@ module TSOS{
         }
 
         public runMemory(progNumber){
+
+            let segment = _MemoryAccessor.getProgFromSegMap(parseInt(progNumber));
+
+            if(segment < 0){
+
+                
+            }
+            progNumber()
 
             // if(progNumber <= _MemoryAccessor.progInMem){
             //     _PCB.newTask(progNumber);

@@ -286,9 +286,6 @@ var TSOS;
             _StdOut.putText("AHHHHHHHHHHHHHHH WHY MUST YOU CAUSE ME HARM FOR A DAMN TEST YOU BASTARD");
             _Kernel.krnTrapError("AHHHHHHHHHHHHHHH WHY MUST YOU CAUSE ME HARM FOR A DAMN TEST YOU BASTARD");
         };
-        //Add	a	shell	command	called	load	to	validate	the	user	code	in	the	HTML5	
-        //text	area	(id=	“taProgramInput”).	Only	hex	digits	and	spaces	are	valid.
-        //A-F 0-9
         Shell.prototype.shellLoad = function (args) {
             var program = document.getElementById("taProgramInput").value;
             if (program.length > 0) {
@@ -317,31 +314,45 @@ var TSOS;
         Shell.prototype.shellRun = function (args) {
             if (args.length > 0) {
                 var segment = _MemoryAccessor.getProgFromSegMap(args);
+                //Checks to see if the program exists in memory
                 if (segment < 0) {
                     _StdOut.putText("Could not run program.... not in memory");
                 }
                 else {
-                    // _PCB.newTask(args,segment);
-                }
-                //Run CPU
-                if (_MemoryManager.runMemory(args)) {
+                    //Put in ready queue 
+                    _Schedular.addToReadyQueue(args);
                 }
             }
             else {
-                _StdOut.putText("ERROR MESSAGE GOES HERE");
+                _StdOut.putText("Please input a program");
             }
         };
         Shell.prototype.shellRunAll = function () {
+            //Get programs and add them to the ready queue
+            //Take all programs in memory and add them to the ready queue
+            _Schedular.addAllToReadyQueue();
         };
         Shell.prototype.shellClearMem = function () {
+            //Get the programs by segment
+            //Change their state to terminated
+            // clear memory
         };
         Shell.prototype.shellPS = function () {
+            //Display allProcesses
         };
         Shell.prototype.shellKillAll = function () {
+            // leave in memory but terminate all processes
         };
         Shell.prototype.shellKill = function () {
+            //leave in memory but kill process
         };
-        Shell.prototype.shellQuantum = function () {
+        Shell.prototype.shellQuantum = function (args) {
+            //Chnage quantum
+            //check for int?
+            if (args.length > 0) {
+                _Quant = parseInt(args);
+                _StdOut.putText("The Quantum has been changed to: " + args);
+            }
         };
         return Shell;
     }());

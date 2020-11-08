@@ -79,7 +79,14 @@ var TSOS;
                     row_1.insertCell(j).innerHTML = _Schedular.allProcesses[i - 1][j];
                 }
             }
-            //Look at schedule table
+        };
+        DeviceDisplay.prototype.updateReadyQueue = function () {
+            var table = document.getElementById("readyQ");
+            while (table.hasChildNodes()) {
+                table.removeChild(table.firstChild);
+            }
+            var row = table.insertRow(0);
+            row.insertCell(0).innerHTML = _Schedular.readyQueue.toString();
         };
         return DeviceDisplay;
     }());

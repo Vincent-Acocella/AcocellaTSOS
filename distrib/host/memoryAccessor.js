@@ -3,7 +3,7 @@ var TSOS;
     var MemoryAccessor = /** @class */ (function () {
         function MemoryAccessor() {
             this.nextProgInMem = -1;
-            this.programToSegmentMap = [];
+            this.programToSegmentMap = [-1, -1, -1];
         }
         MemoryAccessor.prototype.init = function () {
             _Memory.init();

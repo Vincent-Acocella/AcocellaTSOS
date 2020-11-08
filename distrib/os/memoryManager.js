@@ -30,6 +30,10 @@ var TSOS;
             }
         };
         MemoryManager.prototype.runMemory = function (progNumber) {
+            var segment = _MemoryAccessor.getProgFromSegMap(parseInt(progNumber));
+            if (segment < 0) {
+            }
+            progNumber();
             // if(progNumber <= _MemoryAccessor.progInMem){
             //     _PCB.newTask(progNumber);
             //     _CPU.isExecuting = true;

@@ -103,7 +103,7 @@ module TSOS{
             }
         }
 
-        public startReadyQueue(){
+        public updateReadyQueue(){
             let table: HTMLTableElement = <HTMLTableElement> document.getElementById("readyQ");
 
             while(table.hasChildNodes())
@@ -112,8 +112,7 @@ module TSOS{
             }
 
             let row = table.insertRow(0);
-
-             row.insertCell(0).innerHTML = _Schedular.readyQueue.toString();
+            row.insertCell(0).innerHTML = _Schedular.readyQueue.toString();
 
         }
     }

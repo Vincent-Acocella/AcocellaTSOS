@@ -46,15 +46,18 @@ module TSOS{
             console.log("Switching ready queue");
         }
 
-
         public addToReadyQueue(PID){
-
-            if(this.alreadyExistsInQueue(PID)){
+            if(!this.alreadyExistsInQueue(PID)){
                 this.readyQueue.enqueue(PID);
-                _CPU.isExecuting = true;
+                _DeviceDisplay.updateReadyQueue();
+
+                //Deploy
+                 _CPU.isExecuting = true;
+                
             }else{
                 _StdOut.putText("Program " + PID + " is already in the ready queue");
             }
+           
         }
 
         public addAllToReadyQueue(){
@@ -64,26 +67,32 @@ module TSOS{
                let prog = _MemoryAccessor.programToSegmentMap[i];
                if(prog > -1){
                     if(!this.alreadyExistsInQueue(prog)){
-                    this.readyQueue.enqueue(prog);
+                        this.readyQueue.enqueue(prog);
                     }else{
                         _StdOut.putText("Program " + i + " is already in the ready queue");
                     }
                 }   
            }
+
            if(this.readyQueue.getSize() > 0){
             _CPU.isExecuting = true;
+            _DeviceDisplay.updateReadyQueue();
            }else{
                _StdOut.putText("No programs to execute");
            }
+           
         }
 
         public alreadyExistsInQueue(prog){
-
+            let flag = false;
             for(let i = 0; i < this.readyQueue.getSize(); i++){
-                if(this.readyQueue[i].matches(prog))
-                return true;
+                let pullVal = this.readyQueue.dequeue();
+                this.readyQueue.enqueue(pullVal);
+                if(parseInt(pullVal) === parseInt(prog)){
+                     flag = true;
+                 }
             }
-            return false;
+            return flag;
         }
 
         // public checkIfSwitch(){

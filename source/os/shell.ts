@@ -404,17 +404,15 @@ module TSOS {
 
         public shellRun(args: String[]){
 
-            
             if(args.length > 0){
 
-                let segment = _MemoryAccessor.getProgFromSegMap(args)
+                let segment = _MemoryAccessor.getProgFromSegMap(args);
                 //Checks to see if the program exists in memory
                 if(segment < 0){
-
                     _StdOut.putText("Could not run program.... not in memory");
                 }else{
                     //Put in ready queue 
-                   _Schedular.addProccess(args);
+                   _Schedular.addToReadyQueue(args);
                 }
 
 
