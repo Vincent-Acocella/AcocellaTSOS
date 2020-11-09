@@ -13,6 +13,8 @@
 
 module TSOS {
 
+    //Fix print
+
     export class Cpu {
 
         constructor(public PC: number = 0,
@@ -23,6 +25,7 @@ module TSOS {
                     public IR: string = "0",
                     public endOfProg = 0,
                     public bytesNeeded = 0,
+                    public segment = -1,
                     public isExecuting: boolean = false) {
         }
 
@@ -34,12 +37,13 @@ module TSOS {
             this.Zflag = 0;
             this.IR = "";
             this.endOfProg = 0;
+            this.segment = -1;
             this.bytesNeeded = 0;
             this.isExecuting = false;
         }
 
         public cycle(): void {
-            // _PCB.state = 1;
+
             _Kernel.krnTrace('CPU cycle');
             let moveThatBus = this.fetch(this.PC);
             if(moveThatBus < 0){
@@ -49,12 +53,28 @@ module TSOS {
                 //Increment by bytes
                 this.PC+= moveThatBus;
             }
+
+            //This Line has to Change
             if(this.PC > this.endOfProg){
                 this.isExecuting = false;
                 // _PCB.state = 3;
             }
-           // _PCB.save();
-            _DeviceDisplay.reload();
+
+            //Check if switch is needed
+            if(_Schedular.checkIfSwitch()){
+
+            // Check to see if we should change PCB
+            // Update CPU accordingly
+            // Call interupt 
+            // _PCB.save();
+            _Schedular.switchMemoryUnit();
+            
+                //If not decrease quant
+            }
+
+            _DeviceDisplay.updateMemory(this.segment, this.PC);
+
+            //Update CPU and memory display in one cycle
         }
 
         public fetch(code){
@@ -135,7 +155,6 @@ module TSOS {
             }
             return this.bytesNeeded;
         }
-
 
         private loadAcc(value) {
             this.bytesNeeded = 2;

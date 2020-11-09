@@ -7,10 +7,20 @@ module TSOS{
             this.startUpSchedular();
         }
 
-        // public updateMemory(segment, PC, value){
-        //     let newIndex = _MemoryAccessor.read(PC,segment);
-        //     //Change the new index value
-        // }
+        public highlightMemory(segment, PC){
+            let stringMemory = _Memory.memoryThread[0].concat(_Memory.memoryThread[1],_Memory.memoryThread[2]);
+            let newIndex = _MemoryAccessor.read(PC,segment);
+
+
+            console.log(newIndex);
+
+            let table: HTMLTableElement = <HTMLTableElement>document.getElementById('memoryUnit');
+
+
+
+
+            //Change the new index value
+        }
 
         public startUpMemory(){
             let table: HTMLTableElement = <HTMLTableElement>document.getElementById('memoryUnit');

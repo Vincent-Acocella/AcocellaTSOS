@@ -76,23 +76,21 @@ module TSOS {
             // Check for an interrupt, if there are any. Page 560
 
                 if (_KernelInterruptQueue.getSize() > 0) {
-                    // if (_PCB.state === 1) {
-                    //     _PCB.save();
-                    //     _DeviceDisplay.updatePCB();
-                    // }
+                  
                     // Process the first interrupt on the interrupt queue.
                     // TODO (maybe): Implement a priority queue based on the IRQ number/id to enforce interrupt priority.
+
                     var interrupt = _KernelInterruptQueue.dequeue();
                     this.krnInterruptHandler(interrupt.irq, interrupt.params);
                 } else if (_CPU.isExecuting) {
-                    // If there are no interrupts then run one CPU cycle if there is anything being processed.
-                    // if (_PCB.state === 2) {
+
+                    //Update CPU from PCB
                     //_PCB.load();
-                    //     _DeviceDisplay.updatePCB();
-                    // }
+
                     if(!_SingleStep){
                         _CPU.cycle();
                     }
+
                 } else {                       // If there are no interrupts and there is nothing being executed then just be idle.
                     this.krnTrace("Idle");
                 }
@@ -132,7 +130,8 @@ module TSOS {
                 case PRINT_YREGInt_ERQ:
                     _StdOut.putText(_CPU.Yreg);
                     break;
-
+                case TERMINATE_STRING:
+                    break;
                 case STOP_EXEC_IRQ:
                     //_PCB.terminate();
                     break;

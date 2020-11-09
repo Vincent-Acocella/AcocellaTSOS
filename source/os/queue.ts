@@ -7,7 +7,6 @@
    Look at the push and shift methods, as they are the least obvious here.
 
    ------------ */
-
 module TSOS {
     export class Queue {
         constructor(public q = new Array()) {
@@ -39,6 +38,24 @@ module TSOS {
                 retVal += "[" + this.q[i] + "] ";
             }
             return retVal;
+        }
+
+        //Look at the first element in the queue
+        public peek(){
+
+            var retVal = -1;
+            if(this.q.length>0){
+                for(var i = 0; i < this.q.length; i++){
+                    var x = this.dequeue()
+                    if(i === 0){
+                        retVal = x
+                    }
+                    this.enqueue(x)
+                }
+                console.log("return value: " + retVal)
+                console.log("Status of queue: " + this.q.toString())
+                return retVal;
+            }
         }
     }
 }

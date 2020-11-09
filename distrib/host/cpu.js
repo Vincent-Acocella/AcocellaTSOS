@@ -12,8 +12,9 @@
      ------------ */
 var TSOS;
 (function (TSOS) {
+    //Fix print
     var Cpu = /** @class */ (function () {
-        function Cpu(PC, Acc, Xreg, Yreg, Zflag, IR, endOfProg, bytesNeeded, isExecuting) {
+        function Cpu(PC, Acc, Xreg, Yreg, Zflag, IR, endOfProg, bytesNeeded, segment, isExecuting) {
             if (PC === void 0) { PC = 0; }
             if (Acc === void 0) { Acc = 0; }
             if (Xreg === void 0) { Xreg = 0; }
@@ -22,6 +23,7 @@ var TSOS;
             if (IR === void 0) { IR = "0"; }
             if (endOfProg === void 0) { endOfProg = 0; }
             if (bytesNeeded === void 0) { bytesNeeded = 0; }
+            if (segment === void 0) { segment = -1; }
             if (isExecuting === void 0) { isExecuting = false; }
             this.PC = PC;
             this.Acc = Acc;
@@ -31,6 +33,7 @@ var TSOS;
             this.IR = IR;
             this.endOfProg = endOfProg;
             this.bytesNeeded = bytesNeeded;
+            this.segment = segment;
             this.isExecuting = isExecuting;
         }
         Cpu.prototype.init = function () {
@@ -41,11 +44,11 @@ var TSOS;
             this.Zflag = 0;
             this.IR = "";
             this.endOfProg = 0;
+            this.segment = -1;
             this.bytesNeeded = 0;
             this.isExecuting = false;
         };
         Cpu.prototype.cycle = function () {
-            // _PCB.state = 1;
             _Kernel.krnTrace('CPU cycle');
             var moveThatBus = this.fetch(this.PC);
             if (moveThatBus < 0) {
@@ -56,12 +59,22 @@ var TSOS;
                 //Increment by bytes
                 this.PC += moveThatBus;
             }
+            //This Line has to Change
             if (this.PC > this.endOfProg) {
                 this.isExecuting = false;
                 // _PCB.state = 3;
             }
-            // _PCB.save();
-            _DeviceDisplay.reload();
+            //Check if switch is needed
+            if (_Schedular.checkIfSwitch()) {
+                // Check to see if we should change PCB
+                // Update CPU accordingly
+                // Call interupt 
+                // _PCB.save();
+                _Schedular.switchMemoryUnit();
+                //If not decrease quant
+            }
+            _DeviceDisplay.updateMemory(this.segment, this.PC);
+            //Update CPU and memory display in one cycle
         };
         Cpu.prototype.fetch = function (code) {
             var opCode = _Memory.memoryThread[code];

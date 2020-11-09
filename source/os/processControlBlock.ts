@@ -48,16 +48,33 @@ module TSOS{
             _Schedular.addProccess(PID);
         }
 
-        public load(){
+        public loadPCB(PID, PC, ACC, X, Y, Z,IR, state, loc, end){
+
+            this.PID = PID;
+            this.PC = PC;
+            this.Acc = ACC;
+            this.Xreg = X;
+            this.Yreg = Y;
+            this.Zflag = Z;
+            this.IR = IR;
+            this.state = state;
+            this.location = loc;
+            this.endIndex = end;
+        }
+
+        public loadCPU(){
+
             _CPU.PC = this.PC;
             _CPU.Zflag = this.Zflag;
             _CPU.Yreg = this.Yreg;
             _CPU.Xreg = this.Xreg;
             _CPU.IR = this.IR;
+            _CPU.segment = this.location;
+            _CPU.endOfProg = this.endIndex;
         }
         
         public returnPCB(){
-            return [this.PID, this.PC,this.Acc, this.Xreg, this.Yreg, this.Zflag, this.IR, this.state, this.location];
+            return [this.PID, this.PC,this.Acc, this.Xreg, this.Yreg, this.Zflag, this.IR, this.state, this.location, this.endIndex];
         }
     }
 }

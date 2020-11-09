@@ -5,11 +5,11 @@ var TSOS;
             //across
             // 0 = progNumber
             // 1 = PC
-            // 2 = IR
-            // 3 = ACC
-            // 4 = Xreg
-            // 5 = YReg
-            // 6 = ZReg
+            // 2 = ACC
+            // 3 = Xreg
+            // 4 = YReg
+            // 5 = ZReg
+            // 6 = IR 
             // 7 = state
             // 8 = location
             // 9 =  end of prog
@@ -39,34 +39,30 @@ var TSOS;
             console.log("Switching ready queue");
         };
         Schedular.prototype.addToReadyQueue = function (PID) {
+            var added = false;
             if (!this.alreadyExistsInQueue(PID)) {
                 this.readyQueue.enqueue(PID);
-                //_CPU.isExecuting = true;
                 _DeviceDisplay.updateReadyQueue();
+                added = true;
             }
-            else {
-                _StdOut.putText("Program " + PID + " is already in the ready queue");
-            }
+            return added;
         };
         Schedular.prototype.addAllToReadyQueue = function () {
             //3 is the number of segments in memory
+            var added = false;
             for (var i = 0; i < 3; i++) {
                 var prog = _MemoryAccessor.programToSegmentMap[i];
                 if (prog > -1) {
-                    if (!this.alreadyExistsInQueue(prog)) {
-                        this.readyQueue.enqueue(prog);
-                    }
-                    else {
-                        _StdOut.putText("Program " + i + " is already in the ready queue");
-                    }
+                    this.addToReadyQueue(prog);
+                    added = true;
                 }
             }
-            if (this.readyQueue.getSize() > 0) {
+            if (added) {
                 _CPU.isExecuting = true;
                 _DeviceDisplay.updateReadyQueue();
             }
             else {
-                _StdOut.putText("No programs to execute");
+                _StdOut.putText("No more programs to execute");
             }
         };
         Schedular.prototype.alreadyExistsInQueue = function (prog) {
@@ -79,6 +75,36 @@ var TSOS;
                 }
             }
             return flag;
+        };
+        Schedular.prototype.checkIfSwitch = function () {
+            if (this.quant === 0) {
+                return true;
+            }
+            else {
+                this.decreaseQuantum();
+                return false;
+            }
+        };
+        Schedular.prototype.decreaseQuantum = function () {
+            this.quant--;
+            console.log("Quantum now equals: " + this.quant);
+        };
+        Schedular.prototype.switchMemory = function () {
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TIMER_IRQ, ["Switching Memory"]));
+        };
+        Schedular.prototype.deployFirstInQueueToCPU = function () {
+            //This is the data we want
+            var firstIndex = this.readyQueue.peek();
+            this.allProcesses[firstIndex][7] = "Executing";
+            var array = this.allProcesses[firstIndex];
+            _PCB.loadPCB(array[0], array[1], array[2], array[3], array[4], array[5], array[6], array[7], array[8], array[9]);
+            _PCB.loadCPU();
+            // Load PCB then put into CPU
+            console.log("Array that is being deployed is: " + array);
+        };
+        Schedular.prototype.startCpu = function () {
+            this.deployFirstInQueueToCPU();
+            _CPU.isExecuting = true;
         };
         return Schedular;
     }());
