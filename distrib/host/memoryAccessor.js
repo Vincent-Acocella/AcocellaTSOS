@@ -10,7 +10,6 @@ var TSOS;
         };
         //Write from pysical memory to logical
         MemoryAccessor.prototype.write = function (code, segement, index) {
-            //console.log("AT Segment: " + segement + " and index " + index + " ====" + code);
             _Memory.memoryThread[segement][index] = code;
             //Chnage for single entry?
             // _DeviceDisplay.updateMemory();
@@ -18,6 +17,7 @@ var TSOS;
         MemoryAccessor.prototype.read = function (curIndex, segment) {
             return _Memory.memoryThread[segment][curIndex];
         };
+        //-------------------------------------------------------------------------------
         //input the segment and program number
         MemoryAccessor.prototype.setSegtoMemMap = function (progNumber, segment) {
             this.programToSegmentMap[segment] = progNumber;
@@ -30,6 +30,17 @@ var TSOS;
                 }
             }
             return -1;
+        };
+        MemoryAccessor.prototype.removeProgFromSegMap = function (segement) {
+            this.programToSegmentMap[segement] = -1;
+        };
+        // Set memory as avaliable
+        // clear memory 
+        // reset map
+        MemoryAccessor.prototype.programOverCleanUp = function (segment) {
+            _Memory.clearSingleThread(segment);
+            this.removeProgFromSegMap(segment);
+            _MemoryManager.avaliableMemory[segment] = true;
         };
         return MemoryAccessor;
     }());

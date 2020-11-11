@@ -19,13 +19,8 @@ var TSOS;
         }
         Schedular.prototype.init = function () {
         };
-        Schedular.prototype.addProccess = function (PID) {
-            this.allProcesses[PID] = _PCB.returnPCB();
-            _DeviceDisplay.startUpSchedular();
-        };
-        Schedular.prototype.deployToPCB = function (PID) {
-            this.allProcesses[PID];
-        };
+        //--------------------------------------------------------
+        //QUANT
         Schedular.prototype.setQuant = function (value) {
             _Quant = value;
             this.quant = value;
@@ -33,11 +28,48 @@ var TSOS;
         Schedular.prototype.refreshQuant = function () {
             this.quant = _Quant;
         };
+        Schedular.prototype.decreaseQuantum = function () {
+            this.quant--;
+            console.log("Quantum now equals: " + this.quant);
+        };
+        //--------------------------------------------------------
+        //DEPLOY PROCCESS
+        //Main funtion to return the PCB back to the array
+        Schedular.prototype.addProccess = function (PID) {
+            this.allProcesses[PID] = _PCB.returnPCB();
+            _DeviceDisplay.startUpSchedular();
+        };
+        //Used to deploy to the CPU
+        //Can be used after switch or initial start
+        Schedular.prototype.deployFirstInQueueToCPU = function () {
+            //This is the data we want
+            var firstIndex = this.readyQueue.peek();
+            this.allProcesses[firstIndex][7] = "Executing";
+            var array = this.allProcesses[firstIndex];
+            _PCB.loadPCB(array[0], array[1], array[2], array[3], array[4], array[5], array[6], array[7], array[8], array[9]);
+            _PCB.loadCPU();
+            // Load PCB then put into CPU
+        };
+        Schedular.prototype.startCpu = function () {
+            this.deployFirstInQueueToCPU();
+            _CPU.isExecuting = true;
+        };
+        //--------------------------------------------------------
+        //SWITCH MEMORY
+        Schedular.prototype.switchMemoryInterupt = function () {
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(MEM_SWAP, ["Switching Memory"]));
+        };
         //Update ready queue
         Schedular.prototype.switchMemoryUnit = function () {
             this.readyQueue.enqueue(this.readyQueue.dequeue());
             console.log("Switching ready queue");
         };
+        Schedular.prototype.checkIfSwitch = function () {
+            //If the ready queue is empty but the quant is not 0, it was killed so check for both
+            return (this.quant === 0 || this.readyQueue.isEmpty());
+        };
+        //--------------------------------------------------------
+        //READY QUEUE
         Schedular.prototype.addToReadyQueue = function (PID) {
             var added = false;
             if (!this.alreadyExistsInQueue(PID)) {
@@ -46,6 +78,10 @@ var TSOS;
                 added = true;
             }
             return added;
+        };
+        Schedular.prototype.removeFromReadyQueue = function () {
+            this.readyQueue.dequeue();
+            _DeviceDisplay.updateReadyQueue();
         };
         Schedular.prototype.addAllToReadyQueue = function () {
             //3 is the number of segments in memory
@@ -65,6 +101,7 @@ var TSOS;
                 _StdOut.putText("No more programs to execute");
             }
         };
+        //UTIL
         Schedular.prototype.alreadyExistsInQueue = function (prog) {
             var flag = false;
             for (var i = 0; i < this.readyQueue.getSize(); i++) {
@@ -75,36 +112,6 @@ var TSOS;
                 }
             }
             return flag;
-        };
-        Schedular.prototype.checkIfSwitch = function () {
-            if (this.quant === 0) {
-                return true;
-            }
-            else {
-                this.decreaseQuantum();
-                return false;
-            }
-        };
-        Schedular.prototype.decreaseQuantum = function () {
-            this.quant--;
-            console.log("Quantum now equals: " + this.quant);
-        };
-        Schedular.prototype.switchMemory = function () {
-            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TIMER_IRQ, ["Switching Memory"]));
-        };
-        Schedular.prototype.deployFirstInQueueToCPU = function () {
-            //This is the data we want
-            var firstIndex = this.readyQueue.peek();
-            this.allProcesses[firstIndex][7] = "Executing";
-            var array = this.allProcesses[firstIndex];
-            _PCB.loadPCB(array[0], array[1], array[2], array[3], array[4], array[5], array[6], array[7], array[8], array[9]);
-            _PCB.loadCPU();
-            // Load PCB then put into CPU
-            console.log("Array that is being deployed is: " + array);
-        };
-        Schedular.prototype.startCpu = function () {
-            this.deployFirstInQueueToCPU();
-            _CPU.isExecuting = true;
         };
         return Schedular;
     }());

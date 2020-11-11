@@ -82,10 +82,10 @@ module TSOS {
 
                     var interrupt = _KernelInterruptQueue.dequeue();
                     this.krnInterruptHandler(interrupt.irq, interrupt.params);
+                    
                 } else if (_CPU.isExecuting) {
 
                     //Update CPU from PCB
-                    //_PCB.load();
 
                     if(!_SingleStep){
                         _CPU.cycle();

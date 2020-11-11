@@ -12,6 +12,12 @@ var TSOS;
             this.memoryThread = [];
             this.init();
         }
+        //Clear a signle thread of memory when complete or terminated
+        Memory.prototype.clearSingleThread = function (segment) {
+            for (var i = 0; i < 256; i++) {
+                this.memoryThread[segment][i] = "00";
+            }
+        };
         Memory.prototype.init = function () {
             for (var i = 0; i < 256; i++) {
                 this.memorySegment0[i] = "00";

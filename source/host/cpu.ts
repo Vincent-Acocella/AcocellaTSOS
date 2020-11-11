@@ -56,70 +56,76 @@ module TSOS {
 
             //This Line has to Change
             if(this.PC > this.endOfProg){
-                this.isExecuting = false;
-                // _PCB.state = 3;
+                 _PCB.state = "Complete";
+                _Schedular.removeFromReadyQueue();
+                _Schedular.quant = 0;
             }
 
-            //Check if switch is needed
+            _PCB.updateScheduler();
+            _DeviceDisplay.cycleReload();
+
+            //Check to see if we need to switch units
+
+            //LEFT OFF HERE. NEED TO MAKE A CHECK FOR END OF ALL PROGRAMS 
             if(_Schedular.checkIfSwitch()){
-
-            // Check to see if we should change PCB
-            // Update CPU accordingly
-            // Call interupt 
-            // _PCB.save();
-            _Schedular.switchMemoryUnit();
-            
-                //If not decrease quant
+                _Schedular.switchMemoryUnit();
+            }else{
+                if(_Schedular.readyQueue.getSize() !==1)
+                    _Schedular.decreaseQuantum();
             }
 
-            _DeviceDisplay.updateMemory(this.segment, this.PC);
-
-            //Update CPU and memory display in one cycle
+            //_DeviceDisplay.updateMemory(this.segment, this.PC);
+            //Update CPU and memory display in one cycle     
         }
 
-        public fetch(code){
-            let opCode = _Memory.memoryThread[code];
+
+        public fetch(PC){
+
+            let opCode = _MemoryAccessor.read(PC,this.segment)
+
+            console.log("Current OpCode: " + opCode)
+
             this.IR = opCode.toString();
 
             switch(opCode){
                 //Load the accumulator with a constant
                 case "A9":
-                    this.loadAcc(code);
+                    this.loadAcc(PC);
                     break;
 
                 //Load the accumulator from memory
                 case "AD":
-                    this.loadAccFrmMem(code);
+                    this.loadAccFrmMem(PC);
                     break;
 
                 //store the accumulator in memory
                 case "8D":
-                    this.strAccInMem(code);
+                    this.strAccInMem(PC);
                     break;
 
                 //Add a carry
                 case "6D":
-                    this.addCarry(code);
+                    this.addCarry(PC);
                     break;
 
                 //Load the X register with a constant
                 case "A2":
-                    this.loadXregCons(code);
+                    this.loadXregCons(PC);
                     break;
 
                 //Load the X register from memory
                 case "AE":
-                    this.loadXregMem(code);
+                    this.loadXregMem(PC);
                     break;
 
                 //Load the Y register with a constant
                 case "A0":
-                    this.loadYregCons(code);
+                    this.loadYregCons(PC);
                     break;
 
                 //Load the Y register from memory
                 case "AC":
-                    this.loadYregMem(code);
+                    this.loadYregMem(PC);
                     break;
 
                 //No operation
@@ -134,136 +140,31 @@ module TSOS {
 
                 //compare a byte in memory to the X reg. sets Z flag if =
                 case "EC":
-                    this.compXmem(code);
+                    this.compXmem(PC);
                     break;
 
                 //Branch n bytes if Z flag = 0
                 case "D0":
-                    this.branchIfZ(code);
+                    this.branchIfZ(PC);
                     break;
 
                 //Increment the value of a byte
                 case "EE":
-                    this.incremVal(code);
+                    this.incremVal(PC);
                     break;
 
                 //System Call
                 case "FF":
-                    this.systemCall(code);
+                    this.systemCall(PC);
                     break;
                 default:
+
             }
             return this.bytesNeeded;
         }
 
-        private loadAcc(value) {
-            this.bytesNeeded = 2;
-            this.Acc  = this.convToHex(_Memory.memoryThread[value + 1]);
-        }
-
-        private loadAccFrmMem(value) {
-            this.bytesNeeded = 3;
-            if(_Memory.memoryThread[value+2].match("00")){
-                //Load accumulator from memory means that we are taking the location in memory and returning the value to the Accumulator
-                //Location 10 for example is the start position -10
-                //FIX FIX FIX
-               let numInMem = this.convToHex((_Memory.memoryThread[value+1]));
-               this.Acc = this.convToHex(_Memory.memoryThread[numInMem]);
-            }else{
-                _StdOut.putText("Only one memory segment exists currently");
-            }
-        }
-
-        private strAccInMem(value) {
-            this.bytesNeeded = 3;
-            if(_Memory.memoryThread[value+2].match("00")){
-                let locationToStore = this.convToHex((_Memory.memoryThread[value+1]));
-                _Memory.memoryThread[locationToStore] = this.Acc;
-            }else{
-                _StdOut.putText("Only one memory segment exists currently");
-            }
-        }
-
-        private addCarry(value) {
-            this.bytesNeeded = 3;
-            if (_Memory.memoryThread[value + 2].match("00")) {
-                let valuetoAdd = this.convToHex((_Memory.memoryThread[value+1]));
-                this.Acc = valuetoAdd + this.Acc;
-            }else{
-                _StdOut.putText("Only one memory segment exists currently");
-            }
-        }
-
-        private loadXregCons(value) {
-            this.bytesNeeded = 2;
-            this.Xreg = this.convToHex(_Memory.memoryThread[value+1]);
-        }
-
-        private loadXregMem(value) {
-            this.bytesNeeded = 3;
-            if (_Memory.memoryThread[value + 2].match("00")) {
-                let spotInMem = this.convToHex(_Memory.memoryThread[value + 1]);
-                this.Xreg = _Memory.memoryThread[spotInMem];
-            }else{
-                _StdOut.putText("Only one memory segment exists currently");
-            }
-        }
-
-        private loadYregCons(value) {
-            this.bytesNeeded = 2;
-            this.Yreg = this.convToHex(_Memory.memoryThread[value+1]);
-        }
-
-        private loadYregMem(value) {
-            this.bytesNeeded = 3;
-            if (_Memory.memoryThread[value + 2].match("00")) {
-                let spotInMem = this.convToHex(_Memory.memoryThread[value + 1]);
-                this.Yreg = this.convToHex(_Memory.memoryThread[spotInMem]);
-            }else{
-                _StdOut.putText("Only one memory segment exists currently");
-            }
-        }
-
-        private compXmem(value) {
-            this.bytesNeeded = 3;
-            if (_Memory.memoryThread[value + 2].match("00")) {
-                let spotInMem = this.convToHex(_Memory.memoryThread[value + 1]);
-                this.Zflag = (this.Xreg === spotInMem)? 1:0;
-            }else{
-                _StdOut.putText("Only one memory segment exists currently");
-            }
-        }
-
-        private branchIfZ(value) {
-
-            if(this.Zflag === 0){
-                //Gets location to set the program counter to
-                this.PC = this.convToHex(_Memory.memoryThread[value + 1]);
-
-                //If we are branching to 0
-                if(this.PC === 0){
-                    this.bytesNeeded = -1;
-                }else{
-                    console.log(this.PC);
-                    this.bytesNeeded = (-1 * (this.PC+1));
-                }
-            }else{
-                this.bytesNeeded = 2;
-            }
-        }
-
-        private incremVal(value) {
-            this.bytesNeeded = 3;
-            if (_Memory.memoryThread[value + 2].match("00")) {
-                let temp = this.convToHex(_Memory.memoryThread[value + 1]);
-                _Memory.memoryThread[value+1] = temp+1;
-            }else{
-                _StdOut.putText("Only one memory segment exists currently");
-            }
-        }
-        private break() {
-            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(STOP_EXEC_IRQ, ["PID " + _PCB.PID + " has finished."]));
-        }
+//----------------------------------------------------------------------------------
+        //Bytes needed = 1
 
         public systemCall(code){
             this.bytesNeeded = 1;
@@ -279,6 +180,137 @@ module TSOS {
             }
         }
 
+//----------------------------------------------------------------------------------
+        
+        //GOOD
+        private loadAcc(value) {
+            this.bytesNeeded = 2;
+
+            //Loads next value in memory
+            let newValue = _MemoryAccessor.read(value+1, this.segment)
+            this.Acc = this.convToHex(newValue);
+        }
+
+        //All of this has to change
+
+        //8D
+        private loadAccFrmMem(value) {
+            this.bytesNeeded = 3;
+
+            //First byte is the op
+            //Second is the segment
+            //thrid is the location
+
+          let segmentToLook:number =  this.returnSegmentFromMemory(_MemoryAccessor.read(value+1, this.segment));
+          console.log("Segment found in memory: "+ segmentToLook);
+
+          if(segmentToLook < 0){
+              _StdOut.putText("Invalid opcode detected")
+          }else{
+
+            let valueInMemory = _MemoryAccessor.read(value + 2, segmentToLook);
+            console.log("Location to grab: " + valueInMemory);
+            this.Acc = valueInMemory;
+          }
+        }
+
+        private strAccInMem(value) {
+            this.bytesNeeded = 3;
+
+            let segmentToLook:number =  this.returnSegmentFromMemory(_MemoryAccessor.read(value+1, this.segment));
+           
+            if(segmentToLook < 0){
+                 _StdOut.putText("Invalid opcode detected")
+            }else{
+                let valueInMemory = _MemoryAccessor.read(value+2, segmentToLook);
+                //console.log("Location to grab: " + valueInMemory);
+                this.Acc = valueInMemory;
+          }
+        }
+
+        private addCarry(value) {
+            this.bytesNeeded = 3;
+            // if (_Memory.memoryThread[value + 2].match("00")) {
+            //     let valuetoAdd = this.convToHex((_Memory.memoryThread[value+1]));
+            //     this.Acc = valuetoAdd + this.Acc;
+            // }else{
+            //     _StdOut.putText("Only one memory segment exists currently");
+            // }
+        }
+
+        private loadXregCons(value) {
+            this.bytesNeeded = 2;
+            // this.Xreg = this.convToHex(_Memory.memoryThread[value+1]);
+        }
+
+        private loadXregMem(value) {
+            this.bytesNeeded = 3;
+            // if (_Memory.memoryThread[value + 2].match("00")) {
+            //     let spotInMem = this.convToHex(_Memory.memoryThread[value + 1]);
+            //     this.Xreg = _Memory.memoryThread[spotInMem];
+            // }else{
+            //     _StdOut.putText("Only one memory segment exists currently");
+            // }
+        }
+
+        private loadYregCons(value) {
+            this.bytesNeeded = 2;
+            // this.Yreg = this.convToHex(_Memory.memoryThread[value+1]);
+        }
+
+        private loadYregMem(value) {
+            this.bytesNeeded = 3;
+            // if (_Memory.memoryThread[value + 2].match("00")) {
+            //     let spotInMem = this.convToHex(_Memory.memoryThread[value + 1]);
+            //     this.Yreg = this.convToHex(_Memory.memoryThread[spotInMem]);
+            // }else{
+            //     _StdOut.putText("Only one memory segment exists currently");
+            // }
+        }
+
+        private compXmem(value) {
+            this.bytesNeeded = 3;
+            // if (_Memory.memoryThread[value + 2].match("00")) {
+            //     let spotInMem = this.convToHex(_Memory.memoryThread[value + 1]);
+            //     this.Zflag = (this.Xreg === spotInMem)? 1:0;
+            // }else{
+            //     _StdOut.putText("Only one memory segment exists currently");
+            // }
+        }
+
+        private branchIfZ(value) {
+
+            if(this.Zflag === 0){
+                //Gets location to set the program counter to
+                // this.PC = this.convToHex(_Memory.memoryThread[value + 1]);
+
+                //If we are branching to 0
+                if(this.PC === 0){
+                    this.bytesNeeded = -1;
+                }else{
+                    console.log(this.PC);
+                    this.bytesNeeded = (-1 * (this.PC+1));
+                }
+            }else{
+                this.bytesNeeded = 2;
+            }
+        }
+
+        private incremVal(value) {
+            this.bytesNeeded = 3;
+            // if (_Memory.memoryThread[value + 2].match("00")) {
+            //     let temp = this.convToHex(_Memory.memoryThread[value + 1]);
+            //     _Memory.memoryThread[value+1] = temp+1;
+            // }else{
+            //     _StdOut.putText("Only one memory segment exists currently");
+            // }
+        }
+        
+        private break() {
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(STOP_EXEC_IRQ, ["PID " + _PCB.PID + " has finished."]));
+        }
+
+       
         private printIntYReg(){
             // #$01 in X reg = print the integer stored in the Y register.
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(PRINT_YREGInt_ERQ, ["Printing int from X register"]));
@@ -297,5 +329,30 @@ module TSOS {
              return parseInt(value.toString(), 16);
         }
 
+        //If this errors then there is an error in the code
+        private returnSegmentFromMemory(byte){
+
+            let temp = -1;
+
+            switch(byte){
+                case "00":
+                    temp = 0;
+                    break
+                case "01":
+                    temp = 1;
+                    break
+                case "02":
+                    temp = 2;
+                    break
+                default:
+                    return -1;
+            }
+
+            //If false that means it is in use which is good
+            if(!_MemoryManager.avaliableMemory[temp]){
+                return temp;
+            }
+            return -1;
+        }
     }
 }

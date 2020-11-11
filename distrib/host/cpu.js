@@ -61,56 +61,60 @@ var TSOS;
             }
             //This Line has to Change
             if (this.PC > this.endOfProg) {
-                this.isExecuting = false;
-                // _PCB.state = 3;
+                _PCB.state = "Complete";
+                _Schedular.removeFromReadyQueue();
+                _Schedular.quant = 0;
             }
-            //Check if switch is needed
+            _PCB.updateScheduler();
+            _DeviceDisplay.cycleReload();
+            //Check to see if we need to switch units
+            //LEFT OFF HERE. NEED TO MAKE A CHECK FOR END OF ALL PROGRAMS 
             if (_Schedular.checkIfSwitch()) {
-                // Check to see if we should change PCB
-                // Update CPU accordingly
-                // Call interupt 
-                // _PCB.save();
                 _Schedular.switchMemoryUnit();
-                //If not decrease quant
             }
-            _DeviceDisplay.updateMemory(this.segment, this.PC);
-            //Update CPU and memory display in one cycle
+            else {
+                if (_Schedular.readyQueue.getSize() !== 1)
+                    _Schedular.decreaseQuantum();
+            }
+            //_DeviceDisplay.updateMemory(this.segment, this.PC);
+            //Update CPU and memory display in one cycle     
         };
-        Cpu.prototype.fetch = function (code) {
-            var opCode = _Memory.memoryThread[code];
+        Cpu.prototype.fetch = function (PC) {
+            var opCode = _MemoryAccessor.read(PC, this.segment);
+            console.log("Current OpCode: " + opCode);
             this.IR = opCode.toString();
             switch (opCode) {
                 //Load the accumulator with a constant
                 case "A9":
-                    this.loadAcc(code);
+                    this.loadAcc(PC);
                     break;
                 //Load the accumulator from memory
                 case "AD":
-                    this.loadAccFrmMem(code);
+                    this.loadAccFrmMem(PC);
                     break;
                 //store the accumulator in memory
                 case "8D":
-                    this.strAccInMem(code);
+                    this.strAccInMem(PC);
                     break;
                 //Add a carry
                 case "6D":
-                    this.addCarry(code);
+                    this.addCarry(PC);
                     break;
                 //Load the X register with a constant
                 case "A2":
-                    this.loadXregCons(code);
+                    this.loadXregCons(PC);
                     break;
                 //Load the X register from memory
                 case "AE":
-                    this.loadXregMem(code);
+                    this.loadXregMem(PC);
                     break;
                 //Load the Y register with a constant
                 case "A0":
-                    this.loadYregCons(code);
+                    this.loadYregCons(PC);
                     break;
                 //Load the Y register from memory
                 case "AC":
-                    this.loadYregMem(code);
+                    this.loadYregMem(PC);
                     break;
                 //No operation
                 case "EA":
@@ -122,103 +126,125 @@ var TSOS;
                     break;
                 //compare a byte in memory to the X reg. sets Z flag if =
                 case "EC":
-                    this.compXmem(code);
+                    this.compXmem(PC);
                     break;
                 //Branch n bytes if Z flag = 0
                 case "D0":
-                    this.branchIfZ(code);
+                    this.branchIfZ(PC);
                     break;
                 //Increment the value of a byte
                 case "EE":
-                    this.incremVal(code);
+                    this.incremVal(PC);
                     break;
                 //System Call
                 case "FF":
-                    this.systemCall(code);
+                    this.systemCall(PC);
                     break;
                 default:
             }
             return this.bytesNeeded;
         };
+        //----------------------------------------------------------------------------------
+        //Bytes needed = 1
+        Cpu.prototype.systemCall = function (code) {
+            this.bytesNeeded = 1;
+            switch (_CPU.Xreg) {
+                case 1: // Print integer from y register
+                    _CPU.printIntYReg();
+                    break;
+                case 2: // Print 00 terminated string from y register
+                    _CPU.printStringYReg();
+                    break;
+                default:
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_STRING, ["Invalid system call operation, stoping execution."]));
+            }
+        };
+        //----------------------------------------------------------------------------------
+        //GOOD
         Cpu.prototype.loadAcc = function (value) {
             this.bytesNeeded = 2;
-            this.Acc = this.convToHex(_Memory.memoryThread[value + 1]);
+            //Loads next value in memory
+            var newValue = _MemoryAccessor.read(value + 1, this.segment);
+            this.Acc = this.convToHex(newValue);
         };
+        //All of this has to change
         Cpu.prototype.loadAccFrmMem = function (value) {
             this.bytesNeeded = 3;
-            if (_Memory.memoryThread[value + 2].match("00")) {
-                //Load accumulator from memory means that we are taking the location in memory and returning the value to the Accumulator
-                //Location 10 for example is the start position -10
-                //FIX FIX FIX
-                var numInMem = this.convToHex((_Memory.memoryThread[value + 1]));
-                this.Acc = this.convToHex(_Memory.memoryThread[numInMem]);
+            //First byte is the op
+            //Second is the segment
+            //thrid is the location
+            var segmentToLook = this.returnSegmentFromMemory(_MemoryAccessor.read(value + 1, this.segment));
+            console.log("Segment found in memory: " + segmentToLook);
+            if (segmentToLook < 0) {
+                _StdOut.putText("Invalid opcode detected");
             }
             else {
-                _StdOut.putText("Only one memory segment exists currently");
+                var valueInMemory = _MemoryAccessor.read(value + 2, segmentToLook);
+                console.log("Location to grab: " + valueInMemory);
+                this.Acc = valueInMemory;
             }
         };
         Cpu.prototype.strAccInMem = function (value) {
             this.bytesNeeded = 3;
-            if (_Memory.memoryThread[value + 2].match("00")) {
-                var locationToStore = this.convToHex((_Memory.memoryThread[value + 1]));
-                _Memory.memoryThread[locationToStore] = this.Acc;
+            var segmentToLook = this.returnSegmentFromMemory(_MemoryAccessor.read(value + 1, this.segment));
+            //console.log("Segment found in memory: " + segmentToLook);
+            if (segmentToLook < 0) {
+                _StdOut.putText("Invalid opcode detected");
             }
             else {
-                _StdOut.putText("Only one memory segment exists currently");
+                var valueInMemory = _MemoryAccessor.read(value + 2, segmentToLook);
+                //console.log("Location to grab: " + valueInMemory);
+                this.Acc = valueInMemory;
             }
         };
         Cpu.prototype.addCarry = function (value) {
             this.bytesNeeded = 3;
-            if (_Memory.memoryThread[value + 2].match("00")) {
-                var valuetoAdd = this.convToHex((_Memory.memoryThread[value + 1]));
-                this.Acc = valuetoAdd + this.Acc;
-            }
-            else {
-                _StdOut.putText("Only one memory segment exists currently");
-            }
+            // if (_Memory.memoryThread[value + 2].match("00")) {
+            //     let valuetoAdd = this.convToHex((_Memory.memoryThread[value+1]));
+            //     this.Acc = valuetoAdd + this.Acc;
+            // }else{
+            //     _StdOut.putText("Only one memory segment exists currently");
+            // }
         };
         Cpu.prototype.loadXregCons = function (value) {
             this.bytesNeeded = 2;
-            this.Xreg = this.convToHex(_Memory.memoryThread[value + 1]);
+            // this.Xreg = this.convToHex(_Memory.memoryThread[value+1]);
         };
         Cpu.prototype.loadXregMem = function (value) {
             this.bytesNeeded = 3;
-            if (_Memory.memoryThread[value + 2].match("00")) {
-                var spotInMem = this.convToHex(_Memory.memoryThread[value + 1]);
-                this.Xreg = _Memory.memoryThread[spotInMem];
-            }
-            else {
-                _StdOut.putText("Only one memory segment exists currently");
-            }
+            // if (_Memory.memoryThread[value + 2].match("00")) {
+            //     let spotInMem = this.convToHex(_Memory.memoryThread[value + 1]);
+            //     this.Xreg = _Memory.memoryThread[spotInMem];
+            // }else{
+            //     _StdOut.putText("Only one memory segment exists currently");
+            // }
         };
         Cpu.prototype.loadYregCons = function (value) {
             this.bytesNeeded = 2;
-            this.Yreg = this.convToHex(_Memory.memoryThread[value + 1]);
+            // this.Yreg = this.convToHex(_Memory.memoryThread[value+1]);
         };
         Cpu.prototype.loadYregMem = function (value) {
             this.bytesNeeded = 3;
-            if (_Memory.memoryThread[value + 2].match("00")) {
-                var spotInMem = this.convToHex(_Memory.memoryThread[value + 1]);
-                this.Yreg = this.convToHex(_Memory.memoryThread[spotInMem]);
-            }
-            else {
-                _StdOut.putText("Only one memory segment exists currently");
-            }
+            // if (_Memory.memoryThread[value + 2].match("00")) {
+            //     let spotInMem = this.convToHex(_Memory.memoryThread[value + 1]);
+            //     this.Yreg = this.convToHex(_Memory.memoryThread[spotInMem]);
+            // }else{
+            //     _StdOut.putText("Only one memory segment exists currently");
+            // }
         };
         Cpu.prototype.compXmem = function (value) {
             this.bytesNeeded = 3;
-            if (_Memory.memoryThread[value + 2].match("00")) {
-                var spotInMem = this.convToHex(_Memory.memoryThread[value + 1]);
-                this.Zflag = (this.Xreg === spotInMem) ? 1 : 0;
-            }
-            else {
-                _StdOut.putText("Only one memory segment exists currently");
-            }
+            // if (_Memory.memoryThread[value + 2].match("00")) {
+            //     let spotInMem = this.convToHex(_Memory.memoryThread[value + 1]);
+            //     this.Zflag = (this.Xreg === spotInMem)? 1:0;
+            // }else{
+            //     _StdOut.putText("Only one memory segment exists currently");
+            // }
         };
         Cpu.prototype.branchIfZ = function (value) {
             if (this.Zflag === 0) {
                 //Gets location to set the program counter to
-                this.PC = this.convToHex(_Memory.memoryThread[value + 1]);
+                // this.PC = this.convToHex(_Memory.memoryThread[value + 1]);
                 //If we are branching to 0
                 if (this.PC === 0) {
                     this.bytesNeeded = -1;
@@ -234,29 +260,15 @@ var TSOS;
         };
         Cpu.prototype.incremVal = function (value) {
             this.bytesNeeded = 3;
-            if (_Memory.memoryThread[value + 2].match("00")) {
-                var temp = this.convToHex(_Memory.memoryThread[value + 1]);
-                _Memory.memoryThread[value + 1] = temp + 1;
-            }
-            else {
-                _StdOut.putText("Only one memory segment exists currently");
-            }
+            // if (_Memory.memoryThread[value + 2].match("00")) {
+            //     let temp = this.convToHex(_Memory.memoryThread[value + 1]);
+            //     _Memory.memoryThread[value+1] = temp+1;
+            // }else{
+            //     _StdOut.putText("Only one memory segment exists currently");
+            // }
         };
         Cpu.prototype["break"] = function () {
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(STOP_EXEC_IRQ, ["PID " + _PCB.PID + " has finished."]));
-        };
-        Cpu.prototype.systemCall = function (code) {
-            this.bytesNeeded = 1;
-            switch (_CPU.Xreg) {
-                case 1: // Print integer from y register
-                    _CPU.printIntYReg();
-                    break;
-                case 2: // Print 00 terminated string from y register
-                    _CPU.printStringYReg();
-                    break;
-                default:
-                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_STRING, ["Invalid system call operation, stoping execution."]));
-            }
         };
         Cpu.prototype.printIntYReg = function () {
             // #$01 in X reg = print the integer stored in the Y register.
@@ -272,6 +284,18 @@ var TSOS;
         };
         Cpu.prototype.convToHex = function (value) {
             return parseInt(value.toString(), 16);
+        };
+        Cpu.prototype.returnSegmentFromMemory = function (memoryString) {
+            switch (memoryString) {
+                case "00":
+                    return 0;
+                case "01":
+                    return 1;
+                case "02":
+                    return 2;
+                default:
+                    return -1;
+            }
         };
         return Cpu;
     }());

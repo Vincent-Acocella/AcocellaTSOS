@@ -12,7 +12,6 @@ module TSOS{
 
         //Write from pysical memory to logical
         public write(code: string, segement:number, index:number){
-            //console.log("AT Segment: " + segement + " and index " + index + " ====" + code);
             _Memory.memoryThread[segement][index] = code;
             
             //Chnage for single entry?
@@ -22,6 +21,9 @@ module TSOS{
         public read(curIndex: number, segment:number){
             return _Memory.memoryThread[segment][curIndex];
         }
+
+
+//-------------------------------------------------------------------------------
 
         //input the segment and program number
         public setSegtoMemMap(progNumber:number, segment:number){
@@ -36,6 +38,19 @@ module TSOS{
                 }
             }
             return -1;
+        }
+
+        public removeProgFromSegMap(segement){
+            this.programToSegmentMap[segement] = -1;
+        }
+
+        // Set memory as avaliable
+        // clear memory 
+        // reset map
+        public programOverCleanUp(segment){
+            _Memory.clearSingleThread(segment);
+            this.removeProgFromSegMap(segment);
+            _MemoryManager.avaliableMemory[segment] = true;
         }
     }
 }

@@ -73,7 +73,6 @@ var TSOS;
             }
             else if (_CPU.isExecuting) {
                 //Update CPU from PCB
-                //_PCB.load();
                 if (!_SingleStep) {
                     _CPU.cycle();
                 }

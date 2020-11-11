@@ -406,26 +406,13 @@ module TSOS {
 
             if(args.length > 0){
 
-                let segment = _MemoryAccessor.getProgFromSegMap(args);
-                //Checks to see if the program exists in memory
-                if(segment < 0){
-                    _StdOut.putText("Could not run program.... not in memory");
-                }else{
-
-                    //Put in ready queue if no duplicates
-                   if(_Schedular.addToReadyQueue(args)){
-                    //If CPU is not executing execute
-                    if(!_CPU.isExecuting){
-                        _Schedular.deployFirstInQueueToCPU();
-                        _Schedular.startCpu();
-                    }
-                   }else{
-                    _StdOut.putText("Program " + args + " is already in the ready queue");
-                   }
-                }
+                _MemoryManager.runMemory(args)
+                
             } else{
                 _StdOut.putText("Please input a program");
             }
+
+                
         }
 
         public shellRunAll(){

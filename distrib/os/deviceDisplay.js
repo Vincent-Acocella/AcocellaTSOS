@@ -6,10 +6,17 @@ var TSOS;
             this.startUpCPU();
             this.startUpSchedular();
         }
-        // public updateMemory(segment, PC, value){
-        //     let newIndex = _MemoryAccessor.read(PC,segment);
-        //     //Change the new index value
-        // }
+        DeviceDisplay.prototype.cycleReload = function () {
+            this.updateCPU();
+            this.updateSchedular();
+        };
+        DeviceDisplay.prototype.highlightMemory = function (segment, PC) {
+            var stringMemory = _Memory.memoryThread[0].concat(_Memory.memoryThread[1], _Memory.memoryThread[2]);
+            var newIndex = _MemoryAccessor.read(PC, segment);
+            console.log(newIndex);
+            var table = document.getElementById('memoryUnit');
+            //Change the new index value
+        };
         DeviceDisplay.prototype.startUpMemory = function () {
             var table = document.getElementById('memoryUnit');
             var stringMemory = _Memory.memoryThread[0].concat(_Memory.memoryThread[1], _Memory.memoryThread[2]);
@@ -60,6 +67,14 @@ var TSOS;
             for (var i = 0; i < header.length; i++) {
                 var next = row.insertCell(i);
                 next.innerHTML = String(header[i]);
+            }
+        };
+        DeviceDisplay.prototype.updateSchedular = function () {
+            var table = document.getElementById("processeList");
+            table.deleteRow(_PCB.PID + 1);
+            var row = table.insertRow(_PCB.PID + 1);
+            for (var i = 0; i < 9; i++) {
+                row.insertCell(i).innerHTML = _Schedular.allProcesses[_PCB.PID][i];
             }
         };
         DeviceDisplay.prototype.startUpSchedular = function () {

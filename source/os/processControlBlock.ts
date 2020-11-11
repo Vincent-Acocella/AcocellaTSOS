@@ -39,20 +39,25 @@ module TSOS{
             this.endIndex = 0;
         }
 
+
         public newTask(PID, segment, index){
+            //We need to save the state of the PCB in case it is being used
+            let tempPCB = this.returnPCB();
+            this.init();
             let tempPID = parseInt(PID);
             this.PID = tempPID;
             this.location = segment;
             this.endIndex = index;
             this.state = "ready";
             _Schedular.addProccess(PID);
+            this.loadPCB(tempPCB[0],tempPCB[1],tempPCB[2],tempPCB[3],tempPCB[4],tempPCB[5],tempPCB[6],tempPCB[7],tempPCB[8],tempPCB[9])
         }
 
         public loadPCB(PID, PC, ACC, X, Y, Z,IR, state, loc, end){
 
             this.PID = PID;
             this.PC = PC;
-            this.Acc = ACC;
+            this.Acc = ACC
             this.Xreg = X;
             this.Yreg = Y;
             this.Zflag = Z;
@@ -62,10 +67,27 @@ module TSOS{
             this.endIndex = end;
         }
 
+        public copyCPU(){
+            this.PC = _CPU.PC
+            this.Zflag = _CPU.Zflag
+            this.Xreg = _CPU.Xreg
+            this.location = _CPU.segment
+            this.IR = _CPU.IR
+            this.Acc = _CPU.Acc
+            this.endIndex = _CPU.endOfProg
+            this.Yreg = _CPU.Yreg
+        }
+
+        public updateScheduler(){
+            this.copyCPU()
+            _Schedular.addProccess(this.PID);
+        }
+
         public loadCPU(){
 
             _CPU.PC = this.PC;
             _CPU.Zflag = this.Zflag;
+            _CPU.Acc = this.Acc
             _CPU.Yreg = this.Yreg;
             _CPU.Xreg = this.Xreg;
             _CPU.IR = this.IR;

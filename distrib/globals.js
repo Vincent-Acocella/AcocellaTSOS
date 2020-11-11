@@ -20,6 +20,7 @@ var PRINT_YREGInt_ERQ = 1;
 var TERMINATE_STRING = 2;
 var STOP_EXEC_IRQ = 4;
 var _RoundRobin = false;
+var MEM_SWAP = 3;
 //
 // Global Variables
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.

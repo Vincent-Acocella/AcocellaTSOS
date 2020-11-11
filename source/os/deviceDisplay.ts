@@ -7,17 +7,18 @@ module TSOS{
             this.startUpSchedular();
         }
 
+        public cycleReload(){
+           this.updateCPU();
+           this.updateSchedular();
+        }
+
         public highlightMemory(segment, PC){
             let stringMemory = _Memory.memoryThread[0].concat(_Memory.memoryThread[1],_Memory.memoryThread[2]);
             let newIndex = _MemoryAccessor.read(PC,segment);
 
-
             console.log(newIndex);
 
             let table: HTMLTableElement = <HTMLTableElement>document.getElementById('memoryUnit');
-
-
-
 
             //Change the new index value
         }
@@ -85,6 +86,15 @@ module TSOS{
             for(let i = 0; i < header.length; i++){
                 let next = row.insertCell(i);
                 next.innerHTML = String(header[i]);
+            }
+        }
+        public updateSchedular(){
+            let table: HTMLTableElement = <HTMLTableElement>document.getElementById("processeList");
+            table.deleteRow(_PCB.PID+1);
+            let row = table.insertRow(_PCB.PID+1);
+
+            for(let i = 0; i < 9; i++){
+               row.insertCell(i).innerHTML =_Schedular.allProcesses[_PCB.PID][i]
             }
         }
 

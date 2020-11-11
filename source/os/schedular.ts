@@ -17,19 +17,11 @@ module TSOS{
         public quant = _Quant;
         constructor(){
         }
-
         public init(){
         }
 
-        public addProccess(PID){
-            this.allProcesses[PID] = _PCB.returnPCB();
-            _DeviceDisplay.startUpSchedular();
-        }
-
-        public deployToPCB(PID){
-            this.allProcesses[PID];
-        }
-
+//--------------------------------------------------------
+        //QUANT
         public setQuant(value){
             _Quant = value;
             this.quant = value; 
@@ -39,11 +31,64 @@ module TSOS{
             this.quant =_Quant;
         }
 
+        public decreaseQuantum(){
+            this.quant--;
+            console.log("Quantum now equals: " + this.quant);
+        }
+
+//--------------------------------------------------------
+
+        //DEPLOY PROCCESS
+
+        //Main funtion to return the PCB back to the array
+        public addProccess(PID){
+            this.allProcesses[PID] = _PCB.returnPCB();
+            _DeviceDisplay.startUpSchedular();
+        }
+
+        //Used to deploy to the CPU
+        //Can be used after switch or initial start
+        public deployFirstInQueueToCPU(){
+
+            //This is the data we want
+            let firstIndex = this.readyQueue.peek();
+            this.allProcesses[firstIndex][7] = "Executing";
+            var array = this.allProcesses[firstIndex];
+
+            _PCB.loadPCB(array[0], array[1],array[2],array[3],array[4],array[5],array[6],array[7],array[8],array[9]);
+            _PCB.loadCPU();
+           // Load PCB then put into CPU
+        }
+
+        public startCpu(){
+            this.deployFirstInQueueToCPU();
+            _CPU.isExecuting = true;
+        }
+
+//--------------------------------------------------------
+
+        //SWITCH MEMORY
+
+        public switchMemoryInterupt(){
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(MEM_SWAP, ["Switching Memory"]));
+        }
+
         //Update ready queue
         public switchMemoryUnit(){
             this.readyQueue.enqueue(this.readyQueue.dequeue());
             console.log("Switching ready queue");
         }
+
+        public checkIfSwitch(){
+            //If the ready queue is empty but the quant is not 0, it was killed so check for both
+            return (this.quant === 0 || this.readyQueue.isEmpty())
+        }
+
+
+//--------------------------------------------------------
+
+        //READY QUEUE
+
 
         public addToReadyQueue(PID){
             let added = false;
@@ -53,6 +98,11 @@ module TSOS{
                 added = true;
             }
             return added;
+        }
+
+        public removeFromReadyQueue(){
+            this.readyQueue.dequeue();
+            _DeviceDisplay.updateReadyQueue();
         }
 
         public addAllToReadyQueue(){
@@ -69,13 +119,16 @@ module TSOS{
            if(added){
             _CPU.isExecuting = true;
             _DeviceDisplay.updateReadyQueue();
+
            }else{
                _StdOut.putText("No more programs to execute");
            }
         }
 
+        //UTIL
         public alreadyExistsInQueue(prog){
             let flag = false;
+
             for(let i = 0; i < this.readyQueue.getSize(); i++){
                 let pullVal = this.readyQueue.dequeue();
                 this.readyQueue.enqueue(pullVal);
@@ -85,43 +138,5 @@ module TSOS{
             }
             return flag;
         }
-
-        public checkIfSwitch(){
-            if(this.quant === 0){
-                return true;
-
-            }else{
-                this.decreaseQuantum();
-                return false;
-            }      
-        }
-
-        public decreaseQuantum(){
-            this.quant--;
-            console.log("Quantum now equals: " + this.quant);
-        }
-
-        public switchMemory(){
-            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TIMER_IRQ, ["Switching Memory"]));
-        }
-
-        public deployFirstInQueueToCPU(){
-
-            //This is the data we want
-            let firstIndex = this.readyQueue.peek();
-            this.allProcesses[firstIndex][7] = "Executing";
-            var array = this.allProcesses[firstIndex];
-
-            _PCB.loadPCB(array[0], array[1],array[2],array[3],array[4],array[5],array[6],array[7],array[8],array[9]);
-            _PCB.loadCPU();
-           // Load PCB then put into CPU
-           console.log("Array that is being deployed is: " + array);
-        }
-
-        public startCpu(){
-            this.deployFirstInQueueToCPU();
-            _CPU.isExecuting = true;
-        }
-
     }
 }
