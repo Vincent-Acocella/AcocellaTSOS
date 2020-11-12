@@ -52,6 +52,9 @@ module TSOS {
             }else{
                 //Increment by bytes
                 this.PC+= moveThatBus;
+                if(this.PC > this.endOfProg){
+                    _StdOut.putText("Branched out of memory");
+                }
             }
 
             //This Line has to Change
@@ -181,8 +184,7 @@ module TSOS {
         }
 
 //----------------------------------------------------------------------------------
-        
-        //GOOD
+
         private loadAcc(value) {
             this.bytesNeeded = 2;
 
@@ -207,13 +209,14 @@ module TSOS {
           if(segmentToLook < 0){
               _StdOut.putText("Invalid opcode detected")
           }else{
-
             let valueInMemory = _MemoryAccessor.read(value + 2, segmentToLook);
             console.log("Location to grab: " + valueInMemory);
             this.Acc = valueInMemory;
           }
         }
 
+        //Store the Acc in memory
+        //value +2 is where to store 
         private strAccInMem(value) {
             this.bytesNeeded = 3;
 
@@ -222,60 +225,69 @@ module TSOS {
             if(segmentToLook < 0){
                  _StdOut.putText("Invalid opcode detected")
             }else{
-                let valueInMemory = _MemoryAccessor.read(value+2, segmentToLook);
-                //console.log("Location to grab: " + valueInMemory);
-                this.Acc = valueInMemory;
+                _Memory.memoryThread[segmentToLook][value+2] = this.Acc
           }
         }
 
         private addCarry(value) {
             this.bytesNeeded = 3;
-            // if (_Memory.memoryThread[value + 2].match("00")) {
-            //     let valuetoAdd = this.convToHex((_Memory.memoryThread[value+1]));
-            //     this.Acc = valuetoAdd + this.Acc;
-            // }else{
-            //     _StdOut.putText("Only one memory segment exists currently");
-            // }
+
+            let segmentToLook:number =  this.returnSegmentFromMemory(_MemoryAccessor.read(value+1, this.segment));
+           
+            if(segmentToLook < 0){
+                 _StdOut.putText("Invalid opcode detected")
+            }else{
+                let valueToAdd = _MemoryAccessor.read(value+2, segmentToLook);
+                this.Acc = valueToAdd + valueToAdd;
+                console.log("Acc: " + this.Acc);
+            }
         }
 
         private loadXregCons(value) {
             this.bytesNeeded = 2;
-            // this.Xreg = this.convToHex(_Memory.memoryThread[value+1]);
+            this.Xreg = _MemoryAccessor.read(value+1, this.segment);
         }
 
         private loadXregMem(value) {
             this.bytesNeeded = 3;
-            // if (_Memory.memoryThread[value + 2].match("00")) {
-            //     let spotInMem = this.convToHex(_Memory.memoryThread[value + 1]);
-            //     this.Xreg = _Memory.memoryThread[spotInMem];
-            // }else{
-            //     _StdOut.putText("Only one memory segment exists currently");
-            // }
+
+            let segmentToLook:number =  this.returnSegmentFromMemory(_MemoryAccessor.read(value+1, this.segment));
+           
+            if(segmentToLook < 0){
+                 _StdOut.putText("Invalid opcode detected");
+            }else{
+                this.Xreg = _MemoryAccessor.read(value + 2, segmentToLook)
+            }
         }
 
         private loadYregCons(value) {
             this.bytesNeeded = 2;
-            // this.Yreg = this.convToHex(_Memory.memoryThread[value+1]);
+             this.Yreg = _MemoryAccessor.read(value+1, this.segment);
         }
 
         private loadYregMem(value) {
             this.bytesNeeded = 3;
-            // if (_Memory.memoryThread[value + 2].match("00")) {
-            //     let spotInMem = this.convToHex(_Memory.memoryThread[value + 1]);
-            //     this.Yreg = this.convToHex(_Memory.memoryThread[spotInMem]);
-            // }else{
-            //     _StdOut.putText("Only one memory segment exists currently");
-            // }
+
+            let segmentToLook:number =  this.returnSegmentFromMemory(_MemoryAccessor.read(value+1, this.segment));
+           
+            if(segmentToLook < 0){
+                 _StdOut.putText("Invalid opcode detected");
+            }else{
+                this.Yreg = _MemoryAccessor.read(value + 2, segmentToLook)
+            }
         }
 
         private compXmem(value) {
             this.bytesNeeded = 3;
-            // if (_Memory.memoryThread[value + 2].match("00")) {
-            //     let spotInMem = this.convToHex(_Memory.memoryThread[value + 1]);
-            //     this.Zflag = (this.Xreg === spotInMem)? 1:0;
-            // }else{
-            //     _StdOut.putText("Only one memory segment exists currently");
-            // }
+
+            let segmentToLook:number =  this.returnSegmentFromMemory(_MemoryAccessor.read(value+1, this.segment));
+           
+            if(segmentToLook < 0){
+                 _StdOut.putText("Invalid opcode detected");
+            }else{
+                let valueToCompair = _MemoryAccessor.read(value+2,segmentToLook);
+                this.Zflag = (this.Xreg === valueToCompair)? 1:0;
+             }
         }
 
         private branchIfZ(value) {
@@ -283,7 +295,6 @@ module TSOS {
             if(this.Zflag === 0){
                 //Gets location to set the program counter to
                 // this.PC = this.convToHex(_Memory.memoryThread[value + 1]);
-
                 //If we are branching to 0
                 if(this.PC === 0){
                     this.bytesNeeded = -1;
@@ -298,19 +309,22 @@ module TSOS {
 
         private incremVal(value) {
             this.bytesNeeded = 3;
-            // if (_Memory.memoryThread[value + 2].match("00")) {
-            //     let temp = this.convToHex(_Memory.memoryThread[value + 1]);
-            //     _Memory.memoryThread[value+1] = temp+1;
-            // }else{
-            //     _StdOut.putText("Only one memory segment exists currently");
-            // }
+
+            let segmentToLook:number =  this.returnSegmentFromMemory(_MemoryAccessor.read(value+1, this.segment));
+           
+            if(segmentToLook < 0){
+                _StdOut.putText("Invalid opcode detected");
+            }else{
+                _Memory.memoryThread[segmentToLook][value+2]++;
+            }
         }
         
         private break() {
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(STOP_EXEC_IRQ, ["PID " + _PCB.PID + " has finished."]));
         }
 
-       
+  // ----------------------------------------------------------------------------------
+  //FIX FIX FIX  
         private printIntYReg(){
             // #$01 in X reg = print the integer stored in the Y register.
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(PRINT_YREGInt_ERQ, ["Printing int from X register"]));
@@ -321,6 +335,8 @@ module TSOS {
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_STRING, ["Printing int from X register"]));
         }
 
+// ----------------------------------------------------------------------------------
+        //CPU Utils
         public returnCPU(){
             return [this.PC, this.IR, this.Acc, this.Xreg, this.Yreg, this.Zflag];
         }
