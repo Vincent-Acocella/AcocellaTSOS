@@ -48,13 +48,14 @@ module TSOS {
             let moveThatBus = this.fetch(this.PC);
             if(moveThatBus < 0){
                 this.PC = (-1 * moveThatBus) -1 % 256;
-                //Time to branch
-            }else{
-                //Increment by bytes
-                this.PC+= moveThatBus;
                 if(this.PC > this.endOfProg){
                     _StdOut.putText("Branched out of memory");
                 }
+                //Time to branch
+            }else{
+                //Increment by bytes
+                
+                this.PC+= moveThatBus;
             }
 
             //This Line has to Change
@@ -76,6 +77,7 @@ module TSOS {
                 if(_Schedular.readyQueue.getSize() !==1)
                     _Schedular.decreaseQuantum();
             }
+            _DeviceDisplay.startUpMemory();
 
             //_DeviceDisplay.updateMemory(this.segment, this.PC);
             //Update CPU and memory display in one cycle     
@@ -86,7 +88,7 @@ module TSOS {
 
             let opCode = _MemoryAccessor.read(PC,this.segment)
 
-            console.log("Current OpCode: " + opCode)
+            
 
             this.IR = opCode.toString();
 
@@ -168,6 +170,7 @@ module TSOS {
 
 //----------------------------------------------------------------------------------
         //Bytes needed = 1
+        //FF
 
         public systemCall(code){
             this.bytesNeeded = 1;
@@ -184,7 +187,8 @@ module TSOS {
         }
 
 //----------------------------------------------------------------------------------
-
+        //good
+        //A9
         private loadAcc(value) {
             this.bytesNeeded = 2;
 
@@ -194,8 +198,9 @@ module TSOS {
         }
 
         //All of this has to change
-
-        //8D
+//----------------------------------------------------------------------------------
+        //good
+        //AD
         private loadAccFrmMem(value) {
             this.bytesNeeded = 3;
 
@@ -203,93 +208,124 @@ module TSOS {
             //Second is the segment
             //thrid is the location
 
-          let segmentToLook:number =  this.returnSegmentFromMemory(_MemoryAccessor.read(value+1, this.segment));
-          console.log("Segment found in memory: "+ segmentToLook);
+          let segmentToLook:number =  this.returnSegmentFromMemory(_MemoryAccessor.read(value+2, this.segment));
+          
 
           if(segmentToLook < 0){
               _StdOut.putText("Invalid opcode detected")
           }else{
-            let valueInMemory = _MemoryAccessor.read(value + 2, segmentToLook);
-            console.log("Location to grab: " + valueInMemory);
+            let valueInMemory = _MemoryAccessor.read(value + 1, segmentToLook);
+            
             this.Acc = valueInMemory;
           }
         }
+
+//----------------------------------------------------------------------------------
+        //good
+        //8D
 
         //Store the Acc in memory
         //value +2 is where to store 
         private strAccInMem(value) {
             this.bytesNeeded = 3;
 
-            let segmentToLook:number =  this.returnSegmentFromMemory(_MemoryAccessor.read(value+1, this.segment));
+            let segmentToLook:number =  this.returnSegmentFromMemory(_MemoryAccessor.read(value+2, this.segment));
            
             if(segmentToLook < 0){
                  _StdOut.putText("Invalid opcode detected")
             }else{
-                _Memory.memoryThread[segmentToLook][value+2] = this.Acc
+                
+                let spotInMem = _MemoryAccessor.read(value+1,segmentToLook)
+                
+                _Memory.memoryThread[segmentToLook][spotInMem] = this.Acc
           }
         }
 
+//----------------------------------------------------------------------------------
+
+        //6D
         private addCarry(value) {
             this.bytesNeeded = 3;
 
-            let segmentToLook:number =  this.returnSegmentFromMemory(_MemoryAccessor.read(value+1, this.segment));
+            let segmentToLook:number =  this.returnSegmentFromMemory(_MemoryAccessor.read(value+2, this.segment));
            
             if(segmentToLook < 0){
                  _StdOut.putText("Invalid opcode detected")
             }else{
-                let valueToAdd = _MemoryAccessor.read(value+2, segmentToLook);
-                this.Acc = valueToAdd + valueToAdd;
-                console.log("Acc: " + this.Acc);
+                let valueToAdd = _MemoryAccessor.read(value+1, segmentToLook);
+                this.Acc = this.Acc + valueToAdd;
             }
         }
-
+//----------------------------------------------------------------------------------
+        //A2
+        //GOOD?
         private loadXregCons(value) {
             this.bytesNeeded = 2;
-            this.Xreg = _MemoryAccessor.read(value+1, this.segment);
-        }
 
+            //Loads next value in memory
+            let newValue = _MemoryAccessor.read(value+1, this.segment)
+            this.Xreg = this.convToHex(newValue);
+        }
+//----------------------------------------------------------------------------------
+        //AE
+
+        //GOOD
         private loadXregMem(value) {
             this.bytesNeeded = 3;
 
-            let segmentToLook:number =  this.returnSegmentFromMemory(_MemoryAccessor.read(value+1, this.segment));
-           
+            let segmentToLook:number =  this.returnSegmentFromMemory(_MemoryAccessor.read(value+2, this.segment));
+          
             if(segmentToLook < 0){
-                 _StdOut.putText("Invalid opcode detected");
+                _StdOut.putText("Invalid opcode detected")
             }else{
-                this.Xreg = _MemoryAccessor.read(value + 2, segmentToLook)
+              let valueInMemory = _MemoryAccessor.read(value + 1, segmentToLook);
+              
+              this.Xreg = valueInMemory;
             }
         }
-
+//----------------------------------------------------------------------------------
+        //A0
+        //GOOD?
         private loadYregCons(value) {
             this.bytesNeeded = 2;
-             this.Yreg = _MemoryAccessor.read(value+1, this.segment);
-        }
 
+            //Loads next value in memory
+            let newValue = _MemoryAccessor.read(value+1, this.segment)
+            this.Yreg = this.convToHex(newValue);
+        }
+//----------------------------------------------------------------------------------
+        //AC
+        //GOOD?
         private loadYregMem(value) {
             this.bytesNeeded = 3;
 
-            let segmentToLook:number =  this.returnSegmentFromMemory(_MemoryAccessor.read(value+1, this.segment));
+            let segmentToLook:number =  this.returnSegmentFromMemory(_MemoryAccessor.read(value+2, this.segment));
            
             if(segmentToLook < 0){
-                 _StdOut.putText("Invalid opcode detected");
+                _StdOut.putText("Invalid opcode detected")
             }else{
-                this.Yreg = _MemoryAccessor.read(value + 2, segmentToLook)
+              let valueInMemory = _MemoryAccessor.read(value + 1, segmentToLook);
+              
+              this.Yreg = valueInMemory;
             }
         }
-
+//----------------------------------------------------------------------------------
+        //EC
         private compXmem(value) {
             this.bytesNeeded = 3;
 
-            let segmentToLook:number =  this.returnSegmentFromMemory(_MemoryAccessor.read(value+1, this.segment));
+            let segmentToLook:number =  this.returnSegmentFromMemory(_MemoryAccessor.read(value+2, this.segment));
            
             if(segmentToLook < 0){
                  _StdOut.putText("Invalid opcode detected");
             }else{
-                let valueToCompair = _MemoryAccessor.read(value+2,segmentToLook);
+                let valueToCompair = _MemoryAccessor.read(value+1,segmentToLook);
+                console.log(valueToCompair);
                 this.Zflag = (this.Xreg === valueToCompair)? 1:0;
              }
         }
-
+//----------------------------------------------------------------------------------
+        //EC
         private branchIfZ(value) {
 
             if(this.Zflag === 0){
@@ -299,7 +335,7 @@ module TSOS {
                 if(this.PC === 0){
                     this.bytesNeeded = -1;
                 }else{
-                    console.log(this.PC);
+                    
                     this.bytesNeeded = (-1 * (this.PC+1));
                 }
             }else{
@@ -307,31 +343,40 @@ module TSOS {
             }
         }
 
+//----------------------------------------------
+        //EE
+        //GOOOD
         private incremVal(value) {
             this.bytesNeeded = 3;
 
-            let segmentToLook:number =  this.returnSegmentFromMemory(_MemoryAccessor.read(value+1, this.segment));
+            let segmentToLook:number =  this.returnSegmentFromMemory(_MemoryAccessor.read(value+2, this.segment));
            
             if(segmentToLook < 0){
                 _StdOut.putText("Invalid opcode detected");
             }else{
-                _Memory.memoryThread[segmentToLook][value+2]++;
+                let location = _MemoryAccessor.read(value+1,this.segment);
+                _Memory.memoryThread[segmentToLook][location] = _Memory.memoryThread[segmentToLook][location]+1 ;
             }
         }
         
         private break() {
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(STOP_EXEC_IRQ, ["PID " + _PCB.PID + " has finished."]));
         }
-
+  //----------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------      
   // ----------------------------------------------------------------------------------
   //FIX FIX FIX  
         private printIntYReg(){
+            
             // #$01 in X reg = print the integer stored in the Y register.
+            
+            _StdOut.putText(this.Yreg.toString());
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(PRINT_YREGInt_ERQ, ["Printing int from X register"]));
         }
         private printStringYReg(){
             // #$02 in X reg = print the 00-terminated string stored at the address in
             //  the Y register.
+            _StdOut.putText(_CPU.Yreg);
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_STRING, ["Printing int from X register"]));
         }
 

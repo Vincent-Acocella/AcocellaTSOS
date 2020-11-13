@@ -30,14 +30,24 @@ var TSOS;
             }
         };
         MemoryManager.prototype.runMemory = function (progNumber) {
-            var segment = _MemoryAccessor.getProgFromSegMap(parseInt(progNumber));
+            var segment = _MemoryAccessor.getProgFromSegMap(progNumber);
+            //Checks to see if the program exists in memory
             if (segment < 0) {
+                _StdOut.putText("Could not run program.... not in memory");
             }
-            progNumber();
-            // if(progNumber <= _MemoryAccessor.progInMem){
-            //     _PCB.newTask(progNumber);
-            //     _CPU.isExecuting = true;
-            // }
+            else {
+                //Put in ready queue if no duplicates
+                if (_Schedular.addToReadyQueue(progNumber)) {
+                    //If CPU is not executing execute
+                    if (!_CPU.isExecuting) {
+                        _Schedular.deployFirstInQueueToCPU();
+                        _Schedular.startCpu();
+                    }
+                }
+                else {
+                    _StdOut.putText("Program " + progNumber + " is already in the ready queue");
+                }
+            }
         };
         //Checks for avaliable mem and if there is, mark it as in use
         MemoryManager.prototype.deployNextSegmentForUse = function () {

@@ -128,9 +128,11 @@ module TSOS {
                     _StdIn.handleInput();
                     break;
                 case PRINT_YREGInt_ERQ:
+                    console.log("You getting here champ")
                     _StdOut.putText(_CPU.Yreg);
                     break;
                 case TERMINATE_STRING:
+                    _StdOut.putText(_CPU.Yreg);
                     break;
                 case STOP_EXEC_IRQ:
                     //_PCB.terminate();
@@ -168,7 +170,7 @@ module TSOS {
         //
         public krnTrace(msg: string) {
             // Check globals to see if trace is set ON.  If so, then (maybe) log the message.
-         if (_Trace) {
+            if (_Trace) {
             if (msg === "Idle") {
                 // We can't log every idle clock pulse because it would quickly lag the browser quickly.
                 if (_OSclock % 10 == 0) {
@@ -179,7 +181,7 @@ module TSOS {
             } else {
                 Control.hostLog(msg, "OS");
             }
-         }
+            }
         }
 
         public krnTrapError(msg) {

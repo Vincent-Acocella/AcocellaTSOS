@@ -111,9 +111,11 @@ var TSOS;
                     _StdIn.handleInput();
                     break;
                 case PRINT_YREGInt_ERQ:
+                    console.log("You getting here champ");
                     _StdOut.putText(_CPU.Yreg);
                     break;
                 case TERMINATE_STRING:
+                    _StdOut.putText(_CPU.Yreg);
                     break;
                 case STOP_EXEC_IRQ:
                     //_PCB.terminate();
