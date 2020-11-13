@@ -47,6 +47,8 @@ module TSOS {
             _Kernel.krnTrace('CPU cycle');
             let moveThatBus = this.fetch(this.PC);
             if(moveThatBus < 0){
+                let movement = (-1 * moveThatBus) -1 % 256;
+                console.log("The Bus Moves: " + movement);
                 this.PC = (-1 * moveThatBus) -1 % 256;
                 if(this.PC > this.endOfProg){
                     _StdOut.putText("Branched out of memory");
@@ -54,7 +56,6 @@ module TSOS {
                 //Time to branch
             }else{
                 //Increment by bytes
-                
                 this.PC+= moveThatBus;
             }
 
@@ -69,7 +70,6 @@ module TSOS {
             _DeviceDisplay.cycleReload();
 
             //Check to see if we need to switch units
-
             //LEFT OFF HERE. NEED TO MAKE A CHECK FOR END OF ALL PROGRAMS 
             if(_Schedular.checkIfSwitch()){
                 _Schedular.switchMemoryUnit();
@@ -236,6 +236,7 @@ module TSOS {
             }else{
                 
                 let spotInMem = _MemoryAccessor.read(value+1,segmentToLook)
+                _MemoryAccessor.write(this.Acc.toString(), segmentToLook,spotInMem)
                 
                 _Memory.memoryThread[segmentToLook][spotInMem] = this.Acc
           }
@@ -254,59 +255,54 @@ module TSOS {
             }else{
                 let valueToAdd = _MemoryAccessor.read(value+1, segmentToLook);
                 this.Acc = this.Acc + valueToAdd;
+                console.log("Acc: " + this.Acc);
             }
         }
 //----------------------------------------------------------------------------------
         //A2
-        //GOOD?
+
         private loadXregCons(value) {
             this.bytesNeeded = 2;
-
-            //Loads next value in memory
-            let newValue = _MemoryAccessor.read(value+1, this.segment)
-            this.Xreg = this.convToHex(newValue);
+            this.Xreg = parseInt(_MemoryAccessor.read(value+1, this.segment));
         }
 //----------------------------------------------------------------------------------
         //AE
 
-        //GOOD
         private loadXregMem(value) {
             this.bytesNeeded = 3;
 
             let segmentToLook:number =  this.returnSegmentFromMemory(_MemoryAccessor.read(value+2, this.segment));
-          
+           
             if(segmentToLook < 0){
-                _StdOut.putText("Invalid opcode detected")
+                 _StdOut.putText("Invalid opcode detected");
             }else{
-              let valueInMemory = _MemoryAccessor.read(value + 1, segmentToLook);
-              
-              this.Xreg = valueInMemory;
+
+                //Returns the value in memory in this case we are loading that into y
+                let spotInMem = _MemoryAccessor.read(value+1, segmentToLook);
+                this.Xreg = _Memory.memoryThread[segmentToLook][spotInMem];
             }
         }
 //----------------------------------------------------------------------------------
         //A0
-        //GOOD?
         private loadYregCons(value) {
             this.bytesNeeded = 2;
-
-            //Loads next value in memory
-            let newValue = _MemoryAccessor.read(value+1, this.segment)
-            this.Yreg = this.convToHex(newValue);
+             this.Yreg = _MemoryAccessor.read(value+1, this.segment);
         }
 //----------------------------------------------------------------------------------
         //AC
-        //GOOD?
         private loadYregMem(value) {
             this.bytesNeeded = 3;
 
             let segmentToLook:number =  this.returnSegmentFromMemory(_MemoryAccessor.read(value+2, this.segment));
            
             if(segmentToLook < 0){
-                _StdOut.putText("Invalid opcode detected")
+                 _StdOut.putText("Invalid opcode detected");
             }else{
-              let valueInMemory = _MemoryAccessor.read(value + 1, segmentToLook);
-              
-              this.Yreg = valueInMemory;
+
+                //Returns the value in memory in this case we are loading that into y
+                let spotInMem = _MemoryAccessor.read(value+1, segmentToLook);
+                this.Yreg = _Memory.memoryThread[segmentToLook][spotInMem];
+
             }
         }
 //----------------------------------------------------------------------------------
@@ -319,24 +315,24 @@ module TSOS {
             if(segmentToLook < 0){
                  _StdOut.putText("Invalid opcode detected");
             }else{
-                let valueToCompair = _MemoryAccessor.read(value+1,segmentToLook);
-                console.log(valueToCompair);
+                let spotInMem = _MemoryAccessor.read(value+1,segmentToLook);
+                let valueToCompair = _Memory.memoryThread[segmentToLook][spotInMem];
+                
                 this.Zflag = (this.Xreg === valueToCompair)? 1:0;
              }
         }
 //----------------------------------------------------------------------------------
-        //EC
+        //D0
         private branchIfZ(value) {
-
             if(this.Zflag === 0){
                 //Gets location to set the program counter to
                 // this.PC = this.convToHex(_Memory.memoryThread[value + 1]);
                 //If we are branching to 0
-                if(this.PC === 0){
+                if(value === 0){
                     this.bytesNeeded = -1;
                 }else{
-                    
-                    this.bytesNeeded = (-1 * (this.PC+1));
+                    console.log("HERE")
+                    this.bytesNeeded = (-1 * (value+1));
                 }
             }else{
                 this.bytesNeeded = 2;

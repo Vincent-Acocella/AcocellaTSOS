@@ -52,6 +52,8 @@ var TSOS;
             _Kernel.krnTrace('CPU cycle');
             var moveThatBus = this.fetch(this.PC);
             if (moveThatBus < 0) {
+                var movement = (-1 * moveThatBus) - 1 % 256;
+                console.log("The Bus Moves: " + movement);
                 this.PC = (-1 * moveThatBus) - 1 % 256;
                 if (this.PC > this.endOfProg) {
                     _StdOut.putText("Branched out of memory");
@@ -203,6 +205,7 @@ var TSOS;
             }
             else {
                 var spotInMem = _MemoryAccessor.read(value + 1, segmentToLook);
+                _MemoryAccessor.write(this.Acc.toString(), segmentToLook, spotInMem);
                 _Memory.memoryThread[segmentToLook][spotInMem] = this.Acc;
             }
         };
@@ -217,20 +220,17 @@ var TSOS;
             else {
                 var valueToAdd = _MemoryAccessor.read(value + 1, segmentToLook);
                 this.Acc = this.Acc + valueToAdd;
+                console.log("Acc: " + this.Acc);
             }
         };
         //----------------------------------------------------------------------------------
         //A2
-        //GOOD?
         Cpu.prototype.loadXregCons = function (value) {
             this.bytesNeeded = 2;
-            //Loads next value in memory
-            var newValue = _MemoryAccessor.read(value + 1, this.segment);
-            this.Xreg = this.convToHex(newValue);
+            this.Xreg = parseInt(_MemoryAccessor.read(value + 1, this.segment));
         };
         //----------------------------------------------------------------------------------
         //AE
-        //GOOD
         Cpu.prototype.loadXregMem = function (value) {
             this.bytesNeeded = 3;
             var segmentToLook = this.returnSegmentFromMemory(_MemoryAccessor.read(value + 2, this.segment));
@@ -238,22 +238,19 @@ var TSOS;
                 _StdOut.putText("Invalid opcode detected");
             }
             else {
-                var valueInMemory = _MemoryAccessor.read(value + 1, segmentToLook);
-                this.Xreg = valueInMemory;
+                //Returns the value in memory in this case we are loading that into y
+                var spotInMem = _MemoryAccessor.read(value + 1, segmentToLook);
+                this.Xreg = _Memory.memoryThread[segmentToLook][spotInMem];
             }
         };
         //----------------------------------------------------------------------------------
         //A0
-        //GOOD?
         Cpu.prototype.loadYregCons = function (value) {
             this.bytesNeeded = 2;
-            //Loads next value in memory
-            var newValue = _MemoryAccessor.read(value + 1, this.segment);
-            this.Yreg = this.convToHex(newValue);
+            this.Yreg = _MemoryAccessor.read(value + 1, this.segment);
         };
         //----------------------------------------------------------------------------------
         //AC
-        //GOOD?
         Cpu.prototype.loadYregMem = function (value) {
             this.bytesNeeded = 3;
             var segmentToLook = this.returnSegmentFromMemory(_MemoryAccessor.read(value + 2, this.segment));
@@ -261,8 +258,9 @@ var TSOS;
                 _StdOut.putText("Invalid opcode detected");
             }
             else {
-                var valueInMemory = _MemoryAccessor.read(value + 1, segmentToLook);
-                this.Yreg = valueInMemory;
+                //Returns the value in memory in this case we are loading that into y
+                var spotInMem = _MemoryAccessor.read(value + 1, segmentToLook);
+                this.Yreg = _Memory.memoryThread[segmentToLook][spotInMem];
             }
         };
         //----------------------------------------------------------------------------------
@@ -274,23 +272,24 @@ var TSOS;
                 _StdOut.putText("Invalid opcode detected");
             }
             else {
-                var valueToCompair = _MemoryAccessor.read(value + 1, segmentToLook);
-                console.log(valueToCompair);
+                var spotInMem = _MemoryAccessor.read(value + 1, segmentToLook);
+                var valueToCompair = _Memory.memoryThread[segmentToLook][spotInMem];
                 this.Zflag = (this.Xreg === valueToCompair) ? 1 : 0;
             }
         };
         //----------------------------------------------------------------------------------
-        //EC
+        //D0
         Cpu.prototype.branchIfZ = function (value) {
             if (this.Zflag === 0) {
                 //Gets location to set the program counter to
                 // this.PC = this.convToHex(_Memory.memoryThread[value + 1]);
                 //If we are branching to 0
-                if (this.PC === 0) {
+                if (value === 0) {
                     this.bytesNeeded = -1;
                 }
                 else {
-                    this.bytesNeeded = (-1 * (this.PC + 1));
+                    console.log("HERE");
+                    this.bytesNeeded = (-1 * (value + 1));
                 }
             }
             else {
