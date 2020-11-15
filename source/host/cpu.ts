@@ -26,6 +26,7 @@ module TSOS {
                     public endOfProg = 0,
                     public bytesNeeded = 0,
                     public segment = -1,
+                    public interuptToCall = "",
                     public isExecuting: boolean = false) {
         }
 
@@ -40,16 +41,18 @@ module TSOS {
             this.segment = -1;
             this.bytesNeeded = 0;
             this.isExecuting = false;
+            this.interuptToCall = ""
         }
 
         public cycle(): void {
 
             _Kernel.krnTrace('CPU cycle');
+            console.log("PC = "+this.PC)
             let moveThatBus = this.fetch(this.PC);
             if(moveThatBus < 0){
-                let movement = (-1 * moveThatBus) -1 % 256;
+                let movement = 255 -(-1 * moveThatBus) ;
                 console.log("The Bus Moves: " + movement);
-                this.PC = (-1 * moveThatBus) -1 % 256;
+                this.PC = movement;
                 if(this.PC > this.endOfProg){
                     _StdOut.putText("Branched out of memory");
                 }
@@ -87,8 +90,6 @@ module TSOS {
         public fetch(PC){
 
             let opCode = _MemoryAccessor.read(PC,this.segment)
-
-            
 
             this.IR = opCode.toString();
 
@@ -331,8 +332,10 @@ module TSOS {
                 if(value === 0){
                     this.bytesNeeded = -1;
                 }else{
-                    console.log("HERE")
-                    this.bytesNeeded = (-1 * (value+1));
+                    console.log("Value+1: " + (value+1))
+                    console.log("Not real:  "+ _MemoryAccessor.read(value+1, this.segment))
+                    console.log("Value to branch to: " + -1 * this.convToHex(_MemoryAccessor.read(value+1, this.segment)));
+                    this.bytesNeeded = (-1 * this.convToHex(_MemoryAccessor.read(value+1, this.segment)));
                 }
             }else{
                 this.bytesNeeded = 2;

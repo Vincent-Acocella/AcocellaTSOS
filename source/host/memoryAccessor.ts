@@ -51,6 +51,6 @@ module TSOS{
             _Memory.clearSingleThread(segment);
             this.removeProgFromSegMap(segment);
             _MemoryManager.avaliableMemory[segment] = true;
-        }
+        }   
     }
 }

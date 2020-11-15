@@ -14,7 +14,7 @@ var TSOS;
 (function (TSOS) {
     //Fix print
     var Cpu = /** @class */ (function () {
-        function Cpu(PC, Acc, Xreg, Yreg, Zflag, IR, endOfProg, bytesNeeded, segment, isExecuting) {
+        function Cpu(PC, Acc, Xreg, Yreg, Zflag, IR, endOfProg, bytesNeeded, segment, interuptToCall, isExecuting) {
             if (PC === void 0) { PC = 0; }
             if (Acc === void 0) { Acc = 0; }
             if (Xreg === void 0) { Xreg = 0; }
@@ -24,6 +24,7 @@ var TSOS;
             if (endOfProg === void 0) { endOfProg = 0; }
             if (bytesNeeded === void 0) { bytesNeeded = 0; }
             if (segment === void 0) { segment = -1; }
+            if (interuptToCall === void 0) { interuptToCall = ""; }
             if (isExecuting === void 0) { isExecuting = false; }
             this.PC = PC;
             this.Acc = Acc;
@@ -34,6 +35,7 @@ var TSOS;
             this.endOfProg = endOfProg;
             this.bytesNeeded = bytesNeeded;
             this.segment = segment;
+            this.interuptToCall = interuptToCall;
             this.isExecuting = isExecuting;
         }
         Cpu.prototype.init = function () {
@@ -47,14 +49,16 @@ var TSOS;
             this.segment = -1;
             this.bytesNeeded = 0;
             this.isExecuting = false;
+            this.interuptToCall = "";
         };
         Cpu.prototype.cycle = function () {
             _Kernel.krnTrace('CPU cycle');
+            console.log("PC = " + this.PC);
             var moveThatBus = this.fetch(this.PC);
             if (moveThatBus < 0) {
-                var movement = (-1 * moveThatBus) - 1 % 256;
+                var movement = 255 - (-1 * moveThatBus);
                 console.log("The Bus Moves: " + movement);
-                this.PC = (-1 * moveThatBus) - 1 % 256;
+                this.PC = movement;
                 if (this.PC > this.endOfProg) {
                     _StdOut.putText("Branched out of memory");
                 }
@@ -288,8 +292,10 @@ var TSOS;
                     this.bytesNeeded = -1;
                 }
                 else {
-                    console.log("HERE");
-                    this.bytesNeeded = (-1 * (value + 1));
+                    console.log("Value+1: " + (value + 1));
+                    console.log("Not real:  " + _MemoryAccessor.read(value + 1, this.segment));
+                    console.log("Value to branch to: " + -1 * this.convToHex(_MemoryAccessor.read(value + 1, this.segment)));
+                    this.bytesNeeded = (-1 * this.convToHex(_MemoryAccessor.read(value + 1, this.segment)));
                 }
             }
             else {
