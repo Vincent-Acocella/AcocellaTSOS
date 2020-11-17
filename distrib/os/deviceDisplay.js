@@ -10,12 +10,22 @@ var TSOS;
             this.updateCPU();
             this.updateSchedular();
         };
-        DeviceDisplay.prototype.highlightMemory = function (segment, PC) {
-            var stringMemory = _Memory.memoryThread[0].concat(_Memory.memoryThread[1], _Memory.memoryThread[2]);
-            var newIndex = _MemoryAccessor.read(PC, segment);
-            console.log(newIndex);
+        DeviceDisplay.prototype.updateMemory = function () {
             var table = document.getElementById('memoryUnit');
-            //Change the new index value
+            var index = 0;
+            for (var i = 0; i < table.rows.length; i++) {
+                for (var j = 1; j < 9; j++) {
+                    table.rows[i].cells.item(j).innerHTML = _Memory.memoryThread[index].toString();
+                    table.rows[i].cells.item(j).style['font-weight'] = "normal";
+                    if (index === _CPU.PC) {
+                        table.rows[i].cells.item(j).style.color = "magenta";
+                    }
+                    else {
+                        table.rows[i].cells.item(j).style.color = "black";
+                    }
+                    index++;
+                }
+            }
         };
         DeviceDisplay.prototype.startUpMemory = function () {
             var table = document.getElementById('memoryUnit');
@@ -41,6 +51,7 @@ var TSOS;
                     index++;
                 }
             }
+            table.rows[8].cells.item(2).style.color = "magenta";
         };
         DeviceDisplay.prototype.startUpCPU = function () {
             var table = document.getElementById("cpu");

@@ -15,6 +15,7 @@ module TSOS{
         public readyQueue = new Queue;
         public allProcesses = [];
         public quant = _Quant;
+        
         constructor(){
         }
         public init(){

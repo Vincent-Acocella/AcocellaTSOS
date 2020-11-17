@@ -12,15 +12,21 @@ module TSOS{
            this.updateSchedular();
         }
 
-        public highlightMemory(segment, PC){
-            let stringMemory = _Memory.memoryThread[0].concat(_Memory.memoryThread[1],_Memory.memoryThread[2]);
-            let newIndex = _MemoryAccessor.read(PC,segment);
-
-            console.log(newIndex);
-
-            let table: HTMLTableElement = <HTMLTableElement>document.getElementById('memoryUnit');
-
-            //Change the new index value
+        public updateMemory(){
+            let table: HTMLTableElement = <HTMLTableElement> document.getElementById('memoryUnit');
+            let index = 0;
+            for (let i = 0; i < table.rows.length; i++) {
+                for (let j = 1; j < 9; j++) {
+                    table.rows[i].cells.item(j).innerHTML = _Memory.memoryThread[index].toString();
+                    table.rows[i].cells.item(j).style['font-weight'] = "normal";
+                    if(index === _CPU.PC){
+                        table.rows[i].cells.item(j).style.color = "magenta";
+                    }else{
+                        table.rows[i].cells.item(j).style.color = "black";
+                    }
+                    index++;
+                }
+            }
         }
 
         public startUpMemory(){
@@ -31,6 +37,7 @@ module TSOS{
             {
                 table.removeChild(table.firstChild);
             }
+            
 
             let index = 0;
             let numberOfRows = stringMemory.length / 8;
@@ -52,6 +59,7 @@ module TSOS{
                     index++;
                 }
             }
+            table.rows[8].cells.item(2).style.color = "magenta"
         }
 
         public startUpCPU(){
