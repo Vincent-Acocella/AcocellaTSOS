@@ -86,7 +86,6 @@ module TSOS {
                 } else if (_CPU.isExecuting) {
 
                     //Update CPU from PCB
-
                     if(!_SingleStep){
                         _CPU.cycle();
                     }
@@ -133,6 +132,9 @@ module TSOS {
                     break;
                 case TERMINATE_STRING:
                     _StdOut.putText(params.toString());
+                    break;
+                case SWITCH_MEMORY:
+                    _Schedular.switchMemoryInterupt(params)
                     break;
                 case STOP_EXEC_IRQ:
                     //_PCB.terminate();

@@ -70,8 +70,10 @@ module TSOS{
 
         //SWITCH MEMORY
 
-        public switchMemoryInterupt(){
-            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(MEM_SWAP, ["Switching Memory"]));
+        public switchMemoryInterupt(toDo){
+
+
+            
         }
 
         //Update ready queue
@@ -82,7 +84,7 @@ module TSOS{
 
         public checkIfSwitch(){
             //If the ready queue is empty but the quant is not 0, it was killed so check for both
-            return (this.quant === 0 || this.readyQueue.isEmpty())
+            return (this.quant === 0 && this.readyQueue.getSize() > 1)
         }
 
 
@@ -118,9 +120,8 @@ module TSOS{
            }
 
            if(added){
-            _CPU.isExecuting = true;
-            _DeviceDisplay.updateReadyQueue();
-
+                _CPU.isExecuting = true;
+                _DeviceDisplay.updateReadyQueue();
            }else{
                _StdOut.putText("No more programs to execute");
            }
@@ -138,6 +139,16 @@ module TSOS{
                  }
             }
             return flag;
+        }
+
+        //Check if the last program is finsihed executing
+        public isDone(){
+            if(this.readyQueue.getSize() === 0){
+                _CPU.isExecuting = false;
+                return true;
+            }else{
+                return false;
+            }
         }
     }
 }

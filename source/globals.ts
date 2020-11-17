@@ -28,7 +28,7 @@ const STOP_EXEC_IRQ = 4;
 
 const _RoundRobin = false;
 
-const MEM_SWAP = 3;
+const SWITCH_MEMORY = 3;
 
 //
 // Global Variables

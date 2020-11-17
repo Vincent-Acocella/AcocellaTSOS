@@ -53,24 +53,19 @@ module TSOS {
             let moveThatBus = this.fetch(this.PC);
             console.log("Total: " + (moveThatBus + this.PC))
             
-                if (moveThatBus + this.PC > 256) {
-                    this.PC = (this.PC + moveThatBus) % 256;
-                }
-                else {
-                    this.PC += moveThatBus;
-                }
-                //Time to branch
-                console.log("PC = " + this.PC)
-
-            //This Line has to Change
-            if(this.isComplete){
-                 _PCB.state = "Complete";
-                _Schedular.removeFromReadyQueue();
+            if (moveThatBus + this.PC > 256) {
+                this.PC = (this.PC + moveThatBus) % 256;
             }
+            else {
+                this.PC += moveThatBus;
+            }
+                
+            console.log("PC = " + this.PC);
 
             _PCB.updateScheduler();
             _DeviceDisplay.cycleReload();
             _DeviceDisplay.startUpMemory();
+
         }
 
 
@@ -262,7 +257,6 @@ module TSOS {
             if(segmentToLook < 0){
                  _StdOut.putText("Invalid opcode detected");
             }else{
-
                 //Returns the value in memory in this case we are loading that into y
                 let spotInMem = this.convToHex(_MemoryAccessor.read(value+1, segmentToLook));
                 console.log(spotInMem)
@@ -285,7 +279,6 @@ module TSOS {
             if(segmentToLook < 0){
                  _StdOut.putText("Invalid opcode detected");
             }else{
-
                 let spotInMem = this.convToHex(_MemoryAccessor.read(value+1, segmentToLook));
                 this.Yreg = _Memory.memoryThread[segmentToLook][spotInMem];
                 console.log("Y register now equals: " + this.Yreg)
@@ -349,7 +342,6 @@ module TSOS {
         }
         
         private break() {
-            this.isComplete = true;
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(STOP_EXEC_IRQ, ["PID " + _PCB.PID + " has finished."]));
         }
   //----------------------------------------------------------------------------------
@@ -357,11 +349,8 @@ module TSOS {
   // ----------------------------------------------------------------------------------
   //FIX FIX FIX  
         private printIntYReg(){
-            
             // #$01 in X reg = print the integer stored in the Y register.
-            
-            _StdOut.putText(this.Yreg.toString());
-           // _KernelInterruptQueue.enqueue(new TSOS.Interrupt(PRINT_YREGInt_ERQ, ["Printing int from X register"]));
+           _KernelInterruptQueue.enqueue(new TSOS.Interrupt(PRINT_YREGInt_ERQ, ["Printing int from X register"]));
         }
         private printStringYReg(){
             // #$02 in X reg = print the 00-terminated string stored at the address in
