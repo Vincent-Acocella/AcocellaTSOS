@@ -146,6 +146,7 @@ var TSOS;
         //FF
         Cpu.prototype.systemCall = function (code) {
             this.bytesNeeded = 1;
+            console.log("The X register for the SC: " + this.Xreg);
             switch (_CPU.Xreg) {
                 case 1: // Print integer from y register
                     _CPU.printIntYReg();
@@ -165,8 +166,6 @@ var TSOS;
             //Loads next value in memory
             var newValue = _MemoryAccessor.read(value + 1, this.segment);
             this.Acc = this.convToHex(newValue);
-            console.log(String.fromCharCode(this.Acc));
-            console.log(String.fromCharCode(68));
         };
         //All of this has to change
         //----------------------------------------------------------------------------------
@@ -328,14 +327,18 @@ var TSOS;
         Cpu.prototype.printStringYReg = function () {
             // #$02 in X reg = print the 00-terminated string stored at the address in
             //  the Y register.
+            console.log("HELLLLLLLLLLLLLLLLLO");
             var output = "";
-            var i = this.toInt(this.Yreg);
+            var i = this.convToHex(this.Yreg);
+            console.log("Start: " + i);
             var locInMem = _MemoryAccessor.read(i, this.segment);
             while (locInMem !== "00") {
-                output += String.fromCharCode(this.toInt(i));
+                output += String.fromCharCode((locInMem));
                 i++;
                 locInMem = _MemoryAccessor.read(i, this.segment);
+                console.log("Location" + locInMem);
             }
+            console.log("Return: " + output);
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_STRING, [output]));
         };
         // ----------------------------------------------------------------------------------
@@ -345,11 +348,6 @@ var TSOS;
         };
         Cpu.prototype.convToHex = function (value) {
             return parseInt(value.toString(), 16);
-        };
-        Cpu.prototype.hexToBaseTen = function () {
-        };
-        Cpu.prototype.toInt = function (value) {
-            return parseInt(value, 16);
         };
         //If this errors then there is an error in the code
         Cpu.prototype.returnSegmentFromMemory = function (byte) {

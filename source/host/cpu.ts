@@ -162,6 +162,7 @@ module TSOS {
 
         public systemCall(code){
             this.bytesNeeded = 1;
+            console.log("The X register for the SC: " + this.Xreg)
             switch (_CPU.Xreg) {
                 case 1: // Print integer from y register
                     _CPU.printIntYReg();
@@ -172,6 +173,7 @@ module TSOS {
                 default:
                     _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_STRING, ["Invalid system call operation, stoping execution."]));
             }
+
         }
 
 //----------------------------------------------------------------------------------
@@ -364,17 +366,16 @@ module TSOS {
         private printStringYReg(){
             // #$02 in X reg = print the 00-terminated string stored at the address in
             //  the Y register.
+           
             let output = "";
-            let i = this.toInt(this.Yreg);
-
+            let i = this.convToHex(this.Yreg);
             let locInMem = _MemoryAccessor.read(i,this.segment);
-
             while(locInMem !== "00"){
-                output += String.fromCharCode(this.toInt(i));
+                output += String.fromCharCode(locInMem);
                 i++;
-                locInMem = _MemoryAccessor.read(i,this.segment)
+                locInMem = _MemoryAccessor.read(i,this.segment);
+              
             }
-            
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_STRING, [output]));
         }
 
@@ -388,13 +389,6 @@ module TSOS {
              return parseInt(value.toString(), 16);
         }
 
-        private hexToBaseTen(){
-
-        }
-
-        private toInt(value){
-            return parseInt(value,16)
-        }
 
         //If this errors then there is an error in the code
         private returnSegmentFromMemory(byte){

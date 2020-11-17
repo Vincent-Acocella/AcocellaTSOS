@@ -132,7 +132,7 @@ module TSOS {
                     _StdOut.putText(_CPU.Yreg);
                     break;
                 case TERMINATE_STRING:
-                    _StdOut.putText(_CPU.Yreg);
+                    _StdOut.putText(params.toString());
                     break;
                 case STOP_EXEC_IRQ:
                     //_PCB.terminate();
