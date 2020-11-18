@@ -39,7 +39,6 @@ module TSOS{
             this.endIndex = 0;
         }
 
-
         public newTask(PID, segment, index){
             //We need to save the state of the PCB in case it is being used
             let tempPCB = this.returnPCB();
@@ -51,6 +50,13 @@ module TSOS{
             this.state = "ready";
             _Schedular.addProccess(PID);
             this.loadPCB(tempPCB[0],tempPCB[1],tempPCB[2],tempPCB[3],tempPCB[4],tempPCB[5],tempPCB[6],tempPCB[7],tempPCB[8],tempPCB[9])
+        }
+
+        public terminateCPU(){
+            this.state = "terminated";
+            _MemoryAccessor.removeProgFromSegMap(this.location);
+            _CPU.isExecuting = false;
+
         }
 
         public loadPCB(PID, PC, ACC, X, Y, Z,IR, state, loc, end){

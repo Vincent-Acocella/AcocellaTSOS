@@ -56,8 +56,7 @@ var TSOS;
         };
         //--------------------------------------------------------
         //SWITCH MEMORY
-        Schedular.prototype.switchMemoryInterupt = function () {
-            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(MEM_SWAP, ["Switching Memory"]));
+        Schedular.prototype.switchMemoryInterupt = function (toDo) {
         };
         //Update ready queue
         Schedular.prototype.switchMemoryUnit = function () {
@@ -66,7 +65,7 @@ var TSOS;
         };
         Schedular.prototype.checkIfSwitch = function () {
             //If the ready queue is empty but the quant is not 0, it was killed so check for both
-            return (this.quant === 0 || this.readyQueue.isEmpty());
+            return (this.quant === 0 && this.readyQueue.getSize() > 1);
         };
         //--------------------------------------------------------
         //READY QUEUE
@@ -112,6 +111,16 @@ var TSOS;
                 }
             }
             return flag;
+        };
+        //Check if the last program is finsihed executing
+        Schedular.prototype.isDone = function () {
+            if (this.readyQueue.getSize() === 0) {
+                _CPU.isExecuting = false;
+                return true;
+            }
+            else {
+                return false;
+            }
         };
         return Schedular;
     }());

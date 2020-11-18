@@ -102,6 +102,7 @@ var TSOS;
             // TODO: Consider using an Interrupt Vector in the future.
             // Note: There is no need to "dismiss" or acknowledge the interrupts in our design here.
             //       Maybe the hardware simulation will grow to support/require that in the future.
+            console.log(irq);
             switch (irq) {
                 case TIMER_IRQ:
                     this.krnTimerISR(); // Kernel built-in routine for timers (not the clock).
@@ -112,10 +113,13 @@ var TSOS;
                     break;
                 case PRINT_YREGInt_ERQ:
                     console.log("You getting here champ");
-                    _StdOut.putText(_CPU.Yreg);
+                    _StdOut.putText(params.toString());
                     break;
                 case TERMINATE_STRING:
                     _StdOut.putText(params.toString());
+                    break;
+                case SWITCH_MEMORY:
+                    _Schedular.switchMemoryInterupt(params);
                     break;
                 case STOP_EXEC_IRQ:
                     //_PCB.terminate();

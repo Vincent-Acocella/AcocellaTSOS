@@ -51,7 +51,6 @@ module TSOS {
 
             _Kernel.krnTrace('CPU cycle');
             let moveThatBus = this.fetch(this.PC);
-            console.log("Total: " + (moveThatBus + this.PC))
             
             if (moveThatBus + this.PC > 256) {
                 this.PC = (this.PC + moveThatBus) % 256;
@@ -68,11 +67,10 @@ module TSOS {
 
         }
 
-
         public fetch(PC){
 
             let opCode = _MemoryAccessor.read(PC,this.segment)
-            console.log("Op code: " +opCode)
+            console.log("Op code: " + opCode)
             this.IR = opCode.toString();
 
             switch(opCode){
@@ -160,6 +158,7 @@ module TSOS {
             console.log("The X register for the SC: " + this.Xreg)
             switch (_CPU.Xreg) {
                 case 1: // Print integer from y register
+               
                     _CPU.printIntYReg();
                     break;
                 case 2: // Print 00 terminated string from y register
@@ -219,7 +218,7 @@ module TSOS {
                  _StdOut.putText("Invalid opcode detected")
             }else{
                 let spotInMem = this.convToHex(_MemoryAccessor.read((value+1),segmentToLook));
-                _MemoryAccessor.write(this.Acc.toString(), segmentToLook, spotInMem)
+                _MemoryAccessor.write((this.Acc.toString()), segmentToLook, spotInMem)
             
           }
         }
@@ -235,7 +234,7 @@ module TSOS {
             if(segmentToLook < 0){
                  _StdOut.putText("Invalid opcode detected")
             }else{
-                let valueToAdd = _MemoryAccessor.read(value+1, segmentToLook);
+                let valueToAdd = this.convToHex(_MemoryAccessor.read(value+1, segmentToLook));
                 this.Acc = this.Acc + valueToAdd;
             }
         }
@@ -259,7 +258,6 @@ module TSOS {
             }else{
                 //Returns the value in memory in this case we are loading that into y
                 let spotInMem = this.convToHex(_MemoryAccessor.read(value+1, segmentToLook));
-                console.log(spotInMem)
                 this.Xreg = _Memory.memoryThread[segmentToLook][spotInMem];
             }
         }
@@ -267,7 +265,9 @@ module TSOS {
         //A0
         private loadYregCons(value) {
             this.bytesNeeded = 2;
+           
             this.Yreg = _MemoryAccessor.read(value + 1, this.segment);
+            console.log("The Y register: " + this.Yreg)
         }
 //----------------------------------------------------------------------------------
         //AC
@@ -297,8 +297,8 @@ module TSOS {
                 let spotInMem = this.convToHex(_MemoryAccessor.read(value+1,segmentToLook));
                 
                 let valueToCompair = parseInt(_Memory.memoryThread[segmentToLook][spotInMem]);
-                console.log(valueToCompair)
-                console.log(this.Xreg)
+                console.log("Value to compair " +valueToCompair)
+                console.log("XReg: "+this.Xreg)
                 if(this.Xreg === valueToCompair){
                     this.Zflag = 1;
                 }else{
@@ -318,6 +318,7 @@ module TSOS {
                     this.bytesNeeded = 1;
                 }else{
                     this.bytesNeeded = (this.convToHex(_MemoryAccessor.read(value+1, this.segment))+2);
+                    console.log("Branch " + this.bytesNeeded);
                 }
             }else{
                 this.bytesNeeded = 2;
@@ -350,20 +351,24 @@ module TSOS {
   //FIX FIX FIX  
         private printIntYReg(){
             // #$01 in X reg = print the integer stored in the Y register.
-           _KernelInterruptQueue.enqueue(new TSOS.Interrupt(PRINT_YREGInt_ERQ, ["Printing int from X register"]));
+            
+            _StdOut.putText(this.Yreg.toString())
+           //_KernelInterruptQueue.enqueue(new TSOS.Interrupt(PRINT_YREGInt_ERQ, ["Printing int from X register"]));
         }
         private printStringYReg(){
             // #$02 in X reg = print the 00-terminated string stored at the address in
             //  the Y register.
-           
+            
             let output = "";
             let i = this.convToHex(this.Yreg);
-            let locInMem = _MemoryAccessor.read(i,this.segment);
+            console.log("Printing out " + i);
+            let locInMem = _MemoryAccessor.read(i ,this.segment);
+            
+
             while(locInMem !== "00"){
-                output += String.fromCharCode(locInMem);
+                output += String.fromCharCode(this.convToHex(locInMem));
                 i++;
                 locInMem = _MemoryAccessor.read(i,this.segment);
-              
             }
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_STRING, [output]));
         }

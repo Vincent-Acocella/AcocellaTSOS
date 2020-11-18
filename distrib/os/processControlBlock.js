@@ -57,6 +57,11 @@ var TSOS;
             _Schedular.addProccess(PID);
             this.loadPCB(tempPCB[0], tempPCB[1], tempPCB[2], tempPCB[3], tempPCB[4], tempPCB[5], tempPCB[6], tempPCB[7], tempPCB[8], tempPCB[9]);
         };
+        ProcessControlBlock.prototype.terminateCPU = function () {
+            this.state = "terminated";
+            _MemoryAccessor.removeProgFromSegMap(this.location);
+            _CPU.isExecuting = false;
+        };
         ProcessControlBlock.prototype.loadPCB = function (PID, PC, ACC, X, Y, Z, IR, state, loc, end) {
             this.PID = PID;
             this.PC = PC;
