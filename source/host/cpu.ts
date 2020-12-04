@@ -182,7 +182,7 @@ module TSOS {
 
             //Loads next value in memory
             let newValue = _MemoryAccessor.read(value+1, this.segment); 
-            console.log(newValue)
+            console.log("Loading into Acc" + newValue)
             this.Acc = newValue;
         }
 
@@ -239,10 +239,11 @@ module TSOS {
             }else{
 
                 let valueToLook = this.convfromHex(_MemoryAccessor.read(value+1, segmentToLook));
-                console.log(parseInt(this.Acc.toString()) + parseInt(_Memory.memoryThread[segmentToLook][valueToLook]))
-                
+                console.log("fisdiajfiasjdifjiasfiasifjiasdjfiasifiasjfiaifdiadjfiajifjaisjdfiaifaidsjfijdf")
+                console.log("WHen converting to int " + this.addPadding(parseInt(this.Acc.toString()) + " And " +  parseInt(_Memory.memoryThread[segmentToLook][valueToLook])))
+                console.log("When turned from hex " + this.addPadding(parseInt(this.Acc.toString()) + " and " + this.convfromHex(_Memory.memoryThread[segmentToLook][valueToLook])))
                 //COmes in as 01 change
-                this.Acc = this.addPadding(parseInt(this.Acc.toString()) + parseInt(_Memory.memoryThread[segmentToLook][valueToLook]));
+                this.Acc = this.addPadding(this.toHex(this.convfromHex(this.Acc.toString()) + this.convfromHex(_Memory.memoryThread[segmentToLook][valueToLook])));
             }
         }
 
@@ -308,7 +309,7 @@ module TSOS {
                 console.log("X register: " + parseInt(this.Xreg.toString()))
                 console.log("Compair: "+ valueToCompair)
     
-                if(parseInt(this.Xreg.toString()) === valueToCompair){
+                if(this.convfromHex(this.Xreg.toString()) === valueToCompair){
                     this.Zflag = 1;
                 }else{
                     this.Zflag = 0;
@@ -344,7 +345,7 @@ module TSOS {
                 _StdOut.putText("Invalid opcode detected");
             }else{
                 let location = this.convfromHex(_MemoryAccessor.read(value+1, this.segment));
-                _Memory.memoryThread[segmentToLook][location]++; 
+                _Memory.memoryThread[segmentToLook][location] ==  this.toHex(this.convfromHex(_Memory.memoryThread[segmentToLook][location])+1); 
                 console.log("Increase Value at: " +  location + "To: " + _Memory.memoryThread[segmentToLook][location]);
             }
         }
@@ -356,7 +357,7 @@ module TSOS {
   //----------------------------------------------------------------------------------
         private printIntYReg(){
             // #$01 in X reg = print the integer stored in the Y register.
-           _KernelInterruptQueue.enqueue(new TSOS.Interrupt(PRINT_YREGInt_ERQ, [parseInt(this.Yreg.toString()).toString()]));
+           _KernelInterruptQueue.enqueue(new TSOS.Interrupt(PRINT_YREGInt_ERQ, [this.convfromHex(this.Yreg.toString()).toString()]));
         }
 
         private printStringYReg(){
@@ -391,6 +392,11 @@ module TSOS {
                 return ("0" +intNum)
             }
             return intNum
+        }
+
+        private toHex(numInt)
+        {
+            return numInt.toString(16)
         }
 
         //If this errors then there is an error in the code

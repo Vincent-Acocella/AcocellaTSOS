@@ -141,7 +141,6 @@ module TSOS {
                     _Schedular.switchMemoryInterupt()
                     break;
                 case STOP_EXEC_IRQ:
-                    
                     _StdOut.putText(params.toString());
                     _StdOut.advanceLine();
                     _PCB.terminateCPU();

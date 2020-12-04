@@ -59,8 +59,8 @@ var TSOS;
         };
         ProcessControlBlock.prototype.terminateCPU = function () {
             this.state = "terminated";
-            _MemoryAccessor.programOverCleanUp(this.location);
-            this.location = -1;
+            //_MemoryAccessor.programOverCleanUp(this.location);
+            //this.location = -1;
             _Schedular.processComplete();
         };
         ProcessControlBlock.prototype.loadPCB = function (PID, PC, ACC, X, Y, Z, IR, state, loc, end) {

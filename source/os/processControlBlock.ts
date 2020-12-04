@@ -54,8 +54,8 @@ module TSOS{
 
         public terminateCPU(){
             this.state = "terminated";
-            _MemoryAccessor.programOverCleanUp(this.location);
-            this.location = -1;
+            //_MemoryAccessor.programOverCleanUp(this.location);
+            //this.location = -1;
             _Schedular.processComplete();
         }
 

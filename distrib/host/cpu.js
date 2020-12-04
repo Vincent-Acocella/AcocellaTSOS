@@ -163,7 +163,7 @@ var TSOS;
             this.bytesNeeded = 2;
             //Loads next value in memory
             var newValue = _MemoryAccessor.read(value + 1, this.segment);
-            console.log(newValue);
+            console.log("Loading into Acc" + newValue);
             this.Acc = newValue;
         };
         //All of this has to change
@@ -210,9 +210,11 @@ var TSOS;
             }
             else {
                 var valueToLook = this.convfromHex(_MemoryAccessor.read(value + 1, segmentToLook));
-                console.log(parseInt(this.Acc.toString()) + parseInt(_Memory.memoryThread[segmentToLook][valueToLook]));
+                console.log("fisdiajfiasjdifjiasfiasifjiasdjfiasifiasjfiaifdiadjfiajifjaisjdfiaifaidsjfijdf");
+                console.log("WHen converting to int " + this.addPadding(parseInt(this.Acc.toString()) + " And " + parseInt(_Memory.memoryThread[segmentToLook][valueToLook])));
+                console.log("When turned from hex " + this.addPadding(parseInt(this.Acc.toString()) + " and " + this.convfromHex(_Memory.memoryThread[segmentToLook][valueToLook])));
                 //COmes in as 01 change
-                this.Acc = this.addPadding(parseInt(this.Acc.toString()) + parseInt(_Memory.memoryThread[segmentToLook][valueToLook]));
+                this.Acc = this.addPadding(this.toHex(this.convfromHex(this.Acc.toString()) + this.convfromHex(_Memory.memoryThread[segmentToLook][valueToLook])));
             }
         };
         //----------------------------------------------------------------------------------
@@ -268,7 +270,7 @@ var TSOS;
                 var valueToCompair = parseInt((_Memory.memoryThread[segmentToLook][spotInMem]));
                 console.log("X register: " + parseInt(this.Xreg.toString()));
                 console.log("Compair: " + valueToCompair);
-                if (parseInt(this.Xreg.toString()) === valueToCompair) {
+                if (this.convfromHex(this.Xreg.toString()) === valueToCompair) {
                     this.Zflag = 1;
                 }
                 else {
@@ -305,7 +307,7 @@ var TSOS;
             }
             else {
                 var location_1 = this.convfromHex(_MemoryAccessor.read(value + 1, this.segment));
-                _Memory.memoryThread[segmentToLook][location_1]++;
+                _Memory.memoryThread[segmentToLook][location_1] == this.toHex(this.convfromHex(_Memory.memoryThread[segmentToLook][location_1]) + 1);
                 console.log("Increase Value at: " + location_1 + "To: " + _Memory.memoryThread[segmentToLook][location_1]);
             }
         };
@@ -317,7 +319,7 @@ var TSOS;
         //----------------------------------------------------------------------------------
         Cpu.prototype.printIntYReg = function () {
             // #$01 in X reg = print the integer stored in the Y register.
-            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(PRINT_YREGInt_ERQ, [parseInt(this.Yreg.toString()).toString()]));
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(PRINT_YREGInt_ERQ, [this.convfromHex(this.Yreg.toString()).toString()]));
         };
         Cpu.prototype.printStringYReg = function () {
             // #$02 in X reg = print the 00-terminated string stored at the address in
@@ -346,6 +348,9 @@ var TSOS;
                 return ("0" + intNum);
             }
             return intNum;
+        };
+        Cpu.prototype.toHex = function (numInt) {
+            return numInt.toString(16);
         };
         //If this errors then there is an error in the code
         Cpu.prototype.returnSegmentFromMemory = function (byte) {
