@@ -113,6 +113,7 @@ module TSOS {
             // This is the Interrupt Handler Routine.  See pages 8 and 560.
             // Trace our entrance here so we can compute Interrupt Latency by analyzing the log file later on. Page 766.
             this.krnTrace("Handling IRQ~" + irq);
+            console.log("**********************Interupt***********************")
 
             // Invoke the requested Interrupt Service Routine via Switch/Case rather than an Interrupt Vector.
             // TODO: Consider using an Interrupt Vector in the future.
@@ -127,16 +128,20 @@ module TSOS {
                     _StdIn.handleInput();
                     break;
                 case PRINT_YREGInt_ERQ:
-                    console.log("You getting here champ");
+                    console.log("**********************Print Int***********************")
+                    console.log("**********************   " + params.toString() + "   ***********************")
                     _StdOut.putText(params.toString());
                     break;
                 case TERMINATE_STRING:
+                    console.log("**********************Print String***********************")
+                    console.log("**********************   " + params.toString() + "    ***********************")
                     _StdOut.putText(params.toString());
                     break;
                 case SWITCH_MEMORY:
                     _Schedular.switchMemoryInterupt()
                     break;
                 case STOP_EXEC_IRQ:
+                    
                     _StdOut.putText(params.toString());
                     _StdOut.advanceLine();
                     _PCB.terminateCPU();

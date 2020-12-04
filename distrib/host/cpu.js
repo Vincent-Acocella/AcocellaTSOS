@@ -64,17 +64,14 @@ var TSOS;
             else {
                 this.PC += moveThatBus;
             }
-            console.log("SIze of Queue: " + _Schedular.readyQueue.getSize());
-            //Queue interupt
-            if (!this.isComplete && _Schedular.readyQueue.getSize() > 1 && _Schedular.checkIfSwitch()) {
-                console.log("helloasdfkjasjkdofjopasdjpofjposadjpofjpsajpodfjpasdfop");
-                //Break calls an interupt so we wait
-                // interupt switch memory
-                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(SWITCH_MEMORY, ["Switching Memory"]));
-            }
             console.log("PC = " + this.PC);
             _PCB.updateScheduler();
             _DeviceDisplay.cycleReload();
+            //Queue interupt
+            if (!this.isComplete && _Schedular.readyQueue.getSize() > 1 && _Schedular.checkIfSwitch()) {
+                // interupt switch memory
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(SWITCH_MEMORY, ["Switching Memory"]));
+            }
         };
         Cpu.prototype.fetch = function (PC) {
             var opCode = _MemoryAccessor.read(PC, this.segment);
@@ -138,6 +135,7 @@ var TSOS;
                     this.systemCall(PC);
                     break;
                 default:
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(STOP_EXEC_IRQ, [" Bad op code"]));
             }
             return this.bytesNeeded;
         };
@@ -189,10 +187,7 @@ var TSOS;
             }
         };
         //----------------------------------------------------------------------------------
-        //good
         //8D
-        //Store the Acc in memory
-        //value +2 is where to store 
         Cpu.prototype.strAccInMem = function (value) {
             this.bytesNeeded = 3;
             var segmentToLook = this.returnSegmentFromMemory(_MemoryAccessor.read(value + 2, this.segment));
@@ -217,7 +212,7 @@ var TSOS;
                 var valueToLook = this.convfromHex(_MemoryAccessor.read(value + 1, segmentToLook));
                 console.log(parseInt(this.Acc.toString()) + parseInt(_Memory.memoryThread[segmentToLook][valueToLook]));
                 //COmes in as 01 change
-                this.Acc = parseInt(this.Acc.toString()) + parseInt(_Memory.memoryThread[segmentToLook][valueToLook]);
+                this.Acc = this.addPadding(parseInt(this.Acc.toString()) + parseInt(_Memory.memoryThread[segmentToLook][valueToLook]));
             }
         };
         //----------------------------------------------------------------------------------
@@ -269,7 +264,7 @@ var TSOS;
             }
             else {
                 var spotInMem = this.convfromHex(_MemoryAccessor.read(value + 1, segmentToLook));
-                console.log("SPot in memory" + spotInMem);
+                console.log("Spot in memory" + spotInMem);
                 var valueToCompair = parseInt((_Memory.memoryThread[segmentToLook][spotInMem]));
                 console.log("X register: " + parseInt(this.Xreg.toString()));
                 console.log("Compair: " + valueToCompair);
@@ -322,8 +317,7 @@ var TSOS;
         //----------------------------------------------------------------------------------
         Cpu.prototype.printIntYReg = function () {
             // #$01 in X reg = print the integer stored in the Y register.
-            _StdOut.putText(parseInt(this.Yreg.toString()).toString());
-            //_KernelInterruptQueue.enqueue(new TSOS.Interrupt(PRINT_YREGInt_ERQ, ["Printing int from X register"]));
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(PRINT_YREGInt_ERQ, [parseInt(this.Yreg.toString()).toString()]));
         };
         Cpu.prototype.printStringYReg = function () {
             // #$02 in X reg = print the 00-terminated string stored at the address in
@@ -346,6 +340,12 @@ var TSOS;
         };
         Cpu.prototype.convfromHex = function (value) {
             return parseInt(value.toString(), 16);
+        };
+        Cpu.prototype.addPadding = function (intNum) {
+            if (intNum < 10) {
+                return ("0" + intNum);
+            }
+            return intNum;
         };
         //If this errors then there is an error in the code
         Cpu.prototype.returnSegmentFromMemory = function (byte) {

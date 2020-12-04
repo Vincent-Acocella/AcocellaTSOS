@@ -54,6 +54,7 @@ var TSOS;
         Schedular.prototype.startCpu = function () {
             this.refreshQuant();
             this.deployFirstInQueueToCPU();
+            _DeviceDisplay.startUpSchedular();
             _CPU.isComplete = false;
             _CPU.isExecuting = true;
         };
@@ -73,7 +74,7 @@ var TSOS;
             console.log("Switching ready queue");
         };
         Schedular.prototype.checkIfSwitch = function () {
-            if (this.quant === 0) {
+            if (this.quant === 1) {
                 //queue up switch
                 return true;
             }

@@ -58,18 +58,16 @@ module TSOS {
             else {
                 this.PC += moveThatBus;
             } 
-
-            console.log("SIze of Queue: " + _Schedular.readyQueue.getSize())
-            //Queue interupt
-            if(!this.isComplete && _Schedular.readyQueue.getSize() > 1 && _Schedular.checkIfSwitch()){
-                console.log("helloasdfkjasjkdofjopasdjpofjposadjpofjpsajpodfjpasdfop")
-                //Break calls an interupt so we wait
-                    // interupt switch memory
-                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(SWITCH_MEMORY, ["Switching Memory"]));
-            }
             console.log("PC = " + this.PC);
             _PCB.updateScheduler();
             _DeviceDisplay.cycleReload();
+
+            //Queue interupt
+            if(!this.isComplete && _Schedular.readyQueue.getSize() > 1 && _Schedular.checkIfSwitch()){
+                    // interupt switch memory
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(SWITCH_MEMORY, ["Switching Memory"]));
+            }
+           
         }
 
         public fetch(PC){
@@ -149,6 +147,8 @@ module TSOS {
                     this.systemCall(PC);
                     break;
                 default:
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(STOP_EXEC_IRQ, [" Bad op code"]));
+                    
 
             }
             return this.bytesNeeded;
@@ -210,11 +210,9 @@ module TSOS {
         }
 
 //----------------------------------------------------------------------------------
-        //good
+      
         //8D
 
-        //Store the Acc in memory
-        //value +2 is where to store 
         private strAccInMem(value) {
             this.bytesNeeded = 3;
 
@@ -244,7 +242,7 @@ module TSOS {
                 console.log(parseInt(this.Acc.toString()) + parseInt(_Memory.memoryThread[segmentToLook][valueToLook]))
                 
                 //COmes in as 01 change
-                this.Acc = parseInt(this.Acc.toString()) + parseInt(_Memory.memoryThread[segmentToLook][valueToLook]);
+                this.Acc = this.addPadding(parseInt(this.Acc.toString()) + parseInt(_Memory.memoryThread[segmentToLook][valueToLook]));
             }
         }
 
@@ -304,7 +302,7 @@ module TSOS {
             }else{
 
                 let spotInMem = this.convfromHex(_MemoryAccessor.read(value+1, segmentToLook));
-                console.log("SPot in memory" + spotInMem)
+                console.log("Spot in memory" + spotInMem)
                 let valueToCompair = parseInt((_Memory.memoryThread[segmentToLook][spotInMem]));
                 
                 console.log("X register: " + parseInt(this.Xreg.toString()))
@@ -358,8 +356,7 @@ module TSOS {
   //----------------------------------------------------------------------------------
         private printIntYReg(){
             // #$01 in X reg = print the integer stored in the Y register.
-            _StdOut.putText(parseInt(this.Yreg.toString()).toString());
-           //_KernelInterruptQueue.enqueue(new TSOS.Interrupt(PRINT_YREGInt_ERQ, ["Printing int from X register"]));
+           _KernelInterruptQueue.enqueue(new TSOS.Interrupt(PRINT_YREGInt_ERQ, [parseInt(this.Yreg.toString()).toString()]));
         }
 
         private printStringYReg(){
@@ -387,6 +384,13 @@ module TSOS {
 
         private convfromHex(value){
              return parseInt(value.toString(), 16);
+        }
+
+        private addPadding(intNum){
+            if(intNum < 10){
+                return ("0" +intNum)
+            }
+            return intNum
         }
 
         //If this errors then there is an error in the code

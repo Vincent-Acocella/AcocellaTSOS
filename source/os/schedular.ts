@@ -63,6 +63,7 @@ module TSOS{
         public startCpu(){
             this.refreshQuant();
             this.deployFirstInQueueToCPU();
+            _DeviceDisplay.startUpSchedular();
             _CPU.isComplete = false;
             _CPU.isExecuting = true;
         }
@@ -87,7 +88,7 @@ module TSOS{
         }
 
         public checkIfSwitch(){
-            if(this.quant === 0){
+            if(this.quant === 1){
                 //queue up switch
                 return true;
             }else{
