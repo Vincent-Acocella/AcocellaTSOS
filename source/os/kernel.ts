@@ -89,10 +89,10 @@ module TSOS {
                     if(!_SingleStep){
                         _CPU.cycle();
                     }
-
                 } else {                       // If there are no interrupts and there is nothing being executed then just be idle.
                     this.krnTrace("Idle");
                 }
+
         }
         //
         // Interrupt Handling
@@ -118,7 +118,6 @@ module TSOS {
             // TODO: Consider using an Interrupt Vector in the future.
             // Note: There is no need to "dismiss" or acknowledge the interrupts in our design here.
             //       Maybe the hardware simulation will grow to support/require that in the future.
-            console.log(irq)
             switch(irq) {
                 case TIMER_IRQ:
                     this.krnTimerISR();               // Kernel built-in routine for timers (not the clock).
@@ -135,12 +134,13 @@ module TSOS {
                     _StdOut.putText(params.toString());
                     break;
                 case SWITCH_MEMORY:
-                    _Schedular.switchMemoryInterupt(params)
+                    _Schedular.switchMemoryInterupt()
                     break;
                 case STOP_EXEC_IRQ:
-                    //_PCB.terminate();
+                    _StdOut.putText(params.toString());
+                    _StdOut.advanceLine();
+                    _PCB.terminateCPU();
                     break;
-
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
             }

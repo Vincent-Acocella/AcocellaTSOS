@@ -9,6 +9,8 @@ var TSOS;
         DeviceDisplay.prototype.cycleReload = function () {
             this.updateCPU();
             this.updateSchedular();
+            this.startUpMemory();
+            this.updateReadyQueue();
         };
         DeviceDisplay.prototype.updateMemory = function () {
             var table = document.getElementById('memoryUnit');

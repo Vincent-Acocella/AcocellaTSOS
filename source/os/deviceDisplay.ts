@@ -10,6 +10,8 @@ module TSOS{
         public cycleReload(){
            this.updateCPU();
            this.updateSchedular();
+           this.startUpMemory();
+           this.updateReadyQueue();
         }
 
         public updateMemory(){

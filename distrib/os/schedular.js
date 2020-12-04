@@ -44,6 +44,7 @@ var TSOS;
         Schedular.prototype.deployFirstInQueueToCPU = function () {
             //This is the data we want
             var firstIndex = this.readyQueue.peek();
+            console.log("Now Executing process:  " + firstIndex);
             this.allProcesses[firstIndex][7] = "Executing";
             var array = this.allProcesses[firstIndex];
             _PCB.loadPCB(array[0], array[1], array[2], array[3], array[4], array[5], array[6], array[7], array[8], array[9]);
@@ -51,12 +52,20 @@ var TSOS;
             // Load PCB then put into CPU
         };
         Schedular.prototype.startCpu = function () {
+            this.refreshQuant();
             this.deployFirstInQueueToCPU();
+            _CPU.isComplete = false;
             _CPU.isExecuting = true;
         };
         //--------------------------------------------------------
         //SWITCH MEMORY
-        Schedular.prototype.switchMemoryInterupt = function (toDo) {
+        Schedular.prototype.switchMemoryInterupt = function () {
+            //Take PCB
+            _PCB.copyCPU();
+            _PCB.state = "Holding";
+            this.addProccess(_PCB.PID);
+            this.switchMemoryUnit();
+            this.startCpu();
         };
         //Update ready queue
         Schedular.prototype.switchMemoryUnit = function () {
@@ -64,8 +73,15 @@ var TSOS;
             console.log("Switching ready queue");
         };
         Schedular.prototype.checkIfSwitch = function () {
-            //If the ready queue is empty but the quant is not 0, it was killed so check for both
-            return (this.quant === 0 && this.readyQueue.getSize() > 1);
+            if (this.quant === 0) {
+                //queue up switch
+                return true;
+            }
+            else {
+                //decrease quant if there are more than 1 in ready queue
+                this.decreaseQuantum();
+                return false;
+            }
         };
         //--------------------------------------------------------
         //READY QUEUE
@@ -80,7 +96,8 @@ var TSOS;
         };
         Schedular.prototype.removeFromReadyQueue = function () {
             this.readyQueue.dequeue();
-            _DeviceDisplay.updateReadyQueue();
+            _PCB.updateScheduler();
+            _DeviceDisplay.cycleReload();
         };
         Schedular.prototype.addAllToReadyQueue = function () {
             //3 is the number of segments in memory
@@ -94,6 +111,7 @@ var TSOS;
             }
             if (added) {
                 _CPU.isExecuting = true;
+                this.deployFirstInQueueToCPU();
                 _DeviceDisplay.updateReadyQueue();
             }
             else {
@@ -113,13 +131,14 @@ var TSOS;
             return flag;
         };
         //Check if the last program is finsihed executing
-        Schedular.prototype.isDone = function () {
+        Schedular.prototype.processComplete = function () {
+            this.removeFromReadyQueue();
+            console.log(this.readyQueue.getSize());
             if (this.readyQueue.getSize() === 0) {
                 _CPU.isExecuting = false;
-                return true;
             }
             else {
-                return false;
+                this.startCpu();
             }
         };
         return Schedular;

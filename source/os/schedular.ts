@@ -50,19 +50,20 @@ module TSOS{
         //Used to deploy to the CPU
         //Can be used after switch or initial start
         public deployFirstInQueueToCPU(){
-
             //This is the data we want
             let firstIndex = this.readyQueue.peek();
+            console.log("Now Executing process:  " + firstIndex)
             this.allProcesses[firstIndex][7] = "Executing";
             var array = this.allProcesses[firstIndex];
-
             _PCB.loadPCB(array[0], array[1],array[2],array[3],array[4],array[5],array[6],array[7],array[8],array[9]);
             _PCB.loadCPU();
            // Load PCB then put into CPU
         }
 
         public startCpu(){
+            this.refreshQuant();
             this.deployFirstInQueueToCPU();
+            _CPU.isComplete = false;
             _CPU.isExecuting = true;
         }
 
@@ -70,10 +71,13 @@ module TSOS{
 
         //SWITCH MEMORY
 
-        public switchMemoryInterupt(toDo){
-
-
-            
+        public switchMemoryInterupt(){
+            //Take PCB
+            _PCB.copyCPU();
+            _PCB.state = "Holding";
+            this.addProccess(_PCB.PID);
+            this.switchMemoryUnit();
+            this.startCpu();
         }
 
         //Update ready queue
@@ -83,15 +87,20 @@ module TSOS{
         }
 
         public checkIfSwitch(){
-            //If the ready queue is empty but the quant is not 0, it was killed so check for both
-            return (this.quant === 0 && this.readyQueue.getSize() > 1)
+            if(this.quant === 0){
+                //queue up switch
+                return true;
+            }else{
+                //decrease quant if there are more than 1 in ready queue
+                this.decreaseQuantum();
+                return false;
+            }
         }
 
 
 //--------------------------------------------------------
 
         //READY QUEUE
-
 
         public addToReadyQueue(PID){
             let added = false;
@@ -105,7 +114,8 @@ module TSOS{
 
         public removeFromReadyQueue(){
             this.readyQueue.dequeue();
-            _DeviceDisplay.updateReadyQueue();
+            _PCB.updateScheduler();
+            _DeviceDisplay.cycleReload();
         }
 
         public addAllToReadyQueue(){
@@ -121,6 +131,7 @@ module TSOS{
 
            if(added){
                 _CPU.isExecuting = true;
+                 this.deployFirstInQueueToCPU();
                 _DeviceDisplay.updateReadyQueue();
            }else{
                _StdOut.putText("No more programs to execute");
@@ -142,13 +153,15 @@ module TSOS{
         }
 
         //Check if the last program is finsihed executing
-        public isDone(){
+        public processComplete(){
+            this.removeFromReadyQueue();
+            console.log(this.readyQueue.getSize());
             if(this.readyQueue.getSize() === 0){
                 _CPU.isExecuting = false;
-                return true;
             }else{
-                return false;
+                this.startCpu();
             }
         }
+
     }
 }

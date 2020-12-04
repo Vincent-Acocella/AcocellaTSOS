@@ -64,10 +64,17 @@ var TSOS;
             else {
                 this.PC += moveThatBus;
             }
+            console.log("SIze of Queue: " + _Schedular.readyQueue.getSize());
+            //Queue interupt
+            if (!this.isComplete && _Schedular.readyQueue.getSize() > 1 && _Schedular.checkIfSwitch()) {
+                console.log("helloasdfkjasjkdofjopasdjpofjposadjpofjpsajpodfjpasdfop");
+                //Break calls an interupt so we wait
+                // interupt switch memory
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(SWITCH_MEMORY, ["Switching Memory"]));
+            }
             console.log("PC = " + this.PC);
             _PCB.updateScheduler();
             _DeviceDisplay.cycleReload();
-            _DeviceDisplay.startUpMemory();
         };
         Cpu.prototype.fetch = function (PC) {
             var opCode = _MemoryAccessor.read(PC, this.segment);
@@ -139,13 +146,13 @@ var TSOS;
         //FF
         Cpu.prototype.systemCall = function (code) {
             this.bytesNeeded = 1;
-            console.log("The X register for the SC: " + this.Xreg);
-            switch (_CPU.Xreg) {
+            console.log("The X register for the SC: " + +this.Xreg);
+            switch (parseInt(this.Xreg.toString())) {
                 case 1: // Print integer from y register
-                    _CPU.printIntYReg();
+                    this.printIntYReg();
                     break;
                 case 2: // Print 00 terminated string from y register
-                    _CPU.printStringYReg();
+                    this.printStringYReg();
                     break;
                 default:
                     _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_STRING, ["Invalid system call operation, stoping execution."]));
@@ -158,7 +165,7 @@ var TSOS;
             this.bytesNeeded = 2;
             //Loads next value in memory
             var newValue = _MemoryAccessor.read(value + 1, this.segment);
-            console.log("Value" + newValue);
+            console.log(newValue);
             this.Acc = newValue;
         };
         //All of this has to change
@@ -198,7 +205,7 @@ var TSOS;
             }
         };
         //----------------------------------------------------------------------------------
-        //FIX FIX FIX FIX FIX FIX 
+        //Take value in memory and add it to the accumulator 
         //6D
         Cpu.prototype.addCarry = function (value) {
             this.bytesNeeded = 3;
@@ -207,15 +214,17 @@ var TSOS;
                 _StdOut.putText("Invalid opcode detected");
             }
             else {
-                var valueToAdd = this.convfromHex(_MemoryAccessor.read(value + 1, segmentToLook));
-                this.Acc = this.Acc + valueToAdd;
+                var valueToLook = this.convfromHex(_MemoryAccessor.read(value + 1, segmentToLook));
+                console.log(parseInt(this.Acc.toString()) + parseInt(_Memory.memoryThread[segmentToLook][valueToLook]));
+                //COmes in as 01 change
+                this.Acc = parseInt(this.Acc.toString()) + parseInt(_Memory.memoryThread[segmentToLook][valueToLook]);
             }
         };
         //----------------------------------------------------------------------------------
         //A2
         Cpu.prototype.loadXregCons = function (value) {
             this.bytesNeeded = 2;
-            this.Xreg = parseInt(_MemoryAccessor.read(value + 1, this.segment));
+            this.Xreg = _MemoryAccessor.read(value + 1, this.segment);
         };
         //----------------------------------------------------------------------------------
         //AE
@@ -248,7 +257,6 @@ var TSOS;
             else {
                 var spotInMem = this.convfromHex(_MemoryAccessor.read(value + 1, segmentToLook));
                 this.Yreg = _Memory.memoryThread[segmentToLook][spotInMem];
-                console.log("Y register now equals: " + this.Yreg);
             }
         };
         //----------------------------------------------------------------------------------
@@ -261,14 +269,16 @@ var TSOS;
             }
             else {
                 var spotInMem = this.convfromHex(_MemoryAccessor.read(value + 1, segmentToLook));
-                var valueToCompair = parseInt(_Memory.memoryThread[segmentToLook][spotInMem]);
-                if (this.Xreg === valueToCompair) {
+                console.log("SPot in memory" + spotInMem);
+                var valueToCompair = parseInt((_Memory.memoryThread[segmentToLook][spotInMem]));
+                console.log("X register: " + parseInt(this.Xreg.toString()));
+                console.log("Compair: " + valueToCompair);
+                if (parseInt(this.Xreg.toString()) === valueToCompair) {
                     this.Zflag = 1;
                 }
                 else {
                     this.Zflag = 0;
                 }
-                this.Zflag = (this.Xreg === valueToCompair) ? 1 : 0;
             }
         };
         //----------------------------------------------------------------------------------
@@ -282,6 +292,7 @@ var TSOS;
                     this.bytesNeeded = 1;
                 }
                 else {
+                    console.log((this.convfromHex(_MemoryAccessor.read(value + 1, this.segment)) + 2));
                     this.bytesNeeded = (this.convfromHex(_MemoryAccessor.read(value + 1, this.segment)) + 2);
                 }
             }
@@ -291,7 +302,6 @@ var TSOS;
         };
         //----------------------------------------------
         //EE
-        //GOOOD
         Cpu.prototype.incremVal = function (value) {
             this.bytesNeeded = 3;
             var segmentToLook = this.returnSegmentFromMemory(_MemoryAccessor.read(value + 2, this.segment));
@@ -304,16 +314,15 @@ var TSOS;
                 console.log("Increase Value at: " + location_1 + "To: " + _Memory.memoryThread[segmentToLook][location_1]);
             }
         };
+        //----------------------------------------------------
         Cpu.prototype["break"] = function () {
+            this.isComplete = true;
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(STOP_EXEC_IRQ, ["PID " + _PCB.PID + " has finished."]));
         };
         //----------------------------------------------------------------------------------
-        //----------------------------------------------------------------------------------      
-        // ---------------------------------------------------------------------------------
-        //FIX FIX FIX  
         Cpu.prototype.printIntYReg = function () {
             // #$01 in X reg = print the integer stored in the Y register.
-            _StdOut.putText(this.Yreg.toString());
+            _StdOut.putText(parseInt(this.Yreg.toString()).toString());
             //_KernelInterruptQueue.enqueue(new TSOS.Interrupt(PRINT_YREGInt_ERQ, ["Printing int from X register"]));
         };
         Cpu.prototype.printStringYReg = function () {
@@ -359,12 +368,6 @@ var TSOS;
                 return temp;
             }
             return -1;
-        };
-        Cpu.prototype.add0 = function (str) {
-            if (str < 10) {
-                return "0" + str.toString();
-            }
-            return str.toString();
         };
         return Cpu;
     }());

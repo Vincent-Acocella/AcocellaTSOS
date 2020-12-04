@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "/bin/sh && tsc --rootDir source/ --outDir distrib/  source/*.ts source/host/*.ts source/os/*.ts && exit"
   },
   "repository": {
     "type": "git",
@@ -20,7 +20,6 @@
   },
   "homepage": "https://github.com/Vincent-Acocella/TSOS-2019-master#readme",
   "dependencies": {
-    "bootstrap": "^4.5.2",
-    "nodemon": "^2.0.6"
+    "bootstrap": "^4.5.2"
   }
 }
