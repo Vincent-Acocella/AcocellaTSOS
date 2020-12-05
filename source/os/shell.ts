@@ -479,10 +479,9 @@ module TSOS {
 
             if(args.length > 0){
                 _DeviceDiskDriver.createFile(args)
-
+            }else{
+                _StdOut.putText("Disk Already Formatted");
             }
-
-
         }
     }
 }

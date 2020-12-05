@@ -80,6 +80,8 @@ var TSOS;
             this.commandList[this.commandList.length] = sc;
             sc = new TSOS.ShellCommand(this.shellFormat, "format", "- Format Thing");
             this.commandList[this.commandList.length] = sc;
+            sc = new TSOS.ShellCommand(this.shellCreate, "create", "- Create Thing");
+            this.commandList[this.commandList.length] = sc;
         };
         Shell.prototype.putPrompt = function () {
             _StdOut.putText(this.promptStr);
@@ -355,6 +357,14 @@ var TSOS;
         Shell.prototype.shellFormat = function () {
             if (_DeviceDiskDriver.formatDisk()) {
                 _StdOut.putText("Disk Formatted");
+            }
+            else {
+                _StdOut.putText("Disk Already Formatted");
+            }
+        };
+        Shell.prototype.shellCreate = function (args) {
+            if (args.length > 0) {
+                _DeviceDiskDriver.createFile(args);
             }
             else {
                 _StdOut.putText("Disk Already Formatted");
