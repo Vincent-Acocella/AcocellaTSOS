@@ -47,7 +47,7 @@ var TSOS;
             var diskAsJSON = {
                 avalibility: this.getAvalibility(),
                 pointer: this.getPointer(),
-                data: this.data.toString()
+                data: this.data
             };
             return JSON.stringify(diskAsJSON);
         };

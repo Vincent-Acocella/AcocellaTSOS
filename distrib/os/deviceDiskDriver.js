@@ -20,7 +20,7 @@ var TSOS;
                             var newDisk = new TSOS.Disk;
                             if (index === 0)
                                 newDisk.setAvalibility(1);
-                            sessionStorage.setItem(i + ": " + j + ": " + k, newDisk.storeInSession());
+                            sessionStorage.setItem(i + ":" + k + ":" + j, newDisk.storeInSession());
                             index++;
                         }
                     }
@@ -30,17 +30,19 @@ var TSOS;
             return false;
         };
         DeviceDiskDriver.prototype.createFile = function (fileName) {
+            fileName = fileName.toString();
             //to create a file we put the name in hex (if it doesn't already exist) in the data at the next avaliable spot
             if (this.checkOut(fileName)) {
+                console.log(this.nextAvaliableBlock);
                 var avaliableBlock = JSON.parse(sessionStorage.getItem("0:0:" + this.nextAvaliableBlock));
-                console.log(avaliableBlock.avalibility);
-                //No more use
                 avaliableBlock.data[0] = 1;
                 avaliableBlock.avalibility = 1;
-                // let dataIndex = 3;
-                // for(let i = 0; i< fileName.length; i++){
-                //     avaliableBlock.data[dataIndex] = this.convertToHexByLetter(fileName.charAt(i))
-                // }
+                var dataIndex = 3;
+                for (var i = 0; i < fileName.length; i++) {
+                    avaliableBlock.data[dataIndex] = this.convertToHexByLetter(fileName.charAt(i));
+                    dataIndex++;
+                }
+                console.log(avaliableBlock.data);
             }
         };
         DeviceDiskDriver.prototype.updateNextAvaliable = function (val) {
@@ -51,6 +53,7 @@ var TSOS;
         DeviceDiskDriver.prototype.getNextAvaliable = function () {
         };
         DeviceDiskDriver.prototype.convertToHexByLetter = function (char) {
+            console.log(parseInt(char, 16));
             return parseInt(char, 16);
         };
         DeviceDiskDriver.prototype.checkOut = function (str) {

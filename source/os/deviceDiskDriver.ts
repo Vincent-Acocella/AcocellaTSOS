@@ -26,7 +26,7 @@ module TSOS{
                             let newDisk =  new Disk;
                             if(index === 0)newDisk.setAvalibility(1);
                             
-                            sessionStorage.setItem(`${i}: ${j}: ${k}`, newDisk.storeInSession());
+                            sessionStorage.setItem(`${i}:${k}:${j}`, newDisk.storeInSession());
                             index++;
                         }
                     }
@@ -37,20 +37,23 @@ module TSOS{
         }
 
         public createFile(fileName: string){
+            fileName = fileName.toString();
              //to create a file we put the name in hex (if it doesn't already exist) in the data at the next avaliable spot
             if(this.checkOut(fileName)){
+                console.log(this.nextAvaliableBlock)
 
                 let avaliableBlock = JSON.parse(sessionStorage.getItem(`0:0:${this.nextAvaliableBlock}`));
-                console.log(avaliableBlock.avalibility);
 
-                //No more use
                 avaliableBlock.data[0] = 1;
                 avaliableBlock.avalibility = 1;
 
-                // let dataIndex = 3;
-                // for(let i = 0; i< fileName.length; i++){
-                //     avaliableBlock.data[dataIndex] = this.convertToHexByLetter(fileName.charAt(i))
-                // }
+                let dataIndex = 3;
+                
+                for(let i = 0; i < fileName.length; i++){
+                    avaliableBlock.data[dataIndex] = this.convertToHexByLetter(fileName.charAt(i))
+                    dataIndex++
+                }
+                // console.log(avaliableBlock.data)
             }
         }
 
@@ -65,7 +68,9 @@ module TSOS{
         }
 
         public convertToHexByLetter(char){
+            console.log(parseInt(char,16))
             return parseInt(char,16);
+            
 
         }
 
