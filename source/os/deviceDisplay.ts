@@ -16,6 +16,8 @@ module TSOS{
 
         public updateMemory(){
             let table: HTMLTableElement = <HTMLTableElement> document.getElementById('memoryUnit');
+
+
             let index = 0;
             for (let i = 0; i < table.rows.length; i++) {
                 for (let j = 1; j < 9; j++) {
@@ -57,10 +59,14 @@ module TSOS{
 
                 for (let k = 1; k < 9; k++) {
                     let cell = row.insertCell(k);
+                    if(index === 122){
+                        cell.style.color = "magenta"
+                    }
                     cell.innerHTML = stringMemory[index];
                     index++;
                 }
             }
+            //122
             table.rows[8].cells.item(2).style.color = "magenta"
         }
 

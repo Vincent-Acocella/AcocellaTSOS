@@ -30,6 +30,8 @@ const _RoundRobin = false;
 
 const SWITCH_MEMORY = 4;
 
+const DISK_SIZE = 127;
+
 //
 // Global Variables
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
@@ -45,6 +47,7 @@ var _DeviceDisplay : any = null;
 var _MemoryManager:	any	= null;
 var _PCB: TSOS.ProcessControlBlock = null;
 var _Schedular: TSOS.Schedular = null;
+var _DeviceDiskDriver: TSOS.DeviceDiskDriver = null;
 
 var _OSclock: number = 0;  // Page 23.
 

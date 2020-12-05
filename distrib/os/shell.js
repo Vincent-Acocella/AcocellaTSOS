@@ -78,6 +78,8 @@ var TSOS;
             this.commandList[this.commandList.length] = sc;
             sc = new TSOS.ShellCommand(this.shellQuantum, "quantum", "- runCode");
             this.commandList[this.commandList.length] = sc;
+            sc = new TSOS.ShellCommand(this.shellFormat, "format", "- Format Thing");
+            this.commandList[this.commandList.length] = sc;
         };
         Shell.prototype.putPrompt = function () {
             _StdOut.putText(this.promptStr);
@@ -348,6 +350,14 @@ var TSOS;
             if (args.length > 0) {
                 _Quant = parseInt(args);
                 _StdOut.putText("The Quantum has been changed to: " + args);
+            }
+        };
+        Shell.prototype.shellFormat = function () {
+            if (_DeviceDiskDriver.formatDisk()) {
+                _StdOut.putText("Disk Formatted");
+            }
+            else {
+                _StdOut.putText("Disk Already Formatted");
             }
         };
         return Shell;

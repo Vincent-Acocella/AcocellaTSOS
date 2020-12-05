@@ -21,6 +21,7 @@ var TERMINATE_STRING = 3;
 var STOP_EXEC_IRQ = 5;
 var _RoundRobin = false;
 var SWITCH_MEMORY = 4;
+var DISK_SIZE = 127;
 //
 // Global Variables
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
@@ -35,6 +36,7 @@ var _DeviceDisplay = null;
 var _MemoryManager = null;
 var _PCB = null;
 var _Schedular = null;
+var _DeviceDiskDriver = null;
 var _OSclock = 0; // Page 23.
 var _Mode = 0; // (currently unused)  0 = Kernel Mode, 1 = User Mode.  See page 21.
 var _Canvas; // Initialized in Control.hostInit().

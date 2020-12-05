@@ -150,6 +150,16 @@ module TSOS {
                 "- runCode");
             this.commandList[this.commandList.length] = sc;
 
+            sc = new ShellCommand(this.shellFormat,
+                "format",
+                "- Format Thing");
+            this.commandList[this.commandList.length] = sc;
+
+            sc = new ShellCommand(this.shellCreate,
+                "create",
+                "- Create Thing");
+            this.commandList[this.commandList.length] = sc;
+
         }
         public putPrompt() {
             _StdOut.putText(this.promptStr);
@@ -455,6 +465,24 @@ module TSOS {
                 _Quant = parseInt(args)
                 _StdOut.putText("The Quantum has been changed to: " + args)
             }
+        }
+
+        public shellFormat(){
+
+            if(_DeviceDiskDriver.formatDisk()){
+                _StdOut.putText("Disk Formatted");
+            }else{
+                _StdOut.putText("Disk Already Formatted");
+            }
+        }
+        public shellCreate(args:string){
+
+            if(args.length > 0){
+                _DeviceDiskDriver.createFile(args)
+
+            }
+
+
         }
     }
 }

@@ -210,11 +210,14 @@ var TSOS;
             }
             else {
                 var valueToLook = this.convfromHex(_MemoryAccessor.read(value + 1, segmentToLook));
-                console.log("fisdiajfiasjdifjiasfiasifjiasdjfiasifiasjfiaifdiadjfiajifjaisjdfiaifaidsjfijdf");
+                console.log("*********------------**************------------");
                 console.log("WHen converting to int " + this.addPadding(parseInt(this.Acc.toString()) + " And " + parseInt(_Memory.memoryThread[segmentToLook][valueToLook])));
-                console.log("When turned from hex " + this.addPadding(parseInt(this.Acc.toString()) + " and " + this.convfromHex(_Memory.memoryThread[segmentToLook][valueToLook])));
+                console.log("When turned from hex " + this.addPadding(parseInt(this.Acc.toString()) + " And " + this.convfromHex(_Memory.memoryThread[segmentToLook][valueToLook])));
+                console.log("Acc = " + this.Acc);
+                console.log("Adding: " + parseInt(_Memory.memoryThread[segmentToLook][valueToLook]));
                 //COmes in as 01 change
-                this.Acc = this.addPadding(this.toHex(this.convfromHex(this.Acc.toString()) + this.convfromHex(_Memory.memoryThread[segmentToLook][valueToLook])));
+                this.Acc = this.addPadding(this.convfromHex(this.Acc.toString()) + parseInt(_Memory.memoryThread[segmentToLook][valueToLook]));
+                console.log("Now equals: " + this.Acc);
             }
         };
         //----------------------------------------------------------------------------------
@@ -261,15 +264,17 @@ var TSOS;
         Cpu.prototype.compXmem = function (value) {
             this.bytesNeeded = 3;
             var segmentToLook = this.returnSegmentFromMemory(_MemoryAccessor.read(value + 2, this.segment));
+            console.log("Segment looking: " + segmentToLook);
             if (segmentToLook < 0) {
                 _StdOut.putText("Invalid opcode detected");
             }
             else {
                 var spotInMem = this.convfromHex(_MemoryAccessor.read(value + 1, segmentToLook));
-                console.log("Spot in memory" + spotInMem);
+                // look at 
+                console.log("Spot looking at: " + spotInMem);
+                console.log("Also look at: " + _MemoryAccessor.read(value + 1, segmentToLook));
                 var valueToCompair = parseInt((_Memory.memoryThread[segmentToLook][spotInMem]));
-                console.log("X register: " + parseInt(this.Xreg.toString()));
-                console.log("Compair: " + valueToCompair);
+                console.log("this: " + valueToCompair + " Or " + this.convfromHex(_Memory.memoryThread[segmentToLook][spotInMem]));
                 if (this.convfromHex(this.Xreg.toString()) === valueToCompair) {
                     this.Zflag = 1;
                 }
@@ -285,11 +290,11 @@ var TSOS;
                 //Gets location to set the program counter to
                 // this.PC = this.convToHex(_Memory.memoryThread[value + 1]);
                 //If we are branching to 0
+                console.log("Branching:  " + (_MemoryAccessor.read(value + 1, this.segment)));
                 if (value === 0) {
                     this.bytesNeeded = 1;
                 }
                 else {
-                    console.log((this.convfromHex(_MemoryAccessor.read(value + 1, this.segment)) + 2));
                     this.bytesNeeded = (this.convfromHex(_MemoryAccessor.read(value + 1, this.segment)) + 2);
                 }
             }
@@ -307,7 +312,7 @@ var TSOS;
             }
             else {
                 var location_1 = this.convfromHex(_MemoryAccessor.read(value + 1, this.segment));
-                _Memory.memoryThread[segmentToLook][location_1] == this.toHex(this.convfromHex(_Memory.memoryThread[segmentToLook][location_1]) + 1);
+                _Memory.memoryThread[segmentToLook][location_1]++;
                 console.log("Increase Value at: " + location_1 + "To: " + _Memory.memoryThread[segmentToLook][location_1]);
             }
         };

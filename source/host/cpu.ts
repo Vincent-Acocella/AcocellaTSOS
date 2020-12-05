@@ -149,7 +149,6 @@ module TSOS {
                 default:
                     _KernelInterruptQueue.enqueue(new TSOS.Interrupt(STOP_EXEC_IRQ, [" Bad op code"]));
                     
-
             }
             return this.bytesNeeded;
         }
@@ -204,7 +203,7 @@ module TSOS {
           }else{
             //value + 1 is base 10
             let valueInMemory = _MemoryAccessor.read((value+1), segmentToLook);
-            console.log("Value" + valueInMemory)
+            console.log("Value" + valueInMemory);
             this.Acc = valueInMemory;
           }
         }
@@ -222,6 +221,7 @@ module TSOS {
                  _StdOut.putText("Invalid opcode detected")
             }else{
                 let spotInMem = this.convfromHex(_MemoryAccessor.read((value+1),segmentToLook));
+
                 _MemoryAccessor.write((this.Acc.toString()), segmentToLook, spotInMem);
           }
         }
@@ -235,15 +235,18 @@ module TSOS {
             let segmentToLook:number =  this.returnSegmentFromMemory(_MemoryAccessor.read(value+2, this.segment));
            
             if(segmentToLook < 0){
-                 _StdOut.putText("Invalid opcode detected")
+                 _StdOut.putText("Invalid opcode detected");
             }else{
-
                 let valueToLook = this.convfromHex(_MemoryAccessor.read(value+1, segmentToLook));
-                console.log("fisdiajfiasjdifjiasfiasifjiasdjfiasifiasjfiaifdiadjfiajifjaisjdfiaifaidsjfijdf")
-                console.log("WHen converting to int " + this.addPadding(parseInt(this.Acc.toString()) + " And " +  parseInt(_Memory.memoryThread[segmentToLook][valueToLook])))
-                console.log("When turned from hex " + this.addPadding(parseInt(this.Acc.toString()) + " and " + this.convfromHex(_Memory.memoryThread[segmentToLook][valueToLook])))
+                console.log("*********------------**************------------");
+                console.log("WHen converting to int " + this.addPadding(parseInt(this.Acc.toString()) + " And " +  parseInt(_Memory.memoryThread[segmentToLook][valueToLook])));
+                console.log("When turned from hex " + this.addPadding(parseInt(this.Acc.toString()) + " And " + this.convfromHex(_Memory.memoryThread[segmentToLook][valueToLook])));
+                console.log("Acc = " + this.Acc);
+                console.log("Adding: " + parseInt(_Memory.memoryThread[segmentToLook][valueToLook]));
+                
                 //COmes in as 01 change
-                this.Acc = this.addPadding(this.toHex(this.convfromHex(this.Acc.toString()) + this.convfromHex(_Memory.memoryThread[segmentToLook][valueToLook])));
+                this.Acc = this.addPadding(this.convfromHex(this.Acc.toString()) + parseInt(_Memory.memoryThread[segmentToLook][valueToLook]));
+                console.log("Now equals: " + this.Acc)
             }
         }
 
@@ -297,17 +300,20 @@ module TSOS {
             this.bytesNeeded = 3;
 
             let segmentToLook:number =  this.returnSegmentFromMemory(_MemoryAccessor.read(value+2, this.segment));
+            console.log("Segment looking: " + segmentToLook);
            
             if(segmentToLook < 0){
                  _StdOut.putText("Invalid opcode detected");
             }else{
 
                 let spotInMem = this.convfromHex(_MemoryAccessor.read(value+1, segmentToLook));
-                console.log("Spot in memory" + spotInMem)
+                // look at 
+
+                console.log("Spot looking at: " + spotInMem)
+                console.log("Also look at: " + _MemoryAccessor.read(value+1, segmentToLook))
                 let valueToCompair = parseInt((_Memory.memoryThread[segmentToLook][spotInMem]));
-                
-                console.log("X register: " + parseInt(this.Xreg.toString()))
-                console.log("Compair: "+ valueToCompair)
+
+                console.log("this: " + valueToCompair + " Or " +this.convfromHex(_Memory.memoryThread[segmentToLook][spotInMem]))
     
                 if(this.convfromHex(this.Xreg.toString()) === valueToCompair){
                     this.Zflag = 1;
@@ -323,10 +329,11 @@ module TSOS {
                 //Gets location to set the program counter to
                 // this.PC = this.convToHex(_Memory.memoryThread[value + 1]);
                 //If we are branching to 0
+
+                console.log("Branching:  " + (_MemoryAccessor.read(value+1, this.segment)))
                 if(value === 0){
                     this.bytesNeeded = 1;
                 }else{
-                    console.log((this.convfromHex(_MemoryAccessor.read(value+1, this.segment))+2))
                     this.bytesNeeded = (this.convfromHex(_MemoryAccessor.read(value+1, this.segment))+2);
                 }
             }else{
@@ -345,7 +352,7 @@ module TSOS {
                 _StdOut.putText("Invalid opcode detected");
             }else{
                 let location = this.convfromHex(_MemoryAccessor.read(value+1, this.segment));
-                _Memory.memoryThread[segmentToLook][location] ==  this.toHex(this.convfromHex(_Memory.memoryThread[segmentToLook][location])+1); 
+                _Memory.memoryThread[segmentToLook][location]++; 
                 console.log("Increase Value at: " +  location + "To: " + _Memory.memoryThread[segmentToLook][location]);
             }
         }
@@ -394,10 +401,12 @@ module TSOS {
             return intNum
         }
 
-        private toHex(numInt)
-        {
-            return numInt.toString(16)
+        private toHex(numInt){
+
+            return numInt.toString(16);
+
         }
+        
 
         //If this errors then there is an error in the code
         private returnSegmentFromMemory(byte){

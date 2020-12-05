@@ -79,6 +79,7 @@ module TSOS{
             this.addProccess(_PCB.PID);
             this.switchMemoryUnit();
             this.startCpu();
+            _DeviceDisplay.cycleReload();
         }
 
         //Update ready queue

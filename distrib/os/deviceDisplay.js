@@ -49,10 +49,14 @@ var TSOS;
                 first.innerHTML = memUnit;
                 for (var k = 1; k < 9; k++) {
                     var cell = row.insertCell(k);
+                    if (index === 122) {
+                        cell.style.color = "magenta";
+                    }
                     cell.innerHTML = stringMemory[index];
                     index++;
                 }
             }
+            //122
             table.rows[8].cells.item(2).style.color = "magenta";
         };
         DeviceDisplay.prototype.startUpCPU = function () {
