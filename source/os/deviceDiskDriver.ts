@@ -70,7 +70,7 @@ module TSOS{
 
             //directory
             let index = 0;
-            if(sessionStorage.getItem('0:0;0') === null){
+            if(sessionStorage.getItem('0:0:0') === null){
 
             //First instance is always in use
             //used to hold next aval
@@ -92,87 +92,122 @@ module TSOS{
         }
 
         public createFile(fileName: string){
-            fileName = fileName.toString();
              //to create a file we put the name in hex (if it doesn't already exist) in the data at the next avaliable spot
-            
-             fileName = this.convertWordToHexByLetter(fileName)
 
-             if(this.searchForFileByName(fileName)){
+             if(this.searchForFileByName(fileName) < 0){
                 let dataIndex = 0;
-                console.log(this.nextAvaliableBlock)
 
                 let avaliableBlock = JSON.parse(sessionStorage.getItem(`0:0:${this.nextAvaliableBlock}`));
-
                 avaliableBlock.data[dataIndex] = "1";
-                avaliableBlock.avalibility = 1;
+                avaliableBlock.availability = 1;
+                dataIndex = dataIndex +3;
 
-                //Give pointer value
-                for(let i = 0; i < 3; i++){
-                    avaliableBlock.data[dataIndex] = this.currentPointer[i].toString();
-                    dataIndex++;
-                }
+                console.log(fileName.length)
 
                 //Assign the name to the file
-                for(let i = 0; i < fileName.length; i++){  
-                    avaliableBlock.data[dataIndex] = fileName.charAt(i);
-                    dataIndex++
-                }
+                for(let i = 0; i < fileName.length; i++){ 
+                    let value:string = this.convertToHexByLetter(fileName.charCodeAt(i));
 
+                    if(value.length > 1){
+                        avaliableBlock.data[dataIndex] = value.charAt(0);
+                        avaliableBlock.data[dataIndex+1] = value.charAt(1);
+                        dataIndex = dataIndex +2;
+                    }else{
+                        avaliableBlock.data[dataIndex] = fileName.charAt(0);
+                        dataIndex++
+                    }
+                }
+                //Set the item
                 sessionStorage.setItem(`0:0:${this.nextAvaliableBlock}`, JSON.stringify(avaliableBlock));
+                this.setNextAvaliableBlock();
+                return true;
+            }else{
+                return false;
             }
 
-            this.setNextAvaliableBlock();
+          
         }
 
         public deleteFile(fileName: string){
+           fileName = fileName.toString();
             //clear filename and set avaliability to 0
             //set next avaliable to index
 
-            let dataIndex = 0;
-            let removedBlock = JSON.parse(sessionStorage.getItem(`0;0;${this.nextAvaliableBlock}`));
+            let search = this.searchForFileByName(fileName)
 
-             //set avalibility to 0
-             removedBlock.avaliability = 0;
-             removedBlock.data[dataIndex] = "0";
+            if(search > 0){
 
+                let removingDisk = JSON.parse(sessionStorage.getItem(`0:0:${search}`));
+
+                removingDisk.availability = 0;
+                removingDisk.data[0] = "0";
+
+                //Remove Pointer
+                let removedPointer = JSON.parse(sessionStorage.getItem(`${removingDisk.data[1]}:${removingDisk.data[2]}:${removingDisk.data[3]}`));
+
+                removedPointer.availability = 0;
+                removedPointer.data[0] = "0";
+
+                //Put back storage values
+                sessionStorage.setItem(`0:0:${search}`, JSON.stringify(removingDisk));
+                sessionStorage.setItem(`${removingDisk.data[1]}:${removingDisk.data[2]}:${removingDisk.data[3]}`, JSON.stringify(removedPointer));
+
+                //Update next avaliable if needed
+                if(search < this.nextAvaliableBlock){
+                    this.nextAvaliableBlock = search;
+                }
+
+                //Update pointer if needed
+            
+                return true;
+            }else{
+                return false
+            }
         }
-
 
         //-----------------------------------------------------------------------------------
 
-
-
-        public searchForFileByName(fileName){
+        public searchForFileByName(fileName: string){
             //return the filename and the JSON with it 
             //if not return false
-            let next = 4
-            for(let i =0; i < 8; i++){
-                let block = JSON.parse(sessionStorage.getItem(`0;0;${i}`))
-                if(block.avalibility ! == 0){
-                    //start at index 4 go until next = 0
-                    while(block)
 
+            for(let i = 1; i < 8; i++){
+                //iterate thru directory
+                let next = 4;
+                let block = JSON.parse(sessionStorage.getItem(`0:0:${i}`));
+                //if avaliable check if the names match
+                if(block.availability === 1){
 
+                    let flag = true;
+                    for(let j = 0; j < fileName.length; j++){
+                        //compare by letter if one doesnt match break
+                        let value:string = this.convertToHexByLetter(fileName.charCodeAt(j));
 
+                        if(value.length > 1){
+                           if(block.data[next] !== value.charAt(0) && block.data[next] !== value.charAt(1)){
+                               flag = false;
+                           }
+                           next = next +2;
+                        }else{
+                            if(block.data[next] !== value.charAt(0)){
+                                flag = false;
+                            }
+                            next++;
+                        }
+                    }
+                    if(flag){
+                        //we found a match!!!
+                        return i;
+                    }
                 }
-
             }
-            
-
-
-
-
-            //convert hex char codes to char codes then to letters
-
-
-
-
+            return -1;
         }
 
 
         public setNextAvaliableBlock(){
             let next = 1
-            while((next + this.nextAvaliableBlock < 8) && JSON.parse(sessionStorage.getItem(`0;0;${this.nextAvaliableBlock + next}`)).avalibility === 0 ){
+            while((next + this.nextAvaliableBlock < 8) && JSON.parse(sessionStorage.getItem(`0:0:${this.nextAvaliableBlock + next}`)).availability === 0 ){
                 next++;
             }
             this.nextAvaliableBlock === this.nextAvaliableBlock + next;
@@ -180,20 +215,31 @@ module TSOS{
 
         public setNextAvaliablePointer(){
 
+            //Edit
+
             let w = 1;
             //Searches linearly for next avaliable starting with next index
-            while((JSON.parse(sessionStorage.getItem(`0;0;${this.nextAvaliableBlock + w}`))).avalibility !== 0){
+            while((JSON.parse(sessionStorage.getItem(`0;0;${this.nextAvaliableBlock + w}`))).availability !== 0){
                 w++;
             }  
         }
 
-        public convertWordToHexByLetter(filename){
+        public convertWordFromHexByLetter(filename: string){
             let newStr;
-            for(let i = 0; i < filename.length; i++){
-                newStr += parseInt(filename.charCodeAt(i),16)
+            console.log(filename)
+            for(let i = 1; i <= filename.length; i++){
+                console.log(i)
+                console.log(filename.charCodeAt(i).toString(16))
+                newStr += filename.charCodeAt(i).toString(16);
             }
+            console.log(newStr)
             return newStr
         }
 
+        public convertToHexByLetter(char: number) {
+            console.log(char)
+            console.log(char.toString(16))
+            return char.toString(16);
+        };
     }
 }

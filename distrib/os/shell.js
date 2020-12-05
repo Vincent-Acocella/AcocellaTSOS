@@ -82,6 +82,8 @@ var TSOS;
             this.commandList[this.commandList.length] = sc;
             sc = new TSOS.ShellCommand(this.shellCreate, "create", "- Create Thing");
             this.commandList[this.commandList.length] = sc;
+            sc = new TSOS.ShellCommand(this.shellDelete, "delete", "- Create Thing");
+            this.commandList[this.commandList.length] = sc;
         };
         Shell.prototype.putPrompt = function () {
             _StdOut.putText(this.promptStr);
@@ -364,10 +366,19 @@ var TSOS;
         };
         Shell.prototype.shellCreate = function (args) {
             if (args.length > 0) {
-                _DeviceDiskDriver.createFile(args);
+                _DeviceDiskDriver.createFile(args.toString());
             }
             else {
                 _StdOut.putText("Disk Already Formatted");
+            }
+        };
+        Shell.prototype.shellDelete = function (args) {
+            if (args.length > 0) {
+                _DeviceDiskDriver.deleteFile(args.toString());
+                _StdOut.putText("Deleted " + args.toString());
+            }
+            else {
+                _StdOut.putText("Could not delete " + args.toString());
             }
         };
         return Shell;

@@ -75,6 +75,7 @@ module TSOS {
         public static hostBtnStartOS_click(btn): void {
             // Disable the (passed-in) start button...
             btn.disabled = true;
+            sessionStorage.clear();
 
             // .. enable the Halt and Reset and singleStep buttons ...
             (<HTMLButtonElement>document.getElementById("btnHaltOS")).disabled = false;

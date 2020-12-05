@@ -28,7 +28,7 @@ module TSOS{
         }
 
         public getAvalibility(){
-            return this.data[0];
+            return parseInt(this.data[0]);
         }
 
         public setKey(track, sector, block){
@@ -50,7 +50,7 @@ module TSOS{
 
         public storeInSession(){
             let diskAsJSON = {
-                avalibility: this.getAvalibility(),
+                availability: this.getAvalibility(),
                 pointer: this.getPointer(),
                 data: this.data
 

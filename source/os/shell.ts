@@ -160,6 +160,11 @@ module TSOS {
                 "- Create Thing");
             this.commandList[this.commandList.length] = sc;
 
+            sc = new ShellCommand(this.shellDelete,
+                "delete",
+                "- Create Thing");
+            this.commandList[this.commandList.length] = sc;
+
         }
         public putPrompt() {
             _StdOut.putText(this.promptStr);
@@ -478,9 +483,19 @@ module TSOS {
         public shellCreate(args:string){
 
             if(args.length > 0){
-                _DeviceDiskDriver.createFile(args)
+                _DeviceDiskDriver.createFile(args.toString())
             }else{
                 _StdOut.putText("Disk Already Formatted");
+            }
+        }
+
+        public shellDelete(args:string){
+
+            if(args.length > 0){
+                _DeviceDiskDriver.deleteFile(args.toString())
+                _StdOut.putText("Deleted " + args.toString())
+            }else{
+                _StdOut.putText("Could not delete " + args.toString());
             }
         }
     }

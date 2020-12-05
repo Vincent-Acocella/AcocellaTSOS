@@ -27,7 +27,7 @@ var TSOS;
             this.data[0] = aval.toString();
         };
         Disk.prototype.getAvalibility = function () {
-            return this.data[0];
+            return parseInt(this.data[0]);
         };
         Disk.prototype.setKey = function (track, sector, block) {
             this.track = track;
@@ -45,7 +45,7 @@ var TSOS;
         };
         Disk.prototype.storeInSession = function () {
             var diskAsJSON = {
-                avalibility: this.getAvalibility(),
+                availability: this.getAvalibility(),
                 pointer: this.getPointer(),
                 data: this.data
             };
