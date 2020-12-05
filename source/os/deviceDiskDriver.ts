@@ -1,7 +1,11 @@
 module TSOS{
     export class DeviceDiskDriver{
 
-        constructor(public nextAvaliableBlock = 1, public currentPointer = [1,0,0], nextPointer = [1,0,1]){}
+        constructor(
+            public nextAvaliableBlock = 1, 
+            public currentPointer = [1,0,0]
+            )
+            {}
 
 
 
@@ -14,19 +18,7 @@ module TSOS{
         |           |      002  | current
         |           |           | 
         |           |           |
-        |           |           |
-        |           |           |
-        |           |           |
-        |           |           |
-        |           |           |
-        |           |           |
-        |           |           |
-        |           |           |
-        |           |           |
-        |           |           |
-        |           |           |
-        |           |           |
-        |           |           |
+
 
         Flow
 
@@ -102,7 +94,10 @@ module TSOS{
         public createFile(fileName: string){
             fileName = fileName.toString();
              //to create a file we put the name in hex (if it doesn't already exist) in the data at the next avaliable spot
-            if(this.checkOut(fileName)){
+            
+             fileName = this.convertWordToHexByLetter(fileName)
+
+             if(this.searchForFileByName(fileName)){
                 let dataIndex = 0;
                 console.log(this.nextAvaliableBlock)
 
@@ -111,45 +106,79 @@ module TSOS{
                 avaliableBlock.data[dataIndex] = "1";
                 avaliableBlock.avalibility = 1;
 
-                //Give value
+                //Give pointer value
                 for(let i = 0; i < 3; i++){
                     avaliableBlock.data[dataIndex] = this.currentPointer[i].toString();
                     dataIndex++;
                 }
 
                 //Assign the name to the file
-                for(let i = 0; i < fileName.length; i++){
-                   let value:string = this.convertToHexByLetter(fileName.charCodeAt(i))
-                   if(value.length > 1){
-
-                    avaliableBlock.data[dataIndex] = value.charAt(0);
-                    avaliableBlock.data[dataIndex +1] =  value.charAt(1);
-                    dataIndex = dataIndex +2;
-
-                   }else{
-                    avaliableBlock.data[dataIndex] = value;
+                for(let i = 0; i < fileName.length; i++){  
+                    avaliableBlock.data[dataIndex] = fileName.charAt(i);
                     dataIndex++
-                   }
                 }
 
                 sessionStorage.setItem(`0:0:${this.nextAvaliableBlock}`, JSON.stringify(avaliableBlock));
             }
+
+            this.setNextAvaliableBlock();
+        }
+
+        public deleteFile(fileName: string){
+            //clear filename and set avaliability to 0
+            //set next avaliable to index
+
+            let dataIndex = 0;
+            let removedBlock = JSON.parse(sessionStorage.getItem(`0;0;${this.nextAvaliableBlock}`));
+
+             //set avalibility to 0
+             removedBlock.avaliability = 0;
+             removedBlock.data[dataIndex] = "0";
+
         }
 
 
         //-----------------------------------------------------------------------------------
 
-        public updateNextAvaliable(val){
-            if (val < this.nextAvaliableBlock){
-                this.nextAvaliableBlock = val;
+
+
+        public searchForFileByName(fileName){
+            //return the filename and the JSON with it 
+            //if not return false
+            let next = 4
+            for(let i =0; i < 8; i++){
+                let block = JSON.parse(sessionStorage.getItem(`0;0;${i}`))
+                if(block.avalibility ! == 0){
+                    //start at index 4 go until next = 0
+                    while(block)
+
+
+
+                }
+
             }
+            
+
+
+
+
+            //convert hex char codes to char codes then to letters
+
+
+
+
         }
 
-        public getNextAvaliable(){
 
+        public setNextAvaliableBlock(){
+            let next = 1
+            while((next + this.nextAvaliableBlock < 8) && JSON.parse(sessionStorage.getItem(`0;0;${this.nextAvaliableBlock + next}`)).avalibility === 0 ){
+                next++;
+            }
+            this.nextAvaliableBlock === this.nextAvaliableBlock + next;
         }
 
-        public setNextPointer(){
+        public setNextAvaliablePointer(){
 
             let w = 1;
             //Searches linearly for next avaliable starting with next index
@@ -158,21 +187,13 @@ module TSOS{
             }  
         }
 
-        public convertToHexByLetter(charCode){
-            console.log(charCode.toString(16))
-            return charCode.toString(16)
-        }
-
-        public checkOut(str){
-            //make sure avaliable exists
-            //make sure no names match
-
-            for(let i = 0; i < 8; i++){
-
-
+        public convertWordToHexByLetter(filename){
+            let newStr;
+            for(let i = 0; i < filename.length; i++){
+                newStr += parseInt(filename.charCodeAt(i),16)
             }
-            return true;
-
+            return newStr
         }
+
     }
 }
