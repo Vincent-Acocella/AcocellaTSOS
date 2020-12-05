@@ -481,21 +481,37 @@ module TSOS {
             }
         }
         public shellCreate(args:string){
-
             if(args.length > 0){
-                _DeviceDiskDriver.createFile(args.toString())
+                if(_FORMATTED){
+                    if(_DeviceDiskDriver.createFile(args.toString())){
+                        _StdOut.putText("Created file " + args.toString())
+
+                    }else{
+                        _StdOut.putText("No, " + args.toString()+ " Already exists");
+                    }
+                
+                }else{
+                _StdOut.putText("Please format hard drive.")
+                }
             }else{
-                _StdOut.putText("Disk Already Formatted");
+                _StdOut.putText("create <fileName>");
             }
         }
 
         public shellDelete(args:string){
 
             if(args.length > 0){
-                _DeviceDiskDriver.deleteFile(args.toString())
-                _StdOut.putText("Deleted " + args.toString())
+                if(_FORMATTED){
+                    if(_DeviceDiskDriver.deleteFile(args.toString())){
+                        _StdOut.putText("Deleted " + args.toString())
+                    }else{
+                        _StdOut.putText("Could not delete " + args.toString())
+                    }
+                }else{
+                    _StdOut.putText("Please format hard drive.")
+                }
             }else{
-                _StdOut.putText("Could not delete " + args.toString());
+                _StdOut.putText("delete <fileName>");
             }
         }
     }

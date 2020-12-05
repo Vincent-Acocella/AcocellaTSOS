@@ -66,6 +66,8 @@ module TSOS{
 
         }
 
+//--------------------------------------------------------------
+        //Called in shell
         public formatDisk(){
 
             //directory
@@ -86,11 +88,14 @@ module TSOS{
                         }
                     }
                 }
+                _FORMATTED = true;
                 return true;
             }
             return false;  
         }
 
+//--------------------------------------------------------------     
+        //Called in shell
         public createFile(fileName: string){
              //to create a file we put the name in hex (if it doesn't already exist) in the data at the next avaliable spot
 
@@ -124,16 +129,16 @@ module TSOS{
             }else{
                 return false;
             }
-
-          
         }
-
+//--------------------------------------------------------------
+        //Called in shell
         public deleteFile(fileName: string){
            fileName = fileName.toString();
             //clear filename and set avaliability to 0
             //set next avaliable to index
 
             let search = this.searchForFileByName(fileName)
+            console.log(search)
 
             if(search > 0){
 
@@ -158,12 +163,20 @@ module TSOS{
                 }
 
                 //Update pointer if needed
-            
+
+
+                //TO DOOOOOOOOOOO
+
+
+
                 return true;
             }else{
                 return false
             }
         }
+
+
+        public 
 
         //-----------------------------------------------------------------------------------
 

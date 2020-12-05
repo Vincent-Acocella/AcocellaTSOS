@@ -61,6 +61,8 @@ var TSOS;
         */
         DeviceDiskDriver.prototype.init = function () {
         };
+        //--------------------------------------------------------------
+        //Called in shell
         DeviceDiskDriver.prototype.formatDisk = function () {
             //directory
             var index = 0;
@@ -83,6 +85,8 @@ var TSOS;
             }
             return false;
         };
+        //--------------------------------------------------------------     
+        //Called in shell
         DeviceDiskDriver.prototype.createFile = function (fileName) {
             //to create a file we put the name in hex (if it doesn't already exist) in the data at the next avaliable spot
             if (this.searchForFileByName(fileName) < 0) {
@@ -105,6 +109,7 @@ var TSOS;
                         dataIndex++;
                     }
                 }
+                //Set the item
                 sessionStorage.setItem("0:0:" + this.nextAvaliableBlock, JSON.stringify(avaliableBlock));
                 this.setNextAvaliableBlock();
                 return true;
@@ -113,11 +118,14 @@ var TSOS;
                 return false;
             }
         };
+        //--------------------------------------------------------------
+        //Called in shell
         DeviceDiskDriver.prototype.deleteFile = function (fileName) {
             fileName = fileName.toString();
             //clear filename and set avaliability to 0
             //set next avaliable to index
             var search = this.searchForFileByName(fileName);
+            console.log(search);
             if (search > 0) {
                 var removingDisk = JSON.parse(sessionStorage.getItem("0:0:" + search));
                 removingDisk.availability = 0;
@@ -126,12 +134,15 @@ var TSOS;
                 var removedPointer = JSON.parse(sessionStorage.getItem(removingDisk.data[1] + ":" + removingDisk.data[2] + ":" + removingDisk.data[3]));
                 removedPointer.availability = 0;
                 removedPointer.data[0] = "0";
-                if (search < this.nextAvaliableBlock) {
-                    this.nextAvaliableBlock = search;
-                }
                 //Put back storage values
                 sessionStorage.setItem("0:0:" + search, JSON.stringify(removingDisk));
                 sessionStorage.setItem(removingDisk.data[1] + ":" + removingDisk.data[2] + ":" + removingDisk.data[3], JSON.stringify(removedPointer));
+                //Update next avaliable if needed
+                if (search < this.nextAvaliableBlock) {
+                    this.nextAvaliableBlock = search;
+                }
+                //Update pointer if needed
+                //TO DOOOOOOOOOOO
                 return true;
             }
             else {

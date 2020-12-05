@@ -374,11 +374,15 @@ var TSOS;
         };
         Shell.prototype.shellDelete = function (args) {
             if (args.length > 0) {
-                _DeviceDiskDriver.deleteFile(args.toString());
-                _StdOut.putText("Deleted " + args.toString());
+                if (_DeviceDiskDriver.deleteFile(args.toString())) {
+                    _StdOut.putText("Deleted " + args.toString());
+                }
+                else {
+                    "Could not delete " + args.toString();
+                }
             }
             else {
-                _StdOut.putText("Could not delete " + args.toString());
+                _StdOut.putText("delete <fileName>");
             }
         };
         return Shell;
