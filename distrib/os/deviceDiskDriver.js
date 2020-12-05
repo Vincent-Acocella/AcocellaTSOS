@@ -35,12 +35,20 @@ var TSOS;
             if (this.checkOut(fileName)) {
                 console.log(this.nextAvaliableBlock);
                 var avaliableBlock = JSON.parse(sessionStorage.getItem("0:0:" + this.nextAvaliableBlock));
-                avaliableBlock.data[0] = 1;
+                avaliableBlock.data[0] = "1";
                 avaliableBlock.avalibility = 1;
-                var dataIndex = 3;
+                var dataIndex = 4;
                 for (var i = 0; i < fileName.length; i++) {
-                    avaliableBlock.data[dataIndex] = this.convertToHexByLetter(fileName.charAt(i));
-                    dataIndex++;
+                    var value = this.convertToHexByLetter(fileName.charCodeAt(i));
+                    if (value.length > 1) {
+                        avaliableBlock.data[dataIndex] = value.charAt(0);
+                        avaliableBlock.data[dataIndex + 1] = value.charAt(1);
+                        dataIndex = dataIndex + 2;
+                    }
+                    else {
+                        avaliableBlock.data[dataIndex] = value;
+                        dataIndex++;
+                    }
                 }
                 console.log(avaliableBlock.data);
             }
@@ -52,9 +60,9 @@ var TSOS;
         };
         DeviceDiskDriver.prototype.getNextAvaliable = function () {
         };
-        DeviceDiskDriver.prototype.convertToHexByLetter = function (char) {
-            console.log(parseInt(char, 16));
-            return parseInt(char, 16);
+        DeviceDiskDriver.prototype.convertToHexByLetter = function (charCode) {
+            console.log(charCode.toString(16));
+            return charCode.toString(16);
         };
         DeviceDiskDriver.prototype.checkOut = function (str) {
             //make sure avaliable exists
