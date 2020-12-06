@@ -81,6 +81,7 @@ var TSOS;
                         }
                     }
                 }
+                _FORMATTED = true;
                 return true;
             }
             return false;

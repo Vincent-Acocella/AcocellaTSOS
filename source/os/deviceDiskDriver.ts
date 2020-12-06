@@ -153,10 +153,6 @@ module TSOS{
                 removedPointer.availability = 0;
                 removedPointer.data[0] = "0";
 
-                //Put back storage values
-                sessionStorage.setItem(`0:0:${search}`, JSON.stringify(removingDisk));
-                sessionStorage.setItem(`${removingDisk.data[1]}:${removingDisk.data[2]}:${removingDisk.data[3]}`, JSON.stringify(removedPointer));
-
                 //Update next avaliable if needed
                 if(search < this.nextAvaliableBlock){
                     this.nextAvaliableBlock = search;
@@ -164,11 +160,18 @@ module TSOS{
 
                 //Update pointer if needed
 
+                if(removingDisk.data[0] == this.currentPointer[0] || removingDisk.data[1] == this.currentPointer[1]){
+                    //Same then comapir the block numbers
+                }else if(removingDisk.data[0] < this.currentPointer[0] || removingDisk.data[1] < this.currentPointer[1]){
+                    //Take pointer
+                }
 
                 //TO DOOOOOOOOOOO
 
 
-
+                  //Put back storage values
+                  sessionStorage.setItem(`0:0:${search}`, JSON.stringify(removingDisk));
+                  sessionStorage.setItem(`${removingDisk.data[1]}:${removingDisk.data[2]}:${removingDisk.data[3]}`, JSON.stringify(removedPointer));
                 return true;
             }else{
                 return false

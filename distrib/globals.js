@@ -27,7 +27,9 @@ var DISK_SIZE = 127;
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
 //
 var _Quant = 6;
+var _FORMATTED = false;
 var _SingleStep = false;
+var _dot = false;
 var _CPU; // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
 var _Memory;
 var _MemoryAccessor;

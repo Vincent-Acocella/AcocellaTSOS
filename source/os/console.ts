@@ -84,7 +84,7 @@ module TSOS {
         //at that index of the string. This way works well and I have yet to see a difference in computing therefore, I think it is ok to stay for now??
         //I believe later in the course we track cpu cycles so I would re-evaluate at that time.
 
-        putText(userInput) {
+        public putText(userInput) {
             if (userInput !== "") {
                 for (let i = 0; i < userInput.length; i++) {
                     _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, userInput[i]);

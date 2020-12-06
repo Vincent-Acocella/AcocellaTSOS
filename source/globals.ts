@@ -40,6 +40,7 @@ const DISK_SIZE = 127;
 var _Quant = 6;
 var _FORMATTED = false;
 var _SingleStep = false;
+var _dot = false;
 var _CPU:TSOS.Cpu;  // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
 var	_Memory:TSOS.Memory;
 var	_MemoryAccessor:TSOS.MemoryAccessor;
