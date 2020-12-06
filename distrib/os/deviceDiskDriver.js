@@ -167,8 +167,10 @@ var TSOS;
                 return false;
             }
         };
-        DeviceDiskDriver.prototype.writeToFile = function (filename, toWrite) {
-            var search = this.searchForFileByName(filename);
+        DeviceDiskDriver.prototype.writeToFile = function (input) {
+            //seperate input 
+            //0 is the file name 
+            var search = this.searchForFileByName(input[0]);
             if (search > 0) {
                 //Get file
                 var fileToWriteTo = JSON.parse(sessionStorage.getItem("0:0:" + search));

@@ -62,10 +62,6 @@ var TSOS;
             this.commandList[this.commandList.length] = sc;
             sc = new TSOS.ShellCommand(this.shellRun, "run", "- runCode");
             this.commandList[this.commandList.length] = sc;
-            /*
-                Complete all from below
-    
-            */
             sc = new TSOS.ShellCommand(this.shellRunAll, "runall", "- runCode");
             this.commandList[this.commandList.length] = sc;
             sc = new TSOS.ShellCommand(this.shellClearMem, "clearmem", "- runCode");
@@ -405,7 +401,23 @@ var TSOS;
             }
         };
         Shell.prototype.shellWrite = function (args) {
-            console.log(args);
+            if (args.length > 1) {
+                if (_FORMATTED) {
+                    if (_DeviceDiskDriver.writeToFile(args)) {
+                        _StdOut.putText("Wrote to " + args[0]);
+                        //wrote to file
+                    }
+                    else {
+                        _StdOut.putText("Could not write to " + args[0]);
+                    }
+                }
+                else {
+                    _StdOut.putText("Please format hard drive.");
+                }
+            }
+            else {
+                _StdOut.putText('write <fileName> "<text>"');
+            }
         };
         Shell.prototype.shellRead = function () {
         };

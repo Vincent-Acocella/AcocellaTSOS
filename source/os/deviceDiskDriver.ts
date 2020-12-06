@@ -188,9 +188,12 @@ module TSOS{
             }
         }
 
-        public writeToFile(filename, toWrite){
-            let search = this.searchForFileByName(filename);
-            
+        public writeToFile(input){
+
+            //seperate input 
+            //0 is the file name 
+
+            let search = this.searchForFileByName(input[0]);
             if(search > 0){
 
                 //Get file
