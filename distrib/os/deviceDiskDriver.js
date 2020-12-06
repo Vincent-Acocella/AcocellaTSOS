@@ -167,21 +167,31 @@ var TSOS;
                 return false;
             }
         };
-        DeviceDiskDriver.prototype.writeToFile = function (input) {
+        DeviceDiskDriver.prototype.writeToFile = function (values) {
+            var input = values.splice(0);
+            console.log(input);
             //seperate input 
-            //0 is the file name 
+            //0 is the file name
             var search = this.searchForFileByName(input[0]);
-            if (search > 0) {
-                //Get file
-                var fileToWriteTo = JSON.parse(sessionStorage.getItem("0:0:" + search));
-                //Set pointer
-                fileToWriteTo.pointer = this.currentPointer.slice(0);
-                console.log(fileToWriteTo.pointer);
+            if (search > 0 && input[1].charAt(0) == '"' && input[input.length - 1].charAt(input[input.length - 1].length - 1) == '"') {
+                //Remove "" 
+                input[1] = input[1].substring(1);
+                input[input.length - 1] = input[input.length - 1].substring(0, input[input.length - 1].length - 1);
+                console.log(input[1]);
+                // //Get file
+                // let fileToWriteTo = JSON.parse(sessionStorage.getItem(`0:0:${search}`));
+                // //Set pointer
+                // fileToWriteTo.pointer = this.currentPointer.slice(0);
+                // //Get Pointer location
                 // let keyToWriteIn = JSON.parse(sessionStorage.getItem(`${fileToWriteTo.pointer[0]}:${fileToWriteTo.pointer[1]}:${fileToWriteTo[2]}`));
-                //  //Clear out location to make room 
+                // //Clear out location to make room 
                 // if(keyToWriteIn.data[0] != "0"){
                 //     //Clear data
+                //     let tempDisk = new Disk;
+                //     keyToWriteIn.data = tempDisk.data.slice(0)
                 // }
+                // let dataIndex = 0;
+                //Get correct argument
                 // //Translate the write into hex
                 // //Write to file
                 return true;
@@ -259,18 +269,12 @@ var TSOS;
         };
         DeviceDiskDriver.prototype.convertWordFromHexByLetter = function (filename) {
             var newStr;
-            console.log(filename);
             for (var i = 1; i <= filename.length; i++) {
-                console.log(i);
-                console.log(filename.charCodeAt(i).toString(16));
                 newStr += filename.charCodeAt(i).toString(16);
             }
-            console.log(newStr);
             return newStr;
         };
         DeviceDiskDriver.prototype.convertToHexByLetter = function (char) {
-            console.log(char);
-            console.log(char.toString(16));
             return char.toString(16);
         };
         ;

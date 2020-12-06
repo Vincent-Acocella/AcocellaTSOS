@@ -188,41 +188,58 @@ module TSOS{
             }
         }
 
-        public writeToFile(input){
+        public writeToFile(values){
+            let input = values.splice(0);
+            console.log(input);
 
             //seperate input 
-            //0 is the file name 
+            //0 is the file name
 
             let search = this.searchForFileByName(input[0]);
-            if(search > 0){
+            if(search > 0 && input[1].charAt(0) == '"' && input[input.length-1].charAt(input[input.length-1].length-1) == '"'){
 
-                //Get file
+                //Remove "" 
+                input[1] = input[1].substring(1);
+                input[input.length-1] = input[input.length-1].substring(0, input[input.length-1].length-1);
+
+                // //Get file
                 let fileToWriteTo = JSON.parse(sessionStorage.getItem(`0:0:${search}`));
-                
-                //Set pointer
-                fileToWriteTo.pointer = this.currentPointer.slice(0);
-                console.log(fileToWriteTo.pointer)
-                // let keyToWriteIn = JSON.parse(sessionStorage.getItem(`${fileToWriteTo.pointer[0]}:${fileToWriteTo.pointer[1]}:${fileToWriteTo[2]}`));
 
-                //  //Clear out location to make room 
-                // if(keyToWriteIn.data[0] != "0"){
-                //     //Clear data
-                // }
+                //see if pointer needs to be set
+                if(fileToWriteTo.pointer[0] === 0){
+                    // //Set pointer
+                    fileToWriteTo.pointer = this.currentPointer.slice(0);
+                }
 
-                // //Translate the write into hex
-    
-                // //Write to file
-                
+                // //Get Pointer location
+                let keyToWriteIn = JSON.parse(sessionStorage.getItem(`${fileToWriteTo.pointer[0]}:${fileToWriteTo.pointer[1]}:${fileToWriteTo.pointer[2]}`));
+
+                // //Clear out location to make room 
+                if(keyToWriteIn.data[0] != "0"){
+                    //Clear data
+                    let tempDisk = new Disk;
+                    keyToWriteIn.data = tempDisk.data.slice(0);
+                }
+
+                let dataIndex = 0;
+                for(let i = 1; i < input.length -1; i++){
+                    for(let k = 0; input[i].length-1; i++){
+                         //Translate the write into hex and store
+                        keyToWriteIn.data[dataIndex] = this.convertToHexByLetter(input[i].charCodeAt(k));
+                        dataIndex++;
+                    }
+                }
+
+                //Store back in
+                sessionStorage.setItem(`0:0:${search}`, JSON.stringify(fileToWriteTo));
+                sessionStorage.setItem(`${fileToWriteTo.pointer[0]}:${fileToWriteTo.pointer[1]}:${fileToWriteTo.pointer[2]}`, JSON.stringify(keyToWriteIn));
                 return true;
             }else{
                 return false;
             }
-
-
         }
 
         //-----------------------------------------------------------------------------------
-
         public searchForFileByName(fileName: string){
             //return the filename and the JSON with it 
             //if not return false
@@ -300,19 +317,13 @@ module TSOS{
 
         public convertWordFromHexByLetter(filename: string){
             let newStr;
-            console.log(filename)
             for(let i = 1; i <= filename.length; i++){
-                console.log(i)
-                console.log(filename.charCodeAt(i).toString(16))
                 newStr += filename.charCodeAt(i).toString(16);
             }
-            console.log(newStr)
             return newStr
         }
 
         public convertToHexByLetter(char: number) {
-            console.log(char)
-            console.log(char.toString(16))
             return char.toString(16);
         };
     }

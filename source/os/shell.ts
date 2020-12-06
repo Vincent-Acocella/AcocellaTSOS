@@ -522,9 +522,11 @@ module TSOS {
             if(args.length > 1){
                 if(_FORMATTED){
                     if(_DeviceDiskDriver.writeToFile(args)){
+                        console.log(args.toString())
                         _StdOut.putText("Wrote to " + args[0]);
                         //wrote to file
                     }else{
+                       
                         _StdOut.putText("Could not write to " + args[0]);
                     }
                 }else{
