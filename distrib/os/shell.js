@@ -84,6 +84,10 @@ var TSOS;
             this.commandList[this.commandList.length] = sc;
             sc = new TSOS.ShellCommand(this.shellDelete, "delete", "- Create Thing");
             this.commandList[this.commandList.length] = sc;
+            sc = new TSOS.ShellCommand(this.shellWrite, "write", "- Create Thing");
+            this.commandList[this.commandList.length] = sc;
+            sc = new TSOS.ShellCommand(this.shellRead, "read", "- Create Thing");
+            this.commandList[this.commandList.length] = sc;
         };
         Shell.prototype.putPrompt = function () {
             _StdOut.putText(this.promptStr);
@@ -399,6 +403,11 @@ var TSOS;
             else {
                 _StdOut.putText("delete <fileName>");
             }
+        };
+        Shell.prototype.shellWrite = function (args) {
+            console.log(args);
+        };
+        Shell.prototype.shellRead = function () {
         };
         return Shell;
     }());

@@ -50,8 +50,8 @@ module TSOS{
 
         public storeInSession(){
             let diskAsJSON = {
-                availability: this.getAvalibility(),
-                pointer: this.getPointer(),
+                availability: 0,
+                pointer: [0,0,0],
                 data: this.data
 
             }

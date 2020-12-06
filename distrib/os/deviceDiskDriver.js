@@ -91,13 +91,11 @@ var TSOS;
         DeviceDiskDriver.prototype.createFile = function (fileName) {
             //to create a file we put the name in hex (if it doesn't already exist) in the data at the next avaliable spot
             if (this.searchForFileByName(fileName) < 0) {
-                var dataIndex = 0;
                 var avaliableBlock = JSON.parse(sessionStorage.getItem("0:0:" + this.nextAvaliableBlock));
-                avaliableBlock.data[dataIndex] = "1";
                 avaliableBlock.availability = 1;
-                dataIndex = dataIndex + 3;
-                console.log(fileName.length);
+                // NEED TO CLEAN OUT DATA IF DATA IS USED
                 //Assign the name to the file
+                var dataIndex = 0;
                 for (var i = 0; i < fileName.length; i++) {
                     var value = this.convertToHexByLetter(fileName.charCodeAt(i));
                     if (value.length > 1) {
@@ -130,20 +128,60 @@ var TSOS;
             if (search > 0) {
                 var removingDisk = JSON.parse(sessionStorage.getItem("0:0:" + search));
                 removingDisk.availability = 0;
-                removingDisk.data[0] = "0";
-                //Remove Pointer
-                var removedPointer = JSON.parse(sessionStorage.getItem(removingDisk.data[1] + ":" + removingDisk.data[2] + ":" + removingDisk.data[3]));
-                removedPointer.availability = 0;
-                removedPointer.data[0] = "0";
+                //check if a write occured on the file
+                if (removingDisk.pointer[0] !== 0) {
+                    //Remove Pointer
+                    var removedPointer = JSON.parse(sessionStorage.getItem(removingDisk.pointer[1] + ":" + removingDisk.ponter[2] + ":" + removingDisk.pointer[3]));
+                    removedPointer.availability = 0;
+                    //Update next avaliable if needed
+                    if (search < this.nextAvaliableBlock) {
+                        this.nextAvaliableBlock = search;
+                    }
+                    //Update pointer if needed
+                    var flag = false;
+                    var i = 0;
+                    while (!flag) {
+                        switch (this.locateNextPointerOnDelete(removingDisk.pointer[i], this.currentPointer[i])) {
+                            case 0:
+                                //Equal continue search
+                                break;
+                            case 1:
+                                //Stop less than is better
+                                this.currentPointer = removedPointer.pointer.slice(0);
+                                flag = true;
+                                break;
+                            //Deleted is ahead of next
+                            case 2:
+                                flag = true;
+                                break;
+                        }
+                        i++;
+                    }
+                    sessionStorage.setItem(removingDisk.pointer[1] + ":" + removingDisk.pointer[2] + ":" + removingDisk.pointer[3], JSON.stringify(removedPointer));
+                }
                 //Put back storage values
                 sessionStorage.setItem("0:0:" + search, JSON.stringify(removingDisk));
-                sessionStorage.setItem(removingDisk.data[1] + ":" + removingDisk.data[2] + ":" + removingDisk.data[3], JSON.stringify(removedPointer));
-                //Update next avaliable if needed
-                if (search < this.nextAvaliableBlock) {
-                    this.nextAvaliableBlock = search;
-                }
-                //Update pointer if needed
-                //TO DOOOOOOOOOOO
+                return true;
+            }
+            else {
+                return false;
+            }
+        };
+        DeviceDiskDriver.prototype.writeToFile = function (filename, toWrite) {
+            var search = this.searchForFileByName(filename);
+            if (search > 0) {
+                //Get file
+                var fileToWriteTo = JSON.parse(sessionStorage.getItem("0:0:" + search));
+                //Set pointer
+                fileToWriteTo.pointer = this.currentPointer.slice(0);
+                console.log(fileToWriteTo.pointer);
+                // let keyToWriteIn = JSON.parse(sessionStorage.getItem(`${fileToWriteTo.pointer[0]}:${fileToWriteTo.pointer[1]}:${fileToWriteTo[2]}`));
+                //  //Clear out location to make room 
+                // if(keyToWriteIn.data[0] != "0"){
+                //     //Clear data
+                // }
+                // //Translate the write into hex
+                // //Write to file
                 return true;
             }
             else {
@@ -156,7 +194,7 @@ var TSOS;
             //if not return false
             for (var i = 1; i < 8; i++) {
                 //iterate thru directory
-                var next = 4;
+                var next = 0;
                 var block = JSON.parse(sessionStorage.getItem("0:0:" + i));
                 //if avaliable check if the names match
                 if (block.availability === 1) {
@@ -192,12 +230,29 @@ var TSOS;
             }
             this.nextAvaliableBlock === this.nextAvaliableBlock + next;
         };
+        DeviceDiskDriver.prototype.locateNextPointerOnDelete = function (deletedValue, currentNext) {
+            if (deletedValue === currentNext) {
+                return 0;
+            }
+            else if (deletedValue < currentNext) {
+                return 1;
+            }
+            else {
+                return 2;
+            }
+        };
         DeviceDiskDriver.prototype.setNextAvaliablePointer = function () {
-            //Edit
-            var w = 1;
-            //Searches linearly for next avaliable starting with next index
-            while ((JSON.parse(sessionStorage.getItem("0;0;" + (this.nextAvaliableBlock + w)))).availability !== 0) {
-                w++;
+            loop1: for (var i = 1; i < 4; i++) {
+                for (var j = 0; j < 8; i++) {
+                    for (var k = 0; k < 8; k++) {
+                        var nextPoint = JSON.parse(sessionStorage.getItem(i + ":" + j + ":" + k));
+                        if (nextPoint.avaliability === 0) {
+                            this.currentPointer = nextPoint.slice(1, 4);
+                            break loop1;
+                        }
+                        console.log("Hello");
+                    }
+                }
             }
         };
         DeviceDiskDriver.prototype.convertWordFromHexByLetter = function (filename) {

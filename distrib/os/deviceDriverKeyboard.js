@@ -94,6 +94,10 @@ var TSOS;
                 chr = ";";
                 _KernelInputQueue.enqueue(chr);
             }
+            else if (keyCode == 222) {
+                chr = '"';
+                _KernelInputQueue.enqueue(chr);
+            }
         };
         return DeviceDriverKeyboard;
     }(TSOS.DeviceDriver));

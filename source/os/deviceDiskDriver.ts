@@ -100,16 +100,14 @@ module TSOS{
              //to create a file we put the name in hex (if it doesn't already exist) in the data at the next avaliable spot
 
              if(this.searchForFileByName(fileName) < 0){
-                let dataIndex = 0;
-
+                
                 let avaliableBlock = JSON.parse(sessionStorage.getItem(`0:0:${this.nextAvaliableBlock}`));
-                avaliableBlock.data[dataIndex] = "1";
                 avaliableBlock.availability = 1;
-                dataIndex = dataIndex +3;
-
-                console.log(fileName.length)
+                
+                // NEED TO CLEAN OUT DATA IF DATA IS USED
 
                 //Assign the name to the file
+                let dataIndex = 0;
                 for(let i = 0; i < fileName.length; i++){ 
                     let value:string = this.convertToHexByLetter(fileName.charCodeAt(i));
 
@@ -137,7 +135,7 @@ module TSOS{
             //clear filename and set avaliability to 0
             //set next avaliable to index
 
-            let search = this.searchForFileByName(fileName)
+            let search = this.searchForFileByName(fileName);
             console.log(search)
 
             if(search > 0){
@@ -145,41 +143,80 @@ module TSOS{
                 let removingDisk = JSON.parse(sessionStorage.getItem(`0:0:${search}`));
 
                 removingDisk.availability = 0;
-                removingDisk.data[0] = "0";
 
-                //Remove Pointer
-                let removedPointer = JSON.parse(sessionStorage.getItem(`${removingDisk.data[1]}:${removingDisk.data[2]}:${removingDisk.data[3]}`));
+                //check if a write occured on the file
+                if(removingDisk.pointer[0] !== 0){
 
-                removedPointer.availability = 0;
-                removedPointer.data[0] = "0";
+                    //Remove Pointer
+                    let removedPointer = JSON.parse(sessionStorage.getItem(`${removingDisk.pointer[1]}:${removingDisk.ponter[2]}:${removingDisk.pointer[3]}`));
 
-                //Update next avaliable if needed
-                if(search < this.nextAvaliableBlock){
-                    this.nextAvaliableBlock = search;
+                    removedPointer.availability = 0;
+
+                    //Update next avaliable if needed
+                    if(search < this.nextAvaliableBlock){
+                        this.nextAvaliableBlock = search;
+                    }
+
+                    //Update pointer if needed
+                    let flag = false;
+                    let i = 0;
+
+                    while(!flag){
+                        switch(this.locateNextPointerOnDelete(removingDisk.pointer[i], this.currentPointer[i])){
+                            case 0: 
+                                //Equal continue search
+                                break;
+                            case 1:
+                                //Stop less than is better
+                                this.currentPointer = removedPointer.pointer.slice(0);
+                                flag = true;
+                                break;
+                                //Deleted is ahead of next
+                            case 2:
+                                flag = true;
+                                break;
+                        }
+                        i++;
+                    }
+                    sessionStorage.setItem(`${removingDisk.pointer[1]}:${removingDisk.pointer[2]}:${removingDisk.pointer[3]}`, JSON.stringify(removedPointer));
                 }
-
-                //Update pointer if needed
-
-                if(removingDisk.data[0] == this.currentPointer[0] || removingDisk.data[1] == this.currentPointer[1]){
-                    //Same then comapir the block numbers
-                }else if(removingDisk.data[0] < this.currentPointer[0] || removingDisk.data[1] < this.currentPointer[1]){
-                    //Take pointer
-                }
-
-                //TO DOOOOOOOOOOO
-
-
-                  //Put back storage values
-                  sessionStorage.setItem(`0:0:${search}`, JSON.stringify(removingDisk));
-                  sessionStorage.setItem(`${removingDisk.data[1]}:${removingDisk.data[2]}:${removingDisk.data[3]}`, JSON.stringify(removedPointer));
+                //Put back storage values
+                sessionStorage.setItem(`0:0:${search}`, JSON.stringify(removingDisk));
                 return true;
             }else{
-                return false
+                return false;
             }
         }
 
+        public writeToFile(filename, toWrite){
+            let search = this.searchForFileByName(filename);
+            
+            if(search > 0){
 
-        public 
+                //Get file
+                let fileToWriteTo = JSON.parse(sessionStorage.getItem(`0:0:${search}`));
+                
+                //Set pointer
+                fileToWriteTo.pointer = this.currentPointer.slice(0);
+                console.log(fileToWriteTo.pointer)
+                // let keyToWriteIn = JSON.parse(sessionStorage.getItem(`${fileToWriteTo.pointer[0]}:${fileToWriteTo.pointer[1]}:${fileToWriteTo[2]}`));
+
+                //  //Clear out location to make room 
+                // if(keyToWriteIn.data[0] != "0"){
+                //     //Clear data
+                // }
+
+                // //Translate the write into hex
+    
+                // //Write to file
+                
+                return true;
+            }else{
+                return false;
+            }
+
+
+        }
 
         //-----------------------------------------------------------------------------------
 
@@ -189,7 +226,7 @@ module TSOS{
 
             for(let i = 1; i < 8; i++){
                 //iterate thru directory
-                let next = 4;
+                let next = 0;
                 let block = JSON.parse(sessionStorage.getItem(`0:0:${i}`));
                 //if avaliable check if the names match
                 if(block.availability === 1){
@@ -229,15 +266,33 @@ module TSOS{
             this.nextAvaliableBlock === this.nextAvaliableBlock + next;
         }
 
+        public locateNextPointerOnDelete(deletedValue, currentNext){
+            if(deletedValue === currentNext){
+                return 0;
+            }else if(deletedValue < currentNext){
+                return 1;
+            }else{
+                return 2;
+            }
+        }
+
         public setNextAvaliablePointer(){
+          loop1:
+            for(let i = 1; i < 4; i++){
+            
+                for(let j = 0; j< 8; i++){
+        
+                    for(let k = 0; k< 8; k++){
+                        let nextPoint = JSON.parse(sessionStorage.getItem(`${i}:${j}:${k}`));
 
-            //Edit
-
-            let w = 1;
-            //Searches linearly for next avaliable starting with next index
-            while((JSON.parse(sessionStorage.getItem(`0;0;${this.nextAvaliableBlock + w}`))).availability !== 0){
-                w++;
-            }  
+                        if(nextPoint.avaliability === 0){
+                            this.currentPointer = nextPoint.slice(1,4);
+                            break loop1;
+                        }
+                        console.log("Hello");
+                    }
+                }
+            }
         }
 
         public convertWordFromHexByLetter(filename: string){

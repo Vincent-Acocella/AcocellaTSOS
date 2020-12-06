@@ -76,7 +76,11 @@ module TSOS {
             }else if(keyCode == 186){
                 chr = ";";
                 _KernelInputQueue.enqueue(chr);
+            }else if(keyCode == 222){
+                chr = '"';
+                _KernelInputQueue.enqueue(chr);
             }
+            
         }
     }
 }

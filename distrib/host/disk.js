@@ -45,8 +45,8 @@ var TSOS;
         };
         Disk.prototype.storeInSession = function () {
             var diskAsJSON = {
-                availability: this.getAvalibility(),
-                pointer: this.getPointer(),
+                availability: 0,
+                pointer: [0, 0, 0],
                 data: this.data
             };
             return JSON.stringify(diskAsJSON);

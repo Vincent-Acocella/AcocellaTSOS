@@ -165,6 +165,18 @@ module TSOS {
                 "- Create Thing");
             this.commandList[this.commandList.length] = sc;
 
+            sc = new ShellCommand(this.shellWrite,
+                "write",
+                "- Create Thing");
+            this.commandList[this.commandList.length] = sc;
+
+            sc = new ShellCommand(this.shellRead,
+                "read",
+                "- Create Thing");
+            this.commandList[this.commandList.length] = sc;
+
+
+
         }
         public putPrompt() {
             _StdOut.putText(this.promptStr);
@@ -513,6 +525,13 @@ module TSOS {
             }else{
                 _StdOut.putText("delete <fileName>");
             }
+        }
+        public shellWrite(args:string){
+            console.log(args)
+
+        }
+        public shellRead(){
+
         }
     }
 }
