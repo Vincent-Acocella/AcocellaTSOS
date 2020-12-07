@@ -53,7 +53,6 @@ module TSOS{
                 availability: 0,
                 pointer: [0,0,0],
                 data: this.data
-
             }
             return JSON.stringify(diskAsJSON);
         }

@@ -402,14 +402,14 @@ var TSOS;
         };
         Shell.prototype.shellWrite = function (args) {
             if (args.length > 1) {
+                var filename = args[0];
                 if (_FORMATTED) {
                     if (_DeviceDiskDriver.writeToFile(args)) {
-                        console.log(args.toString());
-                        _StdOut.putText("Wrote to " + args[0]);
+                        _StdOut.putText("Wrote to " + filename);
                         //wrote to file
                     }
                     else {
-                        _StdOut.putText("Could not write to " + args[0]);
+                        _StdOut.putText("Could not write to " + filename);
                     }
                 }
                 else {
