@@ -151,5 +151,68 @@ module TSOS{
             row.insertCell(0).innerHTML = _Schedular.readyQueue.toString();
 
         }
+
+
+        public hardDriveDisplay(){
+            //Set the key equal to the row key
+            let table: HTMLTableElement = <HTMLTableElement> document.getElementById("hardDrive");
+
+            while(table.hasChildNodes())
+            {
+                table.removeChild(table.firstChild);
+            }
+
+            let firstRow = table.insertRow(0);
+            firstRow.insertCell(0).innerHTML = "Key";
+            firstRow.insertCell(1).innerHTML = "Avaliable";
+            firstRow.insertCell(2).innerHTML = "Pointer";
+            firstRow.insertCell(3).innerHTML = "Data";
+
+            for(let m = 0; m < 4; m++){
+                firstRow.cells.item(m).style.textAlign = "center";
+                firstRow.cells.item(m).style.border = "1px solid black";
+            }
+
+            let index = 1;
+            for(let i = 0; i < 4; i++){
+                for(let j = 0; j< 8; j++){
+                    for(let k = 0; k< 8; k++){
+                        let toPutInRow = JSON.parse(sessionStorage.getItem(`${i}:${j}:${k}`));
+                        //create row
+                        let row = table.insertRow(index);
+                        row.id = `${i}:${j}:${k}`;
+                        row.insertCell(0).innerHTML = `${i}:${j}:${k}`;
+                        row.insertCell(1).innerHTML = toPutInRow.availability.toString();
+                        row.insertCell(2).innerHTML = `${toPutInRow.pointer[0]}:${toPutInRow.pointer[1]}:${toPutInRow.pointer[2]}`;
+                        row.insertCell(3).innerHTML = toPutInRow.data;
+                        index++;
+
+                        //Styling
+                        for(let m = 0; m < 4; m++){
+                            row.cells.item(m).style.textAlign = "center";
+                            row.cells.item(m).style.border = "1px solid black";
+                        }
+                    }
+                }
+            }
+        }
+
+        public updateHardDriveDisplay(rowID){
+            let row: HTMLTableRowElement = <HTMLTableRowElement> document.getElementById(rowID);
+
+            let updatedRow = JSON.parse(sessionStorage.getItem(rowID));
+            row.insertCell(1).innerHTML = updatedRow.availability.toString(); 
+            row.insertCell(2).innerHTML = `${updatedRow.pointer[0]}:${updatedRow.pointer[1]}:${updatedRow.pointer[2]}`;
+            row.insertCell(3).innerHTML = updatedRow.data;
+
+            for(let m = 0; m < 4; m++){
+                row.cells.item(m).style.textAlign = "center";
+                row.cells.item(m).style.border = "1px solid black";
+            }
+
+        }
+
+
+
     }
 }

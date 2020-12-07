@@ -120,6 +120,54 @@ var TSOS;
             var row = table.insertRow(0);
             row.insertCell(0).innerHTML = _Schedular.readyQueue.toString();
         };
+        DeviceDisplay.prototype.hardDriveDisplay = function () {
+            //Set the key equal to the row key
+            var table = document.getElementById("hardDrive");
+            while (table.hasChildNodes()) {
+                table.removeChild(table.firstChild);
+            }
+            var firstRow = table.insertRow(0);
+            firstRow.insertCell(0).innerHTML = "Key";
+            firstRow.insertCell(1).innerHTML = "Avaliable";
+            firstRow.insertCell(2).innerHTML = "Pointer";
+            firstRow.insertCell(3).innerHTML = "Data";
+            for (var m = 0; m < 4; m++) {
+                firstRow.cells.item(m).style.textAlign = "center";
+                firstRow.cells.item(m).style.border = "1px solid black";
+            }
+            var index = 1;
+            for (var i = 0; i < 4; i++) {
+                for (var j = 0; j < 8; j++) {
+                    for (var k = 0; k < 8; k++) {
+                        var toPutInRow = JSON.parse(sessionStorage.getItem(i + ":" + j + ":" + k));
+                        //create row
+                        var row = table.insertRow(index);
+                        row.id = i + ":" + j + ":" + k;
+                        row.insertCell(0).innerHTML = i + ":" + j + ":" + k;
+                        row.insertCell(1).innerHTML = toPutInRow.availability.toString();
+                        row.insertCell(2).innerHTML = toPutInRow.pointer[0] + ":" + toPutInRow.pointer[1] + ":" + toPutInRow.pointer[2];
+                        row.insertCell(3).innerHTML = toPutInRow.data;
+                        index++;
+                        //Styling
+                        for (var m = 0; m < 4; m++) {
+                            row.cells.item(m).style.textAlign = "center";
+                            row.cells.item(m).style.border = "1px solid black";
+                        }
+                    }
+                }
+            }
+        };
+        DeviceDisplay.prototype.updateHardDriveDisplay = function (rowID) {
+            var row = document.getElementById(rowID);
+            var updatedRow = JSON.parse(sessionStorage.getItem(rowID));
+            row.insertCell(1).innerHTML = updatedRow.availability.toString();
+            row.insertCell(2).innerHTML = updatedRow.pointer[0] + ":" + updatedRow.pointer[1] + ":" + updatedRow.pointer[2];
+            row.insertCell(3).innerHTML = updatedRow.data;
+            for (var m = 0; m < 4; m++) {
+                row.cells.item(m).style.textAlign = "center";
+                row.cells.item(m).style.border = "1px solid black";
+            }
+        };
         return DeviceDisplay;
     }());
     TSOS.DeviceDisplay = DeviceDisplay;

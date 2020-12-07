@@ -434,6 +434,12 @@ var TSOS;
                 _StdOut.putText('read <fileName> ');
             }
         };
+        Shell.prototype.shellList = function () {
+        };
+        Shell.prototype.shellSetSchedule = function (args) {
+        };
+        Shell.prototype.shellGetSchedule = function () {
+        };
         return Shell;
     }());
     TSOS.Shell = Shell;

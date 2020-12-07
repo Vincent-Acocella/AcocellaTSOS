@@ -87,6 +87,7 @@ module TSOS{
                         }
                     }
                 }
+                _DeviceDisplay.hardDriveDisplay();
                 _FORMATTED = true;
                 return true;
             }
@@ -101,7 +102,6 @@ module TSOS{
             if(this.searchForFileByName(fileName) < 0){
 
                 let nextBlock = this.getNextAvaliableBlock();
-                console.log(nextBlock)
 
                 if(nextBlock > 0){
                     let avaliableBlock = JSON.parse(sessionStorage.getItem(`0:0:${nextBlock}`));
@@ -110,7 +110,6 @@ module TSOS{
                     // NEED TO CLEAN OUT DATA IF DATA IS USED
 
                     if(avaliableBlock.data[0] !== "0"){
-                        console.log("Here?");
                         //Clear data
                         //Overwrite
                         let tempDisk = new Disk;
@@ -133,6 +132,9 @@ module TSOS{
                     }
                     //Set the item
                     sessionStorage.setItem(`0:0:${nextBlock}`, JSON.stringify(avaliableBlock));
+
+                    //UPDATE TABLE
+                    _DeviceDisplay.updateHardDriveDisplay(`0:0:${nextBlock}`);
                     return true;
                 }
             }else{
@@ -147,14 +149,12 @@ module TSOS{
             //set next avaliable to index
 
             let search = this.searchForFileByName(fileName);
-            console.log(search)
 
             if(search > 0){
 
                 let removingDisk = JSON.parse(sessionStorage.getItem(`0:0:${search}`));
 
                 removingDisk.availability = 0;
-                console.log(removingDisk)
 
                 //check if a write occured on the file
                 if(removingDisk.pointer[0] !== 0){
@@ -164,9 +164,13 @@ module TSOS{
                     removedPointer.availability = 0;
 
                     sessionStorage.setItem(`${removingDisk.pointer[0]}:${removingDisk.pointer[1]}:${removingDisk.pointer[2]}`, JSON.stringify(removedPointer));
+                    _DeviceDisplay.updateHardDriveDisplay(`${removingDisk.pointer[0]}:${removingDisk.pointer[1]}:${removingDisk.pointer[2]}`);
                 }
                 //Put back storage values
                 sessionStorage.setItem(`0:0:${search}`, JSON.stringify(removingDisk));
+
+                //UPDATE TABLE
+                _DeviceDisplay.updateHardDriveDisplay(`0:0:${search}`);
                 return true;
             }else{
                 return false;
@@ -178,7 +182,6 @@ module TSOS{
 
             //pinut 0 is the filename
             let search = this.searchForFileByName(input[0]);
-            console.log(search);
             if(search > 0 && input[1].charAt(0) == '"' && input[input.length-1].charAt(input[input.length-1].length-1) == '"'){
 
                 //Remove "" 
@@ -207,8 +210,6 @@ module TSOS{
                 }
 
                 //Add text to the key
-
-                //ADD SPACES
                 let dataIndex = 0;
                 for(let i = 1; i < input.length; i++){
                     for(let k = 0; k < input[i].length; k++){
@@ -231,6 +232,10 @@ module TSOS{
                 sessionStorage.setItem(`0:0:${search}`, JSON.stringify(fileToWriteTo));
                 sessionStorage.setItem(`${fileToWriteTo.pointer[0]}:${fileToWriteTo.pointer[1]}:${fileToWriteTo.pointer[2]}`, JSON.stringify(keyToWriteIn));
                
+                //UPDATE TABLES
+                _DeviceDisplay.updateHardDriveDisplay(`0:0:${search}`);
+                _DeviceDisplay.updateHardDriveDisplay(`${fileToWriteTo.pointer[0]}:${fileToWriteTo.pointer[1]}:${fileToWriteTo.pointer[2]}`);
+
                 return true;
             }else{
                 return false;
@@ -256,14 +261,15 @@ module TSOS{
                     //Return String with info 
                     return output;
                 }else{
-                    return "Nothing to read in " + fileName
+                    return "Nothing to read in " + fileName;
                 }
             }else{
-                return "Could not find file with name " + fileName
+                return "Could not find file with name " + fileName;
             }
         }
 
-        //-----------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
+        // UTILITIES DOSAKODKJOSAKDOKSODKOASDKOK
 
         public convertToTextFromHex(data){
             let output = '';
@@ -341,7 +347,6 @@ module TSOS{
                             sessionStorage.setItem(`${i}:${j}:${k}`, JSON.stringify(nextPoint));
                             return [i,j,k];
                         }
-                        console.log("Hello");
                     }
                 }
             }

@@ -79,6 +79,7 @@ var TSOS;
                         }
                     }
                 }
+                _DeviceDisplay.hardDriveDisplay();
                 _FORMATTED = true;
                 return true;
             }
@@ -90,13 +91,11 @@ var TSOS;
             //to create a file we put the name in hex (if it doesn't already exist) in the data at the next avaliable spot
             if (this.searchForFileByName(fileName) < 0) {
                 var nextBlock = this.getNextAvaliableBlock();
-                console.log(nextBlock);
                 if (nextBlock > 0) {
                     var avaliableBlock = JSON.parse(sessionStorage.getItem("0:0:" + nextBlock));
                     avaliableBlock.availability = 1;
                     // NEED TO CLEAN OUT DATA IF DATA IS USED
                     if (avaliableBlock.data[0] !== "0") {
-                        console.log("Here?");
                         //Clear data
                         //Overwrite
                         var tempDisk = new TSOS.Disk;
@@ -118,6 +117,8 @@ var TSOS;
                     }
                     //Set the item
                     sessionStorage.setItem("0:0:" + nextBlock, JSON.stringify(avaliableBlock));
+                    //UPDATE TABLE
+                    _DeviceDisplay.updateHardDriveDisplay("0:0:" + nextBlock);
                     return true;
                 }
             }
@@ -132,20 +133,21 @@ var TSOS;
             //clear filename and set avaliability to 0
             //set next avaliable to index
             var search = this.searchForFileByName(fileName);
-            console.log(search);
             if (search > 0) {
                 var removingDisk = JSON.parse(sessionStorage.getItem("0:0:" + search));
                 removingDisk.availability = 0;
-                console.log(removingDisk);
                 //check if a write occured on the file
                 if (removingDisk.pointer[0] !== 0) {
                     //Remove Pointer
                     var removedPointer = JSON.parse(sessionStorage.getItem(removingDisk.pointer[0] + ":" + removingDisk.pointer[1] + ":" + removingDisk.pointer[2]));
                     removedPointer.availability = 0;
                     sessionStorage.setItem(removingDisk.pointer[0] + ":" + removingDisk.pointer[1] + ":" + removingDisk.pointer[2], JSON.stringify(removedPointer));
+                    _DeviceDisplay.updateHardDriveDisplay(removingDisk.pointer[0] + ":" + removingDisk.pointer[1] + ":" + removingDisk.pointer[2]);
                 }
                 //Put back storage values
                 sessionStorage.setItem("0:0:" + search, JSON.stringify(removingDisk));
+                //UPDATE TABLE
+                _DeviceDisplay.updateHardDriveDisplay("0:0:" + search);
                 return true;
             }
             else {
@@ -156,7 +158,6 @@ var TSOS;
             var input = values.splice(0);
             //pinut 0 is the filename
             var search = this.searchForFileByName(input[0]);
-            console.log(search);
             if (search > 0 && input[1].charAt(0) == '"' && input[input.length - 1].charAt(input[input.length - 1].length - 1) == '"') {
                 //Remove "" 
                 input[1] = input[1].substring(1);
@@ -178,7 +179,6 @@ var TSOS;
                     keyToWriteIn.data = tempDisk.data.slice(0);
                 }
                 //Add text to the key
-                //ADD SPACES
                 var dataIndex = 0;
                 for (var i = 1; i < input.length; i++) {
                     for (var k = 0; k < input[i].length; k++) {
@@ -199,6 +199,9 @@ var TSOS;
                 //Store back in
                 sessionStorage.setItem("0:0:" + search, JSON.stringify(fileToWriteTo));
                 sessionStorage.setItem(fileToWriteTo.pointer[0] + ":" + fileToWriteTo.pointer[1] + ":" + fileToWriteTo.pointer[2], JSON.stringify(keyToWriteIn));
+                //UPDATE TABLES
+                _DeviceDisplay.updateHardDriveDisplay("0:0:" + search);
+                _DeviceDisplay.updateHardDriveDisplay(fileToWriteTo.pointer[0] + ":" + fileToWriteTo.pointer[1] + ":" + fileToWriteTo.pointer[2]);
                 return true;
             }
             else {
@@ -227,7 +230,8 @@ var TSOS;
                 return "Could not find file with name " + fileName;
             }
         };
-        //-----------------------------------------------------------------------------------
+        //--------------------------------------------------------------------------------------------
+        // UTILITIES DOSAKODKJOSAKDOKSODKOASDKOK
         DeviceDiskDriver.prototype.convertToTextFromHex = function (data) {
             var output = '';
             //array is imputted 
@@ -294,7 +298,6 @@ var TSOS;
                             sessionStorage.setItem(i + ":" + j + ":" + k, JSON.stringify(nextPoint));
                             return [i, j, k];
                         }
-                        console.log("Hello");
                     }
                 }
             }

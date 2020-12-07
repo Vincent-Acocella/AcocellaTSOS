@@ -548,5 +548,18 @@ module TSOS {
                 _StdOut.putText('read <fileName> ');
             }
         }
+
+        public shellList(){
+
+        }
+
+        public shellSetSchedule(args:string){
+
+        }
+
+        public shellGetSchedule(){
+
+        }
+
     }
 }
