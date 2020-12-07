@@ -163,34 +163,6 @@ module TSOS{
                     let removedPointer = JSON.parse(sessionStorage.getItem(`${removingDisk.pointer[0]}:${removingDisk.pointer[1]}:${removingDisk.pointer[2]}`));
                     removedPointer.availability = 0;
 
-                    //Update next avaliable if needed
-                    // if(search < this.nextAvaliableBlock){
-                    //     this.nextAvaliableBlock = search;
-                    // }
-
-                    //Update pointer if needed
-                    //Depreciated
-                    // let flag = false;
-                    // let i = 0;
-
-                    // while(!flag){
-                    //     switch(this.locateNextPointerOnDelete(removingDisk.pointer[i], this.currentPointer[i])){
-                    //         case 0: 
-                    //             //Equal continue search
-                    //             break;
-                    //         case 1:
-                    //             //Stop less than is better
-                    //             this.currentPointer = removedPointer.pointer.slice(0);
-                    //             flag = true;
-                    //             break;
-                    //             //Deleted is ahead of next
-                    //         case 2:
-                    //             flag = true;
-                    //             break;
-                    //     }
-                    //     i++;
-                    // }
-
                     sessionStorage.setItem(`${removingDisk.pointer[0]}:${removingDisk.pointer[1]}:${removingDisk.pointer[2]}`, JSON.stringify(removedPointer));
                 }
                 //Put back storage values
@@ -227,7 +199,7 @@ module TSOS{
 
                 // Clear out location to make room 
                 if(keyToWriteIn.data[0] !== "0"){
-                    console.log("Here?");
+           
                     //Clear data
                     //Overwrite
                     let tempDisk = new Disk;
@@ -235,6 +207,8 @@ module TSOS{
                 }
 
                 //Add text to the key
+
+                //ADD SPACES
                 let dataIndex = 0;
                 for(let i = 1; i < input.length; i++){
                     for(let k = 0; k < input[i].length; k++){
@@ -243,6 +217,13 @@ module TSOS{
                         keyToWriteIn.data[dataIndex] = hexCode.charAt(0);
                         keyToWriteIn.data[dataIndex+1] = hexCode.charAt(1);
                         dataIndex = dataIndex+2;
+                    }
+                    if(i+1 < input.length){
+                        //Add space when needed
+                        let space = this.convertToHexByLetter(32)
+                        keyToWriteIn.data[dataIndex] = space.charAt(0)
+                        keyToWriteIn.data[dataIndex +1] = space.charAt(1)
+                        dataIndex = dataIndex +2;
                     }
                 }
 
@@ -256,7 +237,52 @@ module TSOS{
             }
         }
 
+        public readFile(fileName){
+
+            let search = this.searchForFileByName(fileName);
+
+            if(search > 0){
+                //Get file
+                let directoryFile = JSON.parse(sessionStorage.getItem(`0:0:${search}`));
+
+                //Use pointer to get next file
+                //if no pointer then no write exists 
+                if(directoryFile.pointer[0] !== 0){
+                    let fileToRead = JSON.parse(sessionStorage.getItem(`${directoryFile.pointer[0]}:${directoryFile.pointer[1]}:${directoryFile.pointer[2]}`));
+
+                    //Get data from file
+                    let output = this.convertToTextFromHex(fileToRead.data);
+
+                    //Return String with info 
+                    return output;
+                }else{
+                    return "Nothing to read in " + fileName
+                }
+            }else{
+                return "Could not find file with name " + fileName
+            }
+        }
+
         //-----------------------------------------------------------------------------------
+
+        public convertToTextFromHex(data){
+            let output = '';
+
+            //array is imputted 
+            let next;
+            let index = 0;
+            while(next !== "0") {
+                let hexVal = data[index] + data[index+1];
+                output += this.convertFromHexByLetter(hexVal);
+                index = index + 2;
+                next = data[index];
+            }
+            
+            //loop through and convert each hex character to characters
+            return output;
+        }
+
+
         public searchForFileByName(fileName: string){
             //return the filename and the JSON with it
             //if not return false
@@ -303,16 +329,6 @@ module TSOS{
             return -1;
         }
 
-        // public locateNextPointerOnDelete(deletedValue, currentNext){
-        //     if(deletedValue === currentNext){
-        //         return 0;
-        //     }else if(deletedValue < currentNext){
-        //         return 1;
-        //     }else{
-        //         return 2;
-        //     }
-        // }
-
         public setNextAvaliablePointer(){
             for(let i = 1; i < 4; i++){
                 for(let j = 0; j< 8; j++){
@@ -331,16 +347,12 @@ module TSOS{
             }
         }
 
-        public convertWordFromHexByLetter(filename: string){
-            let newStr;
-            for(let i = 1; i <= filename.length; i++){
-                newStr += filename.charCodeAt(i).toString(16);
-            }
-            return newStr
+        public convertFromHexByLetter(hexVal: string){
+            return String.fromCharCode(parseInt(hexVal,16));
         }
 
         public convertToHexByLetter(char: number) {
             return char.toString(16);
-        };
+        }
     }
 }

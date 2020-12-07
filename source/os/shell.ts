@@ -536,8 +536,17 @@ module TSOS {
                 _StdOut.putText('write <fileName> "<text>"');
             }
         }
-        public shellRead(){
-
+        public shellRead(args:string){
+            if(args.length > 0){
+                if(_FORMATTED){
+                    let output =_DeviceDiskDriver.readFile(args.toString());
+                    _StdOut.putText(output)
+                }else{
+                    _StdOut.putText("Please format hard drive.");
+                }
+            }else{
+                _StdOut.putText('read <fileName> ');
+            }
         }
     }
 }

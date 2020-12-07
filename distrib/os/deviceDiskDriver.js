@@ -142,31 +142,6 @@ var TSOS;
                     //Remove Pointer
                     var removedPointer = JSON.parse(sessionStorage.getItem(removingDisk.pointer[0] + ":" + removingDisk.pointer[1] + ":" + removingDisk.pointer[2]));
                     removedPointer.availability = 0;
-                    //Update next avaliable if needed
-                    // if(search < this.nextAvaliableBlock){
-                    //     this.nextAvaliableBlock = search;
-                    // }
-                    //Update pointer if needed
-                    //Depreciated
-                    // let flag = false;
-                    // let i = 0;
-                    // while(!flag){
-                    //     switch(this.locateNextPointerOnDelete(removingDisk.pointer[i], this.currentPointer[i])){
-                    //         case 0: 
-                    //             //Equal continue search
-                    //             break;
-                    //         case 1:
-                    //             //Stop less than is better
-                    //             this.currentPointer = removedPointer.pointer.slice(0);
-                    //             flag = true;
-                    //             break;
-                    //             //Deleted is ahead of next
-                    //         case 2:
-                    //             flag = true;
-                    //             break;
-                    //     }
-                    //     i++;
-                    // }
                     sessionStorage.setItem(removingDisk.pointer[0] + ":" + removingDisk.pointer[1] + ":" + removingDisk.pointer[2], JSON.stringify(removedPointer));
                 }
                 //Put back storage values
@@ -197,13 +172,13 @@ var TSOS;
                 var keyToWriteIn = JSON.parse(sessionStorage.getItem(fileToWriteTo.pointer[0] + ":" + fileToWriteTo.pointer[1] + ":" + fileToWriteTo.pointer[2]));
                 // Clear out location to make room 
                 if (keyToWriteIn.data[0] !== "0") {
-                    console.log("Here?");
                     //Clear data
                     //Overwrite
                     var tempDisk = new TSOS.Disk;
                     keyToWriteIn.data = tempDisk.data.slice(0);
                 }
                 //Add text to the key
+                //ADD SPACES
                 var dataIndex = 0;
                 for (var i = 1; i < input.length; i++) {
                     for (var k = 0; k < input[i].length; k++) {
@@ -211,6 +186,13 @@ var TSOS;
                         var hexCode = this.convertToHexByLetter(input[i].charCodeAt(k));
                         keyToWriteIn.data[dataIndex] = hexCode.charAt(0);
                         keyToWriteIn.data[dataIndex + 1] = hexCode.charAt(1);
+                        dataIndex = dataIndex + 2;
+                    }
+                    if (i + 1 < input.length) {
+                        //Add space when needed
+                        var space = this.convertToHexByLetter(32);
+                        keyToWriteIn.data[dataIndex] = space.charAt(0);
+                        keyToWriteIn.data[dataIndex + 1] = space.charAt(1);
                         dataIndex = dataIndex + 2;
                     }
                 }
@@ -223,7 +205,43 @@ var TSOS;
                 return false;
             }
         };
+        DeviceDiskDriver.prototype.readFile = function (fileName) {
+            var search = this.searchForFileByName(fileName);
+            if (search > 0) {
+                //Get file
+                var directoryFile = JSON.parse(sessionStorage.getItem("0:0:" + search));
+                //Use pointer to get next file
+                //if no pointer then no write exists 
+                if (directoryFile.pointer[0] !== 0) {
+                    var fileToRead = JSON.parse(sessionStorage.getItem(directoryFile.pointer[0] + ":" + directoryFile.pointer[1] + ":" + directoryFile.pointer[2]));
+                    //Get data from file
+                    var output = this.convertToTextFromHex(fileToRead.data);
+                    //Return String with info 
+                    return output;
+                }
+                else {
+                    return "Nothing to read in " + fileName;
+                }
+            }
+            else {
+                return "Could not find file with name " + fileName;
+            }
+        };
         //-----------------------------------------------------------------------------------
+        DeviceDiskDriver.prototype.convertToTextFromHex = function (data) {
+            var output = '';
+            //array is imputted 
+            var next;
+            var index = 0;
+            while (next !== "0") {
+                var hexVal = data[index] + data[index + 1];
+                output += this.convertFromHexByLetter(hexVal);
+                index = index + 2;
+                next = data[index];
+            }
+            //loop through and convert each hex character to characters
+            return output;
+        };
         DeviceDiskDriver.prototype.searchForFileByName = function (fileName) {
             //return the filename and the JSON with it
             //if not return false
@@ -266,15 +284,6 @@ var TSOS;
             }
             return -1;
         };
-        // public locateNextPointerOnDelete(deletedValue, currentNext){
-        //     if(deletedValue === currentNext){
-        //         return 0;
-        //     }else if(deletedValue < currentNext){
-        //         return 1;
-        //     }else{
-        //         return 2;
-        //     }
-        // }
         DeviceDiskDriver.prototype.setNextAvaliablePointer = function () {
             for (var i = 1; i < 4; i++) {
                 for (var j = 0; j < 8; j++) {
@@ -290,17 +299,12 @@ var TSOS;
                 }
             }
         };
-        DeviceDiskDriver.prototype.convertWordFromHexByLetter = function (filename) {
-            var newStr;
-            for (var i = 1; i <= filename.length; i++) {
-                newStr += filename.charCodeAt(i).toString(16);
-            }
-            return newStr;
+        DeviceDiskDriver.prototype.convertFromHexByLetter = function (hexVal) {
+            return String.fromCharCode(parseInt(hexVal, 16));
         };
         DeviceDiskDriver.prototype.convertToHexByLetter = function (char) {
             return char.toString(16);
         };
-        ;
         return DeviceDiskDriver;
     }());
     TSOS.DeviceDiskDriver = DeviceDiskDriver;
