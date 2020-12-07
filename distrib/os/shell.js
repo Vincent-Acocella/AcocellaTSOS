@@ -80,9 +80,11 @@ var TSOS;
             this.commandList[this.commandList.length] = sc;
             sc = new TSOS.ShellCommand(this.shellDelete, "delete", "- Create Thing");
             this.commandList[this.commandList.length] = sc;
-            sc = new TSOS.ShellCommand(this.shellWrite, "write", "- Create Thing");
+            sc = new TSOS.ShellCommand(this.shellWrite, "write", "- Write to File");
             this.commandList[this.commandList.length] = sc;
-            sc = new TSOS.ShellCommand(this.shellRead, "read", "- Create Thing");
+            sc = new TSOS.ShellCommand(this.shellRead, "read", "- Read File");
+            this.commandList[this.commandList.length] = sc;
+            sc = new TSOS.ShellCommand(this.shellList, "ls", "- List Programs");
             this.commandList[this.commandList.length] = sc;
         };
         Shell.prototype.putPrompt = function () {
@@ -435,6 +437,13 @@ var TSOS;
             }
         };
         Shell.prototype.shellList = function () {
+            var listReturned = _DeviceDiskDriver.listAvaliableFiles();
+            if (listReturned.length > 0) {
+                for (var item in listReturned) {
+                    _StdOut.putText(listReturned[item]);
+                    _StdOut.advanceLine();
+                }
+            }
         };
         Shell.prototype.shellSetSchedule = function (args) {
         };

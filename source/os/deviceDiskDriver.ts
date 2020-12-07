@@ -5,9 +5,6 @@ module TSOS{
             public nextAvaliableBlock = 1
             )
             {}
-
-
-
         /*
 
         |     Key   |   Value   |
@@ -266,6 +263,20 @@ module TSOS{
             }else{
                 return "Could not find file with name " + fileName;
             }
+        }
+
+        public listAvaliableFiles(){
+            let filesFound = [];
+            let filesIndex = 0;
+            for(let i = 1; i< 8; i++){
+                let aFile = JSON.parse(sessionStorage.getItem(`0:0:${i}`));
+                console.log(aFile.availability)
+                if(aFile.availability === 1){
+                    filesFound[filesIndex] = this.convertToTextFromHex(aFile.data);
+                    filesIndex++
+                }
+            }
+            return filesFound;
         }
 
 //--------------------------------------------------------------------------------------------

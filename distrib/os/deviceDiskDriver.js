@@ -230,6 +230,19 @@ var TSOS;
                 return "Could not find file with name " + fileName;
             }
         };
+        DeviceDiskDriver.prototype.listAvaliableFiles = function () {
+            var filesFound = [];
+            var filesIndex = 0;
+            for (var i = 1; i < 8; i++) {
+                var aFile = JSON.parse(sessionStorage.getItem("0:0:" + i));
+                console.log(aFile.availability);
+                if (aFile.availability === 1) {
+                    filesFound[filesIndex] = this.convertToTextFromHex(aFile.data);
+                    filesIndex++;
+                }
+            }
+            return filesFound;
+        };
         //--------------------------------------------------------------------------------------------
         // UTILITIES DOSAKODKJOSAKDOKSODKOASDKOK
         DeviceDiskDriver.prototype.convertToTextFromHex = function (data) {

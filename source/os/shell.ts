@@ -159,15 +159,18 @@ module TSOS {
 
             sc = new ShellCommand(this.shellWrite,
                 "write",
-                "- Create Thing");
+                "- Write to File");
             this.commandList[this.commandList.length] = sc;
 
             sc = new ShellCommand(this.shellRead,
                 "read",
-                "- Create Thing");
+                "- Read File");
             this.commandList[this.commandList.length] = sc;
 
-
+            sc = new ShellCommand(this.shellList,
+                "ls",
+                "- List Programs");
+            this.commandList[this.commandList.length] = sc;
 
         }
         public putPrompt() {
@@ -550,7 +553,13 @@ module TSOS {
         }
 
         public shellList(){
-
+            let listReturned = _DeviceDiskDriver.listAvaliableFiles();
+            if(listReturned.length > 0){
+                for(let item in listReturned){
+                    _StdOut.putText(listReturned[item])
+                    _StdOut.advanceLine();
+                }
+            }
         }
 
         public shellSetSchedule(args:string){
