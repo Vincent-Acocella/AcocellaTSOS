@@ -36,6 +36,7 @@ var TSOS;
         DeviceDriverKeyboard.prototype.krnKbdDriverEntry = function () {
             // Initialization routine for this, the kernel-mode Keyboard Device Driver.
             this.status = "loaded";
+            console.log("");
             // More?
         };
         DeviceDriverKeyboard.prototype.krnKbdDispatchKeyPress = function (params) {

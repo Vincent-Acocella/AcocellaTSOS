@@ -58,6 +58,8 @@ var TSOS;
             console.log("----------Cycle-----------------");
             _Kernel.krnTrace('CPU cycle');
             var moveThatBus = this.fetch(this.PC);
+            console.log("SPOT 122 = " + _MemoryAccessor.read(122, 0));
+            console.log("SPOT 123 = " + _MemoryAccessor.read(123, 0));
             if (moveThatBus + this.PC > 256) {
                 this.PC = (this.PC + moveThatBus) % 256;
             }
@@ -153,6 +155,7 @@ var TSOS;
                     this.printStringYReg();
                     break;
                 default:
+                    console.log("JKLFDJOIKFNDNFOINHSODIFNHIOSDNHIOFNHISODFNHIOSDNOIFPNHISODPFNOPIDFNIPONHDFPOINHFIP)ODNIPOFIDFPOIDSHIOFJOSDIFOI");
                     _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_STRING, ["Invalid system call operation, stoping execution."]));
             }
         };
@@ -181,9 +184,9 @@ var TSOS;
             }
             else {
                 //value + 1 is base 10
-                var valueInMemory = _MemoryAccessor.read((value + 1), segmentToLook);
+                var valueInMemory = this.convfromHex(_MemoryAccessor.read((value + 1), segmentToLook));
                 console.log("Value" + valueInMemory);
-                this.Acc = valueInMemory;
+                this.Acc = _MemoryAccessor.read(valueInMemory, segmentToLook);
             }
         };
         //----------------------------------------------------------------------------------
@@ -196,6 +199,7 @@ var TSOS;
             }
             else {
                 var spotInMem = this.convfromHex(_MemoryAccessor.read((value + 1), segmentToLook));
+                console.log("The acc + " + this.Acc);
                 _MemoryAccessor.write((this.Acc.toString()), segmentToLook, spotInMem);
             }
         };
@@ -210,11 +214,9 @@ var TSOS;
             }
             else {
                 var valueToLook = this.convfromHex(_MemoryAccessor.read(value + 1, segmentToLook));
-                console.log("*********------------**************------------");
-                console.log("WHen converting to int " + this.addPadding(parseInt(this.Acc.toString()) + " And " + parseInt(_Memory.memoryThread[segmentToLook][valueToLook])));
-                console.log("When turned from hex " + this.addPadding(parseInt(this.Acc.toString()) + " And " + this.convfromHex(_Memory.memoryThread[segmentToLook][valueToLook])));
+                console.log(valueToLook);
                 console.log("Acc = " + this.Acc);
-                console.log("Adding: " + parseInt(_Memory.memoryThread[segmentToLook][valueToLook]));
+                console.log((_Memory.memoryThread[segmentToLook][valueToLook]));
                 //COmes in as 01 change
                 this.Acc = this.addPadding(this.convfromHex(this.Acc.toString()) + parseInt(_Memory.memoryThread[segmentToLook][valueToLook]));
                 console.log("Now equals: " + this.Acc);
@@ -237,6 +239,8 @@ var TSOS;
             else {
                 //Returns the value in memory in this case we are loading that into y
                 var spotInMem = this.convfromHex(_MemoryAccessor.read(value + 1, segmentToLook));
+                console.log('%c Oh my heavens! ', 'background: #222; color: #bada55');
+                console.log(spotInMem);
                 this.Xreg = _Memory.memoryThread[segmentToLook][spotInMem];
             }
         };
@@ -271,10 +275,11 @@ var TSOS;
             else {
                 var spotInMem = this.convfromHex(_MemoryAccessor.read(value + 1, segmentToLook));
                 // look at 
+                console.log("LOOKING AT SEGMENT " + segmentToLook);
                 console.log("Spot looking at: " + spotInMem);
                 console.log("Also look at: " + _MemoryAccessor.read(value + 1, segmentToLook));
                 var valueToCompair = parseInt((_Memory.memoryThread[segmentToLook][spotInMem]));
-                console.log("this: " + valueToCompair + " Or " + this.convfromHex(_Memory.memoryThread[segmentToLook][spotInMem]));
+                console.log("this: " + this.convfromHex(this.Xreg.toString()) + " Or " + valueToCompair);
                 if (this.convfromHex(this.Xreg.toString()) === valueToCompair) {
                     this.Zflag = 1;
                 }
@@ -340,6 +345,7 @@ var TSOS;
             }
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_STRING, [output]));
         };
+        //hello
         // ----------------------------------------------------------------------------------
         //CPU Utils
         Cpu.prototype.returnCPU = function () {

@@ -331,10 +331,6 @@ var TSOS;
             //Get programs and add them to the ready queue
             //Take all programs in memory and add them to the ready queue
             _Schedular.addAllToReadyQueue();
-            if (!_CPU.isExecuting) {
-                _Schedular.deployFirstInQueueToCPU();
-                _Schedular.startCpu();
-            }
         };
         Shell.prototype.shellClearMem = function () {
             //Get the programs by segment

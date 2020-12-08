@@ -441,11 +441,6 @@ module TSOS {
             //Get programs and add them to the ready queue
             //Take all programs in memory and add them to the ready queue
             _Schedular.addAllToReadyQueue();
-
-            if(!_CPU.isExecuting){
-                _Schedular.deployFirstInQueueToCPU();
-                _Schedular.startCpu();
-            }
         }
 
         public shellClearMem(){

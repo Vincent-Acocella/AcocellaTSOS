@@ -43,7 +43,7 @@ module TSOS{
 
         //Main funtion to return the PCB back to the array
         public addProccess(PID){
-            this.allProcesses[PID] = _PCB.returnPCB();
+            this.allProcesses[PID] = _PCB.returnPCB().slice(0);
             _DeviceDisplay.startUpSchedular();
         }
 
@@ -55,6 +55,7 @@ module TSOS{
             console.log("Now Executing process:  " + firstIndex)
             this.allProcesses[firstIndex][7] = "Executing";
             var array = this.allProcesses[firstIndex];
+            console.log(array)
             _PCB.loadPCB(array[0], array[1],array[2],array[3],array[4],array[5],array[6],array[7],array[8],array[9]);
             _PCB.loadCPU();
            // Load PCB then put into CPU
@@ -85,7 +86,6 @@ module TSOS{
         //Update ready queue
         public switchMemoryUnit(){
             this.readyQueue.enqueue(this.readyQueue.dequeue());
-            console.log("Switching ready queue");
         }
 
         public checkIfSwitch(){

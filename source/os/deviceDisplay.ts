@@ -42,13 +42,14 @@ module TSOS{
                 table.removeChild(table.firstChild);
             }
             
-
             let index = 0;
             let numberOfRows = stringMemory.length / 8;
             for (let i = 0; i < numberOfRows; i++) {
                 let row = table.insertRow(i);
                 let memAdress = i * 8;
                 let first = row.insertCell(0);
+                row.cells.item(0).style.textAlign = "center";
+                row.cells.item(0).style.border = "1px solid black";
 
                 let memUnit = "0x";
                 for (let j= 0; j < 3 - memAdress.toString(16).length; j++) {
@@ -59,15 +60,12 @@ module TSOS{
 
                 for (let k = 1; k < 9; k++) {
                     let cell = row.insertCell(k);
-                    if(index === 122){
-                        cell.style.color = "magenta"
-                    }
+                    cell.style.textAlign = "center";
+                    cell.style.border = "1px solid black";
                     cell.innerHTML = stringMemory[index];
                     index++;
                 }
             }
-            //122
-            table.rows[8].cells.item(2).style.color = "magenta"
         }
 
         public startUpCPU(){
@@ -84,11 +82,15 @@ module TSOS{
             let row = table.insertRow(0);
             for(let i = 0; i < header.length; i++){
                 let next = row.insertCell(i);
+                next.style.textAlign = "center";
+                next.style.border = "1px solid black";
                 next.innerHTML = header[i];
             }
             let row2 = table.insertRow(1);
             for(let j = 0; j < header.length; j++){
                 let next = row2.insertCell(j);
+                next.style.textAlign = "center";
+                next.style.border = "1px solid black";
                 next.innerHTML = "0";
 
             }
@@ -101,6 +103,8 @@ module TSOS{
             let row = table.insertRow(1);
             for(let i = 0; i < header.length; i++){
                 let next = row.insertCell(i);
+                next.style.textAlign = "center";
+                next.style.border = "1px solid black";
                 next.innerHTML = String(header[i]);
             }
         }

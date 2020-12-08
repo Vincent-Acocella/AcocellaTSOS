@@ -51,6 +51,8 @@ module TSOS {
 
             _Kernel.krnTrace('CPU cycle');
             let moveThatBus = this.fetch(this.PC);
+            console.log("SPOT 122 = " + _MemoryAccessor.read(122,0))
+            console.log("SPOT 123 = " +_MemoryAccessor.read(123,0));
             
             if (moveThatBus + this.PC > 256) {
                 this.PC = (this.PC + moveThatBus) % 256;
@@ -169,6 +171,7 @@ module TSOS {
                     this.printStringYReg();
                     break;
                 default:
+                    console.log("JKLFDJOIKFNDNFOINHSODIFNHIOSDNHIOFNHISODFNHIOSDNOIFPNHISODPFNOPIDFNIPONHDFPOINHFIP)ODNIPOFIDFPOIDSHIOFJOSDIFOI")
                     _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_STRING, ["Invalid system call operation, stoping execution."]));
             }
         }
@@ -202,9 +205,9 @@ module TSOS {
               _StdOut.putText("Invalid opcode detected")
           }else{
             //value + 1 is base 10
-            let valueInMemory = _MemoryAccessor.read((value+1), segmentToLook);
+            let valueInMemory = this.convfromHex(_MemoryAccessor.read((value+1), segmentToLook));
             console.log("Value" + valueInMemory);
-            this.Acc = valueInMemory;
+            this.Acc = _MemoryAccessor.read(valueInMemory, segmentToLook);
           }
         }
 
@@ -221,6 +224,7 @@ module TSOS {
                  _StdOut.putText("Invalid opcode detected")
             }else{
                 let spotInMem = this.convfromHex(_MemoryAccessor.read((value+1),segmentToLook));
+                console.log("The acc + " + this.Acc)
 
                 _MemoryAccessor.write((this.Acc.toString()), segmentToLook, spotInMem);
           }
@@ -238,11 +242,10 @@ module TSOS {
                  _StdOut.putText("Invalid opcode detected");
             }else{
                 let valueToLook = this.convfromHex(_MemoryAccessor.read(value+1, segmentToLook));
-                console.log("*********------------**************------------");
-                console.log("WHen converting to int " + this.addPadding(parseInt(this.Acc.toString()) + " And " +  parseInt(_Memory.memoryThread[segmentToLook][valueToLook])));
-                console.log("When turned from hex " + this.addPadding(parseInt(this.Acc.toString()) + " And " + this.convfromHex(_Memory.memoryThread[segmentToLook][valueToLook])));
+
+                console.log(valueToLook)
                 console.log("Acc = " + this.Acc);
-                console.log("Adding: " + parseInt(_Memory.memoryThread[segmentToLook][valueToLook]));
+                console.log((_Memory.memoryThread[segmentToLook][valueToLook]));
                 
                 //COmes in as 01 change
                 this.Acc = this.addPadding(this.convfromHex(this.Acc.toString()) + parseInt(_Memory.memoryThread[segmentToLook][valueToLook]));
@@ -271,6 +274,8 @@ module TSOS {
             }else{
                 //Returns the value in memory in this case we are loading that into y
                 let spotInMem = this.convfromHex(_MemoryAccessor.read(value+1, segmentToLook));
+                console.log('%c Oh my heavens! ', 'background: #222; color: #bada55');
+                console.log(spotInMem)
                 this.Xreg = _Memory.memoryThread[segmentToLook][spotInMem];
             }
         }
@@ -309,11 +314,13 @@ module TSOS {
                 let spotInMem = this.convfromHex(_MemoryAccessor.read(value+1, segmentToLook));
                 // look at 
 
+                console.log("LOOKING AT SEGMENT " + segmentToLook)
+
                 console.log("Spot looking at: " + spotInMem)
                 console.log("Also look at: " + _MemoryAccessor.read(value+1, segmentToLook))
                 let valueToCompair = parseInt((_Memory.memoryThread[segmentToLook][spotInMem]));
 
-                console.log("this: " + valueToCompair + " Or " +this.convfromHex(_Memory.memoryThread[segmentToLook][spotInMem]))
+                console.log("this: " + this.convfromHex(this.Xreg.toString()) + " Or " + valueToCompair)
     
                 if(this.convfromHex(this.Xreg.toString()) === valueToCompair){
                     this.Zflag = 1;
@@ -381,7 +388,7 @@ module TSOS {
                 i++;
                 locInMem = _MemoryAccessor.read(i,this.segment);
             }
-            console.log("potato")
+       
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_STRING, [output]));
         }
         //hello

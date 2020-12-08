@@ -148,6 +148,7 @@ var TSOS;
                 sessionStorage.setItem("0:0:" + search, JSON.stringify(removingDisk));
                 //UPDATE TABLE
                 _DeviceDisplay.updateHardDriveDisplay("0:0:" + search);
+                console.log("");
                 return true;
             }
             else {

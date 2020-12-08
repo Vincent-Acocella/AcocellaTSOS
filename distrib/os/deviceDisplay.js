@@ -41,6 +41,8 @@ var TSOS;
                 var row = table.insertRow(i);
                 var memAdress = i * 8;
                 var first = row.insertCell(0);
+                row.cells.item(0).style.textAlign = "center";
+                row.cells.item(0).style.border = "1px solid black";
                 var memUnit = "0x";
                 for (var j = 0; j < 3 - memAdress.toString(16).length; j++) {
                     memUnit += "0";
@@ -49,15 +51,12 @@ var TSOS;
                 first.innerHTML = memUnit;
                 for (var k = 1; k < 9; k++) {
                     var cell = row.insertCell(k);
-                    if (index === 122) {
-                        cell.style.color = "magenta";
-                    }
+                    cell.style.textAlign = "center";
+                    cell.style.border = "1px solid black";
                     cell.innerHTML = stringMemory[index];
                     index++;
                 }
             }
-            //122
-            table.rows[8].cells.item(2).style.color = "magenta";
         };
         DeviceDisplay.prototype.startUpCPU = function () {
             var table = document.getElementById("cpu");
@@ -68,11 +67,15 @@ var TSOS;
             var row = table.insertRow(0);
             for (var i = 0; i < header.length; i++) {
                 var next = row.insertCell(i);
+                next.style.textAlign = "center";
+                next.style.border = "1px solid black";
                 next.innerHTML = header[i];
             }
             var row2 = table.insertRow(1);
             for (var j = 0; j < header.length; j++) {
                 var next = row2.insertCell(j);
+                next.style.textAlign = "center";
+                next.style.border = "1px solid black";
                 next.innerHTML = "0";
             }
         };
@@ -83,6 +86,8 @@ var TSOS;
             var row = table.insertRow(1);
             for (var i = 0; i < header.length; i++) {
                 var next = row.insertCell(i);
+                next.style.textAlign = "center";
+                next.style.border = "1px solid black";
                 next.innerHTML = String(header[i]);
             }
         };
@@ -167,6 +172,7 @@ var TSOS;
                 row.cells.item(m).style.textAlign = "center";
                 row.cells.item(m).style.border = "1px solid black";
             }
+            console.log("hello");
         };
         return DeviceDisplay;
     }());
