@@ -209,7 +209,7 @@ module TSOS{
                 row.cells.item(m).style.textAlign = "center";
                 row.cells.item(m).style.border = "1px solid black";
             }
-
+            console.log("hello");
         }
     }
 }

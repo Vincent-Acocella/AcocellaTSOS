@@ -24,6 +24,7 @@ module TSOS {
         public krnKbdDriverEntry() {
             // Initialization routine for this, the kernel-mode Keyboard Device Driver.
             this.status = "loaded";
+            console.log("")
             // More?
         }
 

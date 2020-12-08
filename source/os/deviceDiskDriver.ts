@@ -168,6 +168,7 @@ module TSOS{
 
                 //UPDATE TABLE
                 _DeviceDisplay.updateHardDriveDisplay(`0:0:${search}`);
+                console.log("")
                 return true;
             }else{
                 return false;
