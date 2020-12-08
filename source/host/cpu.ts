@@ -248,7 +248,7 @@ module TSOS {
                 console.log("Acc = " + this.Acc);
                 console.log((_Memory.memoryThread[this.segment][valueToLook]));
                 
-                //COmes in as 01 change
+                //Comes in as 01 change
                 this.Acc = this.addPadding(this.convfromHex(this.Acc.toString()) + parseInt(_Memory.memoryThread[this.segment][valueToLook]));
                 console.log("Now equals: " + this.Acc)
             }

@@ -51,5 +51,12 @@ module TSOS{
             this.removeProgFromSegMap(segment);
             _MemoryManager.avaliableMemory[segment] = true;
         }   
+
+        public clearAllMemory(){
+            _Memory.init();
+            for(let i = 0; i < 3; i++){
+                this.programOverCleanUp(i)
+            }
+        }
     }
 }

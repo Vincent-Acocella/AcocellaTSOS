@@ -427,14 +427,10 @@ module TSOS {
         public shellRun(args: String[]){
 
             if(args.length > 0){
-
                 _MemoryManager.runMemory(args)
-                
             } else{
                 _StdOut.putText("Please input a program");
             }
-
-                
         }
 
         public shellRunAll(){
@@ -447,21 +443,33 @@ module TSOS {
             //Get the programs by segment
             //Change their state to terminated
             // clear memory
-
+            _MemoryAccessor.clearAllMemory();
+            _StdOut.putText("Memory Cleared!");
         }
 
         public shellPS(){
-            //Display allProcesses
 
+            //Display allProcesses
+            let returnList = _MemoryManager.listProgsInMem();
+
+            if(returnList < 1){
+                for(let output in returnList){
+                    _StdOut.putText(output);
+                }
+            }else{
+                _StdOut.putText("No programs in memory");
+            }
         }
 
         public shellKillAll(){
             // leave in memory but terminate all processes
 
+
         }
 
         public shellKill(){
             //leave in memory but kill process
+            //remove from ready Queue
 
         }
 
@@ -482,6 +490,7 @@ module TSOS {
                 _StdOut.putText("Disk Already Formatted");
             }
         }
+
         public shellCreate(args:string){
             if(args.length > 0){
                 if(_FORMATTED){
@@ -491,7 +500,6 @@ module TSOS {
                     }else{
                         _StdOut.putText("No, " + args.toString()+ " Already exists");
                     }
-                
                 }else{
                 _StdOut.putText("Please format hard drive.")
                 }

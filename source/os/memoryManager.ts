@@ -64,5 +64,16 @@ module TSOS{
            }
             return -1 ;
         }
+
+        public listProgsInMem(){
+            let output =[];
+
+            for(let i = 0; i < 3; i++){
+                if(!this.avaliableMemory[i]){
+                    output[i] = _MemoryAccessor.programToSegmentMap[i]
+                }
+            }
+            return output;
+        }
     }
 }
