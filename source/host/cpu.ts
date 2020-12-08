@@ -381,8 +381,10 @@ module TSOS {
                 i++;
                 locInMem = _MemoryAccessor.read(i,this.segment);
             }
+            console.log("potato")
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_STRING, [output]));
         }
+        //hello
 
 // ----------------------------------------------------------------------------------
         //CPU Utils
