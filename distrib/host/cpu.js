@@ -60,6 +60,7 @@ var TSOS;
             var moveThatBus = this.fetch(this.PC);
             console.log("SPOT 122 = " + _MemoryAccessor.read(122, 0));
             console.log("SPOT 123 = " + _MemoryAccessor.read(123, 0));
+            console.log("Segment " + this.segment);
             if (moveThatBus + this.PC > 256) {
                 this.PC = (this.PC + moveThatBus) % 256;
             }
@@ -184,9 +185,9 @@ var TSOS;
             }
             else {
                 //value + 1 is base 10
-                var valueInMemory = this.convfromHex(_MemoryAccessor.read((value + 1), segmentToLook));
+                var valueInMemory = this.convfromHex(_MemoryAccessor.read((value + 1), this.segment));
                 console.log("Value" + valueInMemory);
-                this.Acc = _MemoryAccessor.read(valueInMemory, segmentToLook);
+                this.Acc = _MemoryAccessor.read(valueInMemory, this.segment);
             }
         };
         //----------------------------------------------------------------------------------
@@ -198,9 +199,9 @@ var TSOS;
                 _StdOut.putText("Invalid opcode detected");
             }
             else {
-                var spotInMem = this.convfromHex(_MemoryAccessor.read((value + 1), segmentToLook));
+                var spotInMem = this.convfromHex(_MemoryAccessor.read((value + 1), this.segment));
                 console.log("The acc + " + this.Acc);
-                _MemoryAccessor.write((this.Acc.toString()), segmentToLook, spotInMem);
+                _MemoryAccessor.write((this.Acc.toString()), this.segment, spotInMem);
             }
         };
         //----------------------------------------------------------------------------------
@@ -213,12 +214,12 @@ var TSOS;
                 _StdOut.putText("Invalid opcode detected");
             }
             else {
-                var valueToLook = this.convfromHex(_MemoryAccessor.read(value + 1, segmentToLook));
+                var valueToLook = this.convfromHex(_MemoryAccessor.read(value + 1, this.segment));
                 console.log(valueToLook);
                 console.log("Acc = " + this.Acc);
-                console.log((_Memory.memoryThread[segmentToLook][valueToLook]));
+                console.log((_Memory.memoryThread[this.segment][valueToLook]));
                 //COmes in as 01 change
-                this.Acc = this.addPadding(this.convfromHex(this.Acc.toString()) + parseInt(_Memory.memoryThread[segmentToLook][valueToLook]));
+                this.Acc = this.addPadding(this.convfromHex(this.Acc.toString()) + parseInt(_Memory.memoryThread[this.segment][valueToLook]));
                 console.log("Now equals: " + this.Acc);
             }
         };
@@ -238,10 +239,10 @@ var TSOS;
             }
             else {
                 //Returns the value in memory in this case we are loading that into y
-                var spotInMem = this.convfromHex(_MemoryAccessor.read(value + 1, segmentToLook));
+                var spotInMem = this.convfromHex(_MemoryAccessor.read(value + 1, this.segment));
                 console.log('%c Oh my heavens! ', 'background: #222; color: #bada55');
                 console.log(spotInMem);
-                this.Xreg = _Memory.memoryThread[segmentToLook][spotInMem];
+                this.Xreg = _Memory.memoryThread[this.segment][spotInMem];
             }
         };
         //----------------------------------------------------------------------------------
@@ -259,8 +260,8 @@ var TSOS;
                 _StdOut.putText("Invalid opcode detected");
             }
             else {
-                var spotInMem = this.convfromHex(_MemoryAccessor.read(value + 1, segmentToLook));
-                this.Yreg = _Memory.memoryThread[segmentToLook][spotInMem];
+                var spotInMem = this.convfromHex(_MemoryAccessor.read(value + 1, this.segment));
+                this.Yreg = _Memory.memoryThread[this.segment][spotInMem];
             }
         };
         //----------------------------------------------------------------------------------
@@ -273,12 +274,12 @@ var TSOS;
                 _StdOut.putText("Invalid opcode detected");
             }
             else {
-                var spotInMem = this.convfromHex(_MemoryAccessor.read(value + 1, segmentToLook));
+                var spotInMem = this.convfromHex(_MemoryAccessor.read(value + 1, this.segment));
                 // look at 
                 console.log("LOOKING AT SEGMENT " + segmentToLook);
                 console.log("Spot looking at: " + spotInMem);
-                console.log("Also look at: " + _MemoryAccessor.read(value + 1, segmentToLook));
-                var valueToCompair = parseInt((_Memory.memoryThread[segmentToLook][spotInMem]));
+                console.log("Also look at: " + _MemoryAccessor.read(value + 1, this.segment));
+                var valueToCompair = parseInt((_Memory.memoryThread[this.segment][spotInMem]));
                 console.log("this: " + this.convfromHex(this.Xreg.toString()) + " Or " + valueToCompair);
                 if (this.convfromHex(this.Xreg.toString()) === valueToCompair) {
                     this.Zflag = 1;
@@ -317,8 +318,8 @@ var TSOS;
             }
             else {
                 var location_1 = this.convfromHex(_MemoryAccessor.read(value + 1, this.segment));
-                _Memory.memoryThread[segmentToLook][location_1]++;
-                console.log("Increase Value at: " + location_1 + "To: " + _Memory.memoryThread[segmentToLook][location_1]);
+                _Memory.memoryThread[this.segment][location_1]++;
+                console.log("Increase Value at: " + location_1 + "To: " + _Memory.memoryThread[this.segment][location_1]);
             }
         };
         //----------------------------------------------------
