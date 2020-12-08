@@ -336,15 +336,30 @@ var TSOS;
             //Get the programs by segment
             //Change their state to terminated
             // clear memory
+            _MemoryAccessor.clearAllMemory();
+            _StdOut.putText("Memory Cleared!");
         };
         Shell.prototype.shellPS = function () {
             //Display allProcesses
+            var returnList = _MemoryManager.listProgsInMem();
+            if (returnList < 1) {
+                for (var output in returnList) {
+                    _StdOut.putText(output);
+                }
+            }
+            else {
+                _StdOut.putText("No programs in memory");
+            }
         };
         Shell.prototype.shellKillAll = function () {
             // leave in memory but terminate all processes
+            console.log("hrello");
+            var dateTime = new Date().getFullYear();
+            console.log(dateTime);
         };
         Shell.prototype.shellKill = function () {
             //leave in memory but kill process
+            //remove from ready Queue
         };
         Shell.prototype.shellQuantum = function (args) {
             //Chnage quantum
@@ -442,6 +457,8 @@ var TSOS;
             }
         };
         Shell.prototype.shellSetSchedule = function (args) {
+            //set priority for PCB
+            //ENable swapping
         };
         Shell.prototype.shellGetSchedule = function () {
         };

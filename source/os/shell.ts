@@ -416,8 +416,7 @@ module TSOS {
                    }else{
                     _StdOut.putText("Type 'run " + progNum +"' To run code");
                     //_DeviceDisplay.updateMemory();
-                   }
-                   
+                   }   
                }
            }else{
                 _StdOut.putText("No Program to Load");
@@ -463,6 +462,9 @@ module TSOS {
 
         public shellKillAll(){
             // leave in memory but terminate all processes
+            console.log("hrello")
+            var dateTime = new Date().getFullYear();
+            console.log(dateTime);
 
 
         }
@@ -566,6 +568,8 @@ module TSOS {
         }
 
         public shellSetSchedule(args:string){
+            //set priority for PCB
+            //ENable swapping
 
         }
 

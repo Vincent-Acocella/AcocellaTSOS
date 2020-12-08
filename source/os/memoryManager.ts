@@ -13,7 +13,28 @@ module TSOS{
             //Need a function that returns the current segment for use
             let segment = this.deployNextSegmentForUse();
             if(segment < 0){
-                return -1
+                if(_FORMATTED){
+                    //Store program in backing store
+
+                    //Create format for file names
+
+                    let date = Date.now()
+                    console.log(date)
+
+
+                    let fileName = `~`
+
+                    //File format need time
+
+                    //_DeviceDiskDriver.createFile();
+
+
+
+
+
+                }else{
+                    return -1
+                }
             }else{
                 let index = 0;
                 this.avaliableMemory[segment] = false;

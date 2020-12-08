@@ -11,7 +11,18 @@ var TSOS;
             //Need a function that returns the current segment for use
             var segment = this.deployNextSegmentForUse();
             if (segment < 0) {
-                return -1;
+                if (_FORMATTED) {
+                    //Store program in backing store
+                    //Create format for file names
+                    var date = Date.now();
+                    console.log(date);
+                    var fileName = "~";
+                    //File format need time
+                    //_DeviceDiskDriver.createFile();
+                }
+                else {
+                    return -1;
+                }
             }
             else {
                 var index = 0;
@@ -57,6 +68,15 @@ var TSOS;
                 }
             }
             return -1;
+        };
+        MemoryManager.prototype.listProgsInMem = function () {
+            var output = [];
+            for (var i = 0; i < 3; i++) {
+                if (!this.avaliableMemory[i]) {
+                    output[i] = _MemoryAccessor.programToSegmentMap[i];
+                }
+            }
+            return output;
         };
         return MemoryManager;
     }());

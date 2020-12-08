@@ -41,6 +41,12 @@ var TSOS;
             this.removeProgFromSegMap(segment);
             _MemoryManager.avaliableMemory[segment] = true;
         };
+        MemoryAccessor.prototype.clearAllMemory = function () {
+            _Memory.init();
+            for (var i = 0; i < 3; i++) {
+                this.programOverCleanUp(i);
+            }
+        };
         return MemoryAccessor;
     }());
     TSOS.MemoryAccessor = MemoryAccessor;
