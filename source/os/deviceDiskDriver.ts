@@ -1,10 +1,13 @@
 module TSOS{
-    export class DeviceDiskDriver{
+    export class DeviceDiskDriver extends DeviceDriver{
 
-        constructor(
-            public nextAvaliableBlock = 1
-            )
-            {}
+        constructor()
+            {
+                super();
+                this.driverEntry = this.krnKbdDriverEntry;
+                this.isr = this.krnDiskDispatch;
+
+            }
         /*
 
         |     Key   |   Value   |
@@ -57,6 +60,42 @@ module TSOS{
 
         Max 7 in Memory
         */
+       
+
+       public krnKbdDriverEntry() {
+        // Initialization routine for this, the kernel-mode Keyboard Device Driver.
+        this.status = "loaded";
+        console.log("")
+        // More?
+    }
+    public krnDiskDispatch(parmas){
+        switch(parmas[0]){
+            case FORMATDISK:
+                this.formatDisk();
+                break;
+            case CREATEFILE:
+                this.createFile(parmas[1])
+                break;
+            case WRITEFILE:
+                this.writeToFile(parmas[1])
+                break;
+            case READFILE:
+                this.readFile(parmas[1])
+                break;
+            case LIST:
+                this.listAvaliableFiles();
+                break;
+            case ROLLINPROG:
+                this.returnProgFromDisk(parmas[1]);
+                break;
+            case ROLLOUTPROG:
+                this.writeProgramOnDisk(parmas[1]);
+                break;
+            default:
+                _KernelInterruptQueue.enqueue(new Interrupt(99, ["TRAP TIME"]));
+                //enque interput
+        }
+    }
 
         public init(){
 
@@ -105,7 +144,6 @@ module TSOS{
                     avaliableBlock.availability = 1;
                     
                     // NEED TO CLEAN OUT DATA IF DATA IS USED
-
                     if(avaliableBlock.data[0] !== "0"){
                         //Clear data
                         //Overwrite
@@ -132,12 +170,13 @@ module TSOS{
 
                     //UPDATE TABLE
                     _DeviceDisplay.updateHardDriveDisplay(`0:0:${nextBlock}`);
-                    return true;
+                    return nextBlock;
                 }
             }else{
                 return false;
             }
         }
+        
 //--------------------------------------------------------------
         //Called in shell
         public deleteFile(fileName: string){
@@ -168,7 +207,6 @@ module TSOS{
 
                 //UPDATE TABLE
                 _DeviceDisplay.updateHardDriveDisplay(`0:0:${search}`);
-                console.log("")
                 return true;
             }else{
                 return false;
@@ -200,9 +238,9 @@ module TSOS{
 
                 // Clear out location to make room 
                 if(keyToWriteIn.data[0] !== "0"){
-           
                     //Clear data
                     //Overwrite
+
                     let tempDisk = new Disk;
                     keyToWriteIn.data = tempDisk.data.slice(0);
                 }
@@ -280,8 +318,57 @@ module TSOS{
             return filesFound;
         }
 
+        public writeProgramToDisk(program){
+            //This is where we create the file in the directory
+    
+                //set format 
+            let timeAdded = new Date().getTime();
+            _MemoryAccessor.nextProgInMem++;
+
+            let fileName = `~` + _MemoryAccessor.nextProgInMem + timeAdded + '.swp';
+            let spot = this.createFile(fileName);
+
+            if(spot > 0){
+                let fileCreated = JSON.parse(sessionStorage.getItem(`0:0:${spot}`));
+
+                fileCreated.pointer = this.setNextAvaliablePointer().slice(0);
+
+
+                let keyToWriteIn = JSON.parse(sessionStorage.getItem(`${fileCreated.pointer[0]}:${fileCreated.pointer[1]}:${fileCreated.pointer[2]}`));
+                let index = 0;
+                for(let i = 0; i < program.length; i++){
+
+                    if(index === keyToWriteIn.data.length){
+                        //go to next seg
+                        //set the pointer of current seg to next
+                    }else{
+                        keyToWriteIn.data[index] = program.charAt(i);
+                    }
+                    index++;
+                }
+            }
+                //index progNumber
+                //filename will be 
+                //~ (prognumber)
+    
+                
+            
+                //set the pointers 256 in memory
+    
+                //
+            
+        }
+
+        //
+       public returnProgFromDisk(PID){
+
+       }
+       public writeProgramOnDisk(PID){
+
+       }
+
 //--------------------------------------------------------------------------------------------
-        // UTILITIES DOSAKODKJOSAKDOKSODKOASDKOK
+        // UTILITIES 
 
         public convertToTextFromHex(data){
             let output = '';
@@ -373,3 +460,4 @@ module TSOS{
         }
     }
 }
+

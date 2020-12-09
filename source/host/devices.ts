@@ -56,5 +56,41 @@ module TSOS {
                 _KernelInterruptQueue.enqueue(new Interrupt(KEYBOARD_IRQ, params));
             }
         }
+
+        public hostFormatDisk(){
+            let parmas = [FORMATDISK, "Format"]
+            _KernelInterruptQueue.enqueue(new Interrupt(DISKDRIVER_IRQ, parmas));
+        }
+
+        public hostCreateFileOnDisk(fileName){
+            let parmas = [CREATEFILE, fileName]
+            _KernelInterruptQueue.enqueue(new Interrupt(DISKDRIVER_IRQ, parmas));
+        }
+
+        public hostWriteToFile(userInput){
+            let parmas = [WRITEFILE, userInput];
+            _KernelInterruptQueue.enqueue(new Interrupt(DISKDRIVER_IRQ, parmas));
+        }
+
+        public hostReadFile(fileName){
+            let parmas = [READFILE, fileName];
+            _KernelInputQueue.enqueue(new Interrupt(DISKDRIVER_IRQ, parmas));
+        }
+
+        public hostListFiles(){
+            let parmas = [LIST, "fileName"];
+            _KernelInputQueue.enqueue(new Interrupt(DISKDRIVER_IRQ, parmas));
+            
+        }
+
+        public hostRollOutToDisk(progNumber){
+            let parmas = [ROLLOUTPROG, progNumber];
+            _KernelInputQueue.enqueue(new Interrupt(DISKDRIVER_IRQ, parmas));
+        }
+        public hostRollInFromDisk(progNumber){
+            let parmas = [ROLLINPROG, progNumber];
+            _KernelInputQueue.enqueue(new Interrupt(DISKDRIVER_IRQ, parmas));
+        }
+
     }
 }

@@ -23,6 +23,8 @@ module TSOS{
                     public state: string = "",
                     public location: number = -1,
                     public Zflag: number = 0,
+                    public timeAdded:number = 0,
+                    public priority:number = 0,
                     public endIndex: number = 0) {
         }
 
@@ -36,6 +38,8 @@ module TSOS{
             this.state = "Unknown";
             this.location = -1;
             this.Zflag = 0;
+            this.timeAdded = 0;
+            this.priority = 0;
             this.endIndex = 0;
         }
 
@@ -60,7 +64,6 @@ module TSOS{
         }
 
         public loadPCB(PID, PC, ACC, X, Y, Z,IR, state, loc, end){
-
             this.PID = PID;
             this.PC = PC;
             this.Acc = ACC
@@ -74,23 +77,22 @@ module TSOS{
         }
 
         public copyCPU(){
-            this.PC = _CPU.PC
-            this.Zflag = _CPU.Zflag
-            this.Xreg = _CPU.Xreg
-            this.location = _CPU.segment
-            this.IR = _CPU.IR
-            this.Acc = _CPU.Acc
-            this.endIndex = _CPU.endOfProg
-            this.Yreg = _CPU.Yreg
+            this.PC = _CPU.PC;
+            this.Zflag = _CPU.Zflag;
+            this.Xreg = _CPU.Xreg;
+            this.location = _CPU.segment;
+            this.IR = _CPU.IR;
+            this.Acc = _CPU.Acc;
+            this.endIndex = _CPU.endOfProg;
+            this.Yreg = _CPU.Yreg;
         }
 
         public updateScheduler(){
-            this.copyCPU()
+            this.copyCPU();
             _Schedular.addProccess(this.PID);
         }
 
         public loadCPU(){
-
             _CPU.PC = this.PC;
             _CPU.Zflag = this.Zflag;
             _CPU.Acc = this.Acc

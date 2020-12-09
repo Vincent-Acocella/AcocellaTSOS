@@ -20,15 +20,17 @@ const TIMER_IRQ: number = 0;  // Pages 23 (timer), 9 (interrupts), and 561 (inte
                               // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
 const KEYBOARD_IRQ: number = 1;
 
-const PRINT_YREGInt_ERQ = 2;
+const DISKDRIVER_IRQ: number = 2;
 
-const TERMINATE_STRING = 3;
+const PRINT_YREGInt_ERQ = 3;
 
-const STOP_EXEC_IRQ = 5;
+const TERMINATE_STRING = 4;
+
+const STOP_EXEC_IRQ = 6;
 
 const _RoundRobin = false;
 
-const SWITCH_MEMORY = 4;
+const SWITCH_MEMORY = 5;
 
 const DISK_SIZE = 127;
 
@@ -38,6 +40,7 @@ const DISK_SIZE = 127;
 //
 
 var _Quant = 6;
+var _PRIORITY = 5;
 var _FORMATTED = false;
 var _SingleStep = false;
 var _dot = false;
@@ -84,7 +87,17 @@ var _SarcasticMode: boolean = false;
 // Global Device Driver Objects - page 12
 var _krnKeyboardDriver: TSOS.DeviceDriverKeyboard  = null;
 
+var _krnDiskDriver: TSOS.DeviceDiskDriver = null;
+
 var _hardwareClockID: number = null;
+
+const FORMATDISK =0;
+const CREATEFILE =1;
+const WRITEFILE =2;
+const READFILE =3;
+const LIST =4;
+const ROLLINPROG =5;
+const ROLLOUTPROG = 6;
 
 // For testing (and enrichment)...
 var Glados: any = null;  // This is the function Glados() in glados-ip*.js http://alanclasses.github.io/TSOS/test/ .

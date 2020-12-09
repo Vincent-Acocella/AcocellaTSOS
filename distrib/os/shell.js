@@ -353,8 +353,8 @@ var TSOS;
         };
         Shell.prototype.shellKillAll = function () {
             // leave in memory but terminate all processes
-            console.log("hrello");
-            var dateTime = new Date().getFullYear();
+            //.toLocaleTimeString()
+            var dateTime = new Date().toISOString();
             console.log(dateTime);
         };
         Shell.prototype.shellKill = function () {

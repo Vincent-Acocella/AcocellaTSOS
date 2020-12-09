@@ -127,14 +127,13 @@ module TSOS {
                     _krnKeyboardDriver.isr(params);   // Kernel mode device driver
                     _StdIn.handleInput();
                     break;
+                case DISKDRIVER_IRQ:
+                    _krnDiskDriver.isr(params);
+                    break;
                 case PRINT_YREGInt_ERQ:
-                    console.log("**********************Print Int***********************")
-                    console.log("**********************   " + params.toString() + "   ***********************")
                     _StdOut.putText(params.toString());
                     break;
                 case TERMINATE_STRING:
-                    console.log("**********************Print String***********************")
-                    console.log("**********************   " + params.toString() + "    ***********************")
                     _StdOut.putText(params.toString());
                     break;
                 case SWITCH_MEMORY:

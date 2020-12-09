@@ -18,20 +18,6 @@ module TSOS{
 
                     //Create format for file names
 
-                    let date = Date.now()
-                    console.log(date)
-
-
-                    let fileName = `~`
-
-                    //File format need time
-
-                    //_DeviceDiskDriver.createFile();
-
-
-
-
-
                 }else{
                     return -1
                 }
@@ -96,5 +82,19 @@ module TSOS{
             }
             return output;
         }
+
+
+        //Take process off disk
+        public rollIn(){
+
+
+        }
+
+        //Put process on disk
+        public rollOut(){
+
+        }
+
+
     }
 }

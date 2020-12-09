@@ -462,25 +462,22 @@ module TSOS {
 
         public shellKillAll(){
             // leave in memory but terminate all processes
-            console.log("hrello")
-            var dateTime = new Date().getFullYear();
+            //.toLocaleTimeString()
+            var dateTime = new Date().getTime();
             console.log(dateTime);
-
-
         }
 
         public shellKill(){
             //leave in memory but kill process
             //remove from ready Queue
-
         }
 
         public shellQuantum(args:string){
             //Chnage quantum
             //check for int?
             if(args.length > 0){
-                _Quant = parseInt(args)
-                _StdOut.putText("The Quantum has been changed to: " + args)
+                _Quant = parseInt(args);
+                _StdOut.putText("The Quantum has been changed to: " + args);
             }
         }
 
@@ -534,7 +531,6 @@ module TSOS {
                         _StdOut.putText("Wrote to " + filename);
                         //wrote to file
                     }else{
-                       
                         _StdOut.putText("Could not write to " + filename);
                     }
                 }else{
