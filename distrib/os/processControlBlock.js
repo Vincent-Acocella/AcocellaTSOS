@@ -11,7 +11,7 @@ var TSOS;
         // 7 = state
         // 8 = location
         // 9 = end of prog
-        function ProcessControlBlock(PID, PC, Acc, Xreg, Yreg, IR, state, location, Zflag, endIndex) {
+        function ProcessControlBlock(PID, PC, Acc, Xreg, Yreg, IR, state, location, Zflag, timeAdded, priority, endIndex) {
             if (PID === void 0) { PID = 0; }
             if (PC === void 0) { PC = 0; }
             if (Acc === void 0) { Acc = 0; }
@@ -21,6 +21,8 @@ var TSOS;
             if (state === void 0) { state = ""; }
             if (location === void 0) { location = -1; }
             if (Zflag === void 0) { Zflag = 0; }
+            if (timeAdded === void 0) { timeAdded = 0; }
+            if (priority === void 0) { priority = 0; }
             if (endIndex === void 0) { endIndex = 0; }
             this.PID = PID;
             this.PC = PC;
@@ -31,6 +33,8 @@ var TSOS;
             this.state = state;
             this.location = location;
             this.Zflag = Zflag;
+            this.timeAdded = timeAdded;
+            this.priority = priority;
             this.endIndex = endIndex;
         }
         ProcessControlBlock.prototype.init = function () {
@@ -43,6 +47,8 @@ var TSOS;
             this.state = "Unknown";
             this.location = -1;
             this.Zflag = 0;
+            this.timeAdded = 0;
+            this.priority = 0;
             this.endIndex = 0;
         };
         ProcessControlBlock.prototype.newTask = function (PID, segment, index) {

@@ -50,6 +50,34 @@ var TSOS;
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(KEYBOARD_IRQ, params));
             }
         };
+        Devices.prototype.hostFormatDisk = function () {
+            var parmas = [FORMATDISK, "Format"];
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, parmas));
+        };
+        Devices.prototype.hostCreateFileOnDisk = function (fileName) {
+            var parmas = [CREATEFILE, fileName];
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, parmas));
+        };
+        Devices.prototype.hostWriteToFile = function (userInput) {
+            var parmas = [WRITEFILE, userInput];
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, parmas));
+        };
+        Devices.prototype.hostReadFile = function (fileName) {
+            var parmas = [READFILE, fileName];
+            _KernelInputQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, parmas));
+        };
+        Devices.prototype.hostListFiles = function () {
+            var parmas = [LIST, "fileName"];
+            _KernelInputQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, parmas));
+        };
+        Devices.prototype.hostRollOutToDisk = function (progNumber) {
+            var parmas = [ROLLOUTPROG, progNumber];
+            _KernelInputQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, parmas));
+        };
+        Devices.prototype.hostRollInFromDisk = function (progNumber) {
+            var parmas = [ROLLINPROG, progNumber];
+            _KernelInputQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, parmas));
+        };
         return Devices;
     }());
     TSOS.Devices = Devices;

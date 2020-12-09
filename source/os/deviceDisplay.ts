@@ -188,14 +188,16 @@ module TSOS{
                         row.insertCell(0).innerHTML = `${i}:${j}:${k}`;
                         row.insertCell(1).innerHTML = toPutInRow.availability.toString();
                         row.insertCell(2).innerHTML = `${toPutInRow.pointer[0]}:${toPutInRow.pointer[1]}:${toPutInRow.pointer[2]}`;
-                        row.insertCell(3).innerHTML = toPutInRow.data;
+                        row.insertCell(3).innerHTML = toPutInRow.data.toString();
                         index++;
 
                         //Styling
-                        for(let m = 0; m < 4; m++){
+                        for(let m = 0; m < 3; m++){
                             row.cells.item(m).style.textAlign = "center";
                             row.cells.item(m).style.border = "1px solid black";
                         }
+                        row.cells.item(3).style.border = "1px solid black";
+                        row.cells.item(3).style.textAlign = "left";
                     }
                 }
             }
@@ -203,17 +205,10 @@ module TSOS{
 
         public updateHardDriveDisplay(rowID){
             let row: HTMLTableRowElement = <HTMLTableRowElement> document.getElementById(rowID);
-
             let updatedRow = JSON.parse(sessionStorage.getItem(rowID));
-            row.insertCell(1).innerHTML = updatedRow.availability.toString(); 
-            row.insertCell(2).innerHTML = `${updatedRow.pointer[0]}:${updatedRow.pointer[1]}:${updatedRow.pointer[2]}`;
-            row.insertCell(3).innerHTML = updatedRow.data;
-
-            for(let m = 0; m < 4; m++){
-                row.cells.item(m).style.textAlign = "center";
-                row.cells.item(m).style.border = "1px solid black";
-            }
-            console.log("hello");
+            row.cells[1].innerHTML = updatedRow.availability.toString(); 
+            row.cells[2].innerHTML = `${updatedRow.pointer[0]}:${updatedRow.pointer[1]}:${updatedRow.pointer[2]}`;
+            row.cells[3].innerHTML = updatedRow.data;
         }
     }
 }

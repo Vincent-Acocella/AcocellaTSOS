@@ -354,7 +354,7 @@ var TSOS;
         Shell.prototype.shellKillAll = function () {
             // leave in memory but terminate all processes
             //.toLocaleTimeString()
-            var dateTime = new Date().toISOString();
+            var dateTime = new Date().getTime();
             console.log(dateTime);
         };
         Shell.prototype.shellKill = function () {
@@ -371,6 +371,7 @@ var TSOS;
         };
         Shell.prototype.shellFormat = function () {
             if (_DeviceDiskDriver.formatDisk()) {
+                console.log(_Memory.memoryThread[0]);
                 _StdOut.putText("Disk Formatted");
             }
             else {

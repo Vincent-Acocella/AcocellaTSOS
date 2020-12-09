@@ -10,15 +10,14 @@ var TSOS;
         MemoryManager.prototype.loadMemory = function (usrProg) {
             //Need a function that returns the current segment for use
             var segment = this.deployNextSegmentForUse();
-            if (segment < 0) {
+            console.log(segment);
+            if (segment < 1) {
                 if (_FORMATTED) {
+                    console.log("here");
                     //Store program in backing store
+                    console.log(usrProg);
+                    _DeviceDiskDriver.writeProgramToDisk(usrProg);
                     //Create format for file names
-                    var date = Date.now();
-                    console.log(date);
-                    var fileName = "~";
-                    //File format need time
-                    //_DeviceDiskDriver.createFile();
                 }
                 else {
                     return -1;
@@ -77,6 +76,12 @@ var TSOS;
                 }
             }
             return output;
+        };
+        //Take process off disk
+        MemoryManager.prototype.rollIn = function () {
+        };
+        //Put process on disk
+        MemoryManager.prototype.rollOut = function () {
         };
         return MemoryManager;
     }());

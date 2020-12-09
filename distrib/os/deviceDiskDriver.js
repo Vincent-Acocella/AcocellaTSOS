@@ -1,9 +1,25 @@
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var TSOS;
 (function (TSOS) {
-    var DeviceDiskDriver = /** @class */ (function () {
-        function DeviceDiskDriver(nextAvaliableBlock) {
-            if (nextAvaliableBlock === void 0) { nextAvaliableBlock = 1; }
-            this.nextAvaliableBlock = nextAvaliableBlock;
+    var DeviceDiskDriver = /** @class */ (function (_super) {
+        __extends(DeviceDiskDriver, _super);
+        function DeviceDiskDriver() {
+            var _this = _super.call(this) || this;
+            _this.driverEntry = _this.krnKbdDriverEntry;
+            _this.isr = _this.krnDiskDispatch;
+            return _this;
         }
         /*
 
@@ -57,6 +73,40 @@ var TSOS;
 
         Max 7 in Memory
         */
+        DeviceDiskDriver.prototype.krnKbdDriverEntry = function () {
+            // Initialization routine for this, the kernel-mode Keyboard Device Driver.
+            this.status = "loaded";
+            console.log("");
+            // More?
+        };
+        DeviceDiskDriver.prototype.krnDiskDispatch = function (parmas) {
+            switch (parmas[0]) {
+                case FORMATDISK:
+                    this.formatDisk();
+                    break;
+                case CREATEFILE:
+                    this.createFile(parmas[1]);
+                    break;
+                case WRITEFILE:
+                    this.writeToFile(parmas[1]);
+                    break;
+                case READFILE:
+                    this.readFile(parmas[1]);
+                    break;
+                case LIST:
+                    this.listAvaliableFiles();
+                    break;
+                case ROLLINPROG:
+                    this.returnProgFromDisk(parmas[1]);
+                    break;
+                case ROLLOUTPROG:
+                    this.writeProgramOnDisk(parmas[1]);
+                    break;
+                default:
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(99, ["TRAP TIME"]));
+                //enque interput
+            }
+        };
         DeviceDiskDriver.prototype.init = function () {
         };
         //--------------------------------------------------------------
@@ -91,6 +141,7 @@ var TSOS;
             //to create a file we put the name in hex (if it doesn't already exist) in the data at the next avaliable spot
             if (this.searchForFileByName(fileName) < 0) {
                 var nextBlock = this.getNextAvaliableBlock();
+                console.log("Adding to " + nextBlock);
                 if (nextBlock > 0) {
                     var avaliableBlock = JSON.parse(sessionStorage.getItem("0:0:" + nextBlock));
                     avaliableBlock.availability = 1;
@@ -119,7 +170,7 @@ var TSOS;
                     sessionStorage.setItem("0:0:" + nextBlock, JSON.stringify(avaliableBlock));
                     //UPDATE TABLE
                     _DeviceDisplay.updateHardDriveDisplay("0:0:" + nextBlock);
-                    return true;
+                    return nextBlock;
                 }
             }
             else {
@@ -148,7 +199,6 @@ var TSOS;
                 sessionStorage.setItem("0:0:" + search, JSON.stringify(removingDisk));
                 //UPDATE TABLE
                 _DeviceDisplay.updateHardDriveDisplay("0:0:" + search);
-                console.log("");
                 return true;
             }
             else {
@@ -244,8 +294,64 @@ var TSOS;
             }
             return filesFound;
         };
+        DeviceDiskDriver.prototype.writeProgramToDisk = function (program) {
+            //This is where we create the file in the directory
+            //set format 
+            var timeAdded = new Date().getTime();
+            _MemoryAccessor.nextProgInMem++;
+            var fileName = "~" + _MemoryAccessor.nextProgInMem + timeAdded + '.swp';
+            var spot = this.createFile(fileName);
+            if (spot > 0) {
+                var fileCreated = JSON.parse(sessionStorage.getItem("0:0:" + spot));
+                fileCreated.pointer = this.setNextAvaliablePointer().slice(0);
+                console.log(fileCreated.pointer);
+                sessionStorage.setItem("0:0:" + spot, JSON.stringify(fileCreated));
+                var keyToWriteIn = JSON.parse(sessionStorage.getItem(fileCreated.pointer[0] + ":" + fileCreated.pointer[1] + ":" + fileCreated.pointer[2]));
+                keyToWriteIn.availability = 1;
+                var index = 0;
+                var dataIndex = 0;
+                var previousKey = fileCreated.pointer[0] + ":" + fileCreated.pointer[1] + ":" + fileCreated.pointer[2];
+                var trimmedProg = program.replace(/\s+/g, '');
+                do {
+                    if (dataIndex === keyToWriteIn.data.length) {
+                        dataIndex = 0;
+                        console.log("NEXT DATA SEG");
+                        //Point to next
+                        keyToWriteIn.pointer = this.setNextAvaliablePointer().slice(0);
+                        //Set at previus key
+                        sessionStorage.setItem(previousKey, JSON.stringify(keyToWriteIn));
+                        _DeviceDisplay.updateHardDriveDisplay(previousKey);
+                        console.log(keyToWriteIn.pointer[0] + ":" + keyToWriteIn.pointer[1] + ":" + keyToWriteIn.pointer[2]);
+                        previousKey = keyToWriteIn.pointer[0] + ":" + keyToWriteIn.pointer[1] + ":" + keyToWriteIn.pointer[2];
+                        keyToWriteIn = JSON.parse(sessionStorage.getItem(keyToWriteIn.pointer[0] + ":" + keyToWriteIn.pointer[1] + ":" + keyToWriteIn.pointer[2]));
+                        keyToWriteIn.availability = 1;
+                    }
+                    console.log(index);
+                    keyToWriteIn.data[dataIndex] = trimmedProg.charAt(index);
+                    dataIndex++;
+                    index++;
+                } while (index < trimmedProg.length);
+                //set the last item
+                sessionStorage.setItem(previousKey, JSON.stringify(keyToWriteIn));
+                //At this point the file should be written in memory
+                _DeviceDisplay.updateHardDriveDisplay("0:0:" + spot);
+                _DeviceDisplay.updateHardDriveDisplay(previousKey);
+            }
+        };
+        //Send to PCB
+        //Roll in 
+        DeviceDiskDriver.prototype.returnProgFromDisk = function (PID) {
+            //Check for avaliable memory 
+            //If none, roll out current process
+            //get memorySegment
+            //this.writeProgramOnDisk()
+        };
+        //get From Scheduler
+        //roll out
+        DeviceDiskDriver.prototype.writeProgramOnDisk = function (PID) {
+        };
         //--------------------------------------------------------------------------------------------
-        // UTILITIES DOSAKODKJOSAKDOKSODKOASDKOK
+        // UTILITIES 
         DeviceDiskDriver.prototype.convertToTextFromHex = function (data) {
             var output = '';
             //array is imputted 
@@ -273,18 +379,14 @@ var TSOS;
                     for (var j = 0; j < fileName.length; j++) {
                         //compare by letter if one doesnt match break
                         var value = this.convertToHexByLetter(fileName.charCodeAt(j));
-                        if (value.length > 1) {
-                            if (block.data[next] !== value.charAt(0) && block.data[next] !== value.charAt(1)) {
-                                flag = false;
-                            }
-                            next = next + 2;
+                        console.log(value);
+                        console.log(value.length);
+                        console.log(block.data[next]);
+                        console.log(block.data[next + 1]);
+                        if (block.data[next] !== value.charAt(0) || block.data[next + 1] !== value.charAt(1)) {
+                            return -1;
                         }
-                        else {
-                            if (block.data[next] !== value.charAt(0)) {
-                                flag = false;
-                            }
-                            next++;
-                        }
+                        next = next + 2;
                     }
                     if (flag) {
                         //we found a match!!!
@@ -323,6 +425,6 @@ var TSOS;
             return char.toString(16);
         };
         return DeviceDiskDriver;
-    }());
+    }(TSOS.DeviceDriver));
     TSOS.DeviceDiskDriver = DeviceDiskDriver;
 })(TSOS || (TSOS = {}));

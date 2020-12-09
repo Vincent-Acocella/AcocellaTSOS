@@ -86,17 +86,19 @@ module TSOS{
                 this.listAvaliableFiles();
                 break;
             case ROLLINPROG:
+                //returns the output of the disk as an array
                 this.returnProgFromDisk(parmas[1]);
                 break;
             case ROLLOUTPROG:
-                this.writeProgramOnDisk(parmas[1]);
+
+            //if first time create file
+                this.writeProgramToDisk(parmas[1],parmas[2]);
                 break;
             default:
                 _KernelInterruptQueue.enqueue(new Interrupt(99, ["TRAP TIME"]));
                 //enque interput
         }
     }
-
         public init(){
 
         }
@@ -138,6 +140,7 @@ module TSOS{
             if(this.searchForFileByName(fileName) < 0){
 
                 let nextBlock = this.getNextAvaliableBlock();
+                console.log("Adding to " + nextBlock)
 
                 if(nextBlock > 0){
                     let avaliableBlock = JSON.parse(sessionStorage.getItem(`0:0:${nextBlock}`));
@@ -318,53 +321,129 @@ module TSOS{
             return filesFound;
         }
 
-        public writeProgramToDisk(program){
+        //let fileName = `~` + _MemoryAccessor.nextProgInMem + timeAdded + '.swp';
+        // let timeAdded = new Date().getTime();
+        //     _MemoryAccessor.nextProgInMem++;
+
+        //     let spot = this.createFile(fileName);
+        //DO THIS SOMEWHERE
+
+        //Write the program to the disk at the next free memory spots
+        public writeProgramToDisk(fileName, program){
             //This is where we create the file in the directory
     
                 //set format 
-            let timeAdded = new Date().getTime();
-            _MemoryAccessor.nextProgInMem++;
-
-            let fileName = `~` + _MemoryAccessor.nextProgInMem + timeAdded + '.swp';
-            let spot = this.createFile(fileName);
-
+              let spot  = this.searchForFileByName(fileName);
+            
             if(spot > 0){
+
                 let fileCreated = JSON.parse(sessionStorage.getItem(`0:0:${spot}`));
 
                 fileCreated.pointer = this.setNextAvaliablePointer().slice(0);
 
+                sessionStorage.setItem(`0:0:${spot}`, JSON.stringify(fileCreated));
+
                 let keyToWriteIn = JSON.parse(sessionStorage.getItem(`${fileCreated.pointer[0]}:${fileCreated.pointer[1]}:${fileCreated.pointer[2]}`));
                 keyToWriteIn.availability = 1;
+                
+                //Clear data
+                let tempDisk = new Disk;
+                keyToWriteIn.data = tempDisk.data.slice(0);
+
                 let index = 0;
                 let dataIndex = 0;
                 let previousKey = `${fileCreated.pointer[0]}:${fileCreated.pointer[1]}:${fileCreated.pointer[2]}`;
+                let trimmedProg = program.replace(/\s+/g, '');
 
                 do{
                     if(dataIndex === keyToWriteIn.data.length){
                         dataIndex = 0;
+                        console.log("NEXT DATA SEG");
+
+                        //Point to next
                         keyToWriteIn.pointer = this.setNextAvaliablePointer().slice(0);
+
+                        //Set at previus key
                         sessionStorage.setItem(previousKey, JSON.stringify(keyToWriteIn));
+                        _DeviceDisplay.updateHardDriveDisplay(previousKey);
+                        
+                        previousKey =`${keyToWriteIn.pointer[0]}:${keyToWriteIn.pointer[1]}:${keyToWriteIn.pointer[2]}`;
+
                         keyToWriteIn = JSON.parse(sessionStorage.getItem(`${keyToWriteIn.pointer[0]}:${keyToWriteIn.pointer[1]}:${keyToWriteIn.pointer[2]}`));
                         keyToWriteIn.availability = 1;
-                        previousKey =`${keyToWriteIn.pointer[0]}:${keyToWriteIn.pointer[1]}:${keyToWriteIn.pointer[2]}`;
+
+                        //Clear
+                        let tempDisk = new Disk;
+                        keyToWriteIn.data = tempDisk.data.slice(0);
                     }
 
-                    keyToWriteIn.data[dataIndex] = program.charAt(index);
+                    keyToWriteIn.data[dataIndex] = trimmedProg.charAt(index);
                     dataIndex++;
                     index++;
-                }while(index < program.length);
+
+                }while(index < trimmedProg.length);
                         //set the last item
                 sessionStorage.setItem(previousKey, JSON.stringify(keyToWriteIn));
                 //At this point the file should be written in memory
+                _DeviceDisplay.updateHardDriveDisplay(`0:0:${spot}`);
+                _DeviceDisplay.updateHardDriveDisplay(previousKey);
             }
         }
-        //Send to PCB
-       public returnProgFromDisk(PID){
 
+        //Send to PCB
+        //Roll in 
+       public returnProgFromDisk(fileName){
+           //get segment
+
+           //get filename of file we want to put in memory
+            let search = this.searchForFileByName(fileName);
+
+            if(search > 0){
+                let directoryFile = JSON.parse(sessionStorage.getItem(`0:0:${search}`));
+                let index = 0;
+                let diskIndex = 0;
+
+                let diskFile = JSON.parse(sessionStorage.getItem(`${directoryFile.pointer[0]}:${directoryFile.pointer[1]}:${directoryFile.pointer[2]}`));
+                diskFile.availability = 0;
+                let segmentToReturn = [];
+                let previousKey = `${directoryFile.pointer[0]}:${directoryFile.pointer[1]}:${directoryFile.pointer[2]}`;
+
+                do{
+                    //end of disk
+                    if(diskIndex === diskFile.length){
+                        diskIndex = 0;
+
+                        sessionStorage.setItem(previousKey, JSON.stringify(diskFile));
+                        _DeviceDisplay.updateHardDriveDisplay(previousKey);
+
+                        if(diskFile.pointer[0] === 0){
+                            sessionStorage.setItem(previousKey, JSON.stringify(diskFile));
+                            _DeviceDisplay.updateHardDriveDisplay(previousKey);
+                            return segmentToReturn;
+                            //done
+                        }else{
+                            previousKey =`${diskFile.pointer[0]}:${diskFile.pointer[1]}:${diskFile.pointer[2]}`;
+                            diskFile = JSON.parse(sessionStorage.getItem(previousKey));
+                            diskFile.availability = 0;
+                        }
+                        //clear avaliablility as go
+                    }
+                    segmentToReturn.push(diskFile[diskIndex]);
+                    index++;
+                    diskIndex++;
+                }while(true);
+            }
        }
 
        //get From Scheduler
-       public writeProgramOnDisk(PID){
+       //roll out
+       public writeProgramOnDiskSwap(fileName, code){
+
+        let search = this.searchForFileByName(fileName);
+
+            if(search > 0){
+                let directoryFile = JSON.parse(sessionStorage.getItem(`0:0:${search}`));
+            }
 
        }
 
@@ -388,7 +467,6 @@ module TSOS{
             return output;
         }
 
-
         public searchForFileByName(fileName: string){
             //return the filename and the JSON with it
             //if not return false
@@ -404,18 +482,17 @@ module TSOS{
                     for(let j = 0; j < fileName.length; j++){
                         //compare by letter if one doesnt match break
                         let value:string = this.convertToHexByLetter(fileName.charCodeAt(j));
+                        console.log(value);
+                        console.log(value.length);
+                        console.log(block.data[next])
+                        console.log(block.data[next+1])
 
-                        if(value.length > 1){
-                           if(block.data[next] !== value.charAt(0) && block.data[next] !== value.charAt(1)){
-                               flag = false;
-                           }
-                           next = next +2;
-                        }else{
-                            if(block.data[next] !== value.charAt(0)){
-                                flag = false;
-                            }
-                            next++;
+                        if(block.data[next] !== value.charAt(0) || block.data[next+1] !== value.charAt(1)){
+                            return -1;
                         }
+
+                        next = next +2;
+                        
                     }
                     if(flag){
                         //we found a match!!!

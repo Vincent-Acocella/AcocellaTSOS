@@ -16,17 +16,19 @@ var CPU_CLOCK_INTERVAL = 100; // This is in ms (milliseconds) so 1000 = 1 second
 var TIMER_IRQ = 0; // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
 // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
 var KEYBOARD_IRQ = 1;
-var PRINT_YREGInt_ERQ = 2;
-var TERMINATE_STRING = 3;
-var STOP_EXEC_IRQ = 5;
+var DISKDRIVER_IRQ = 2;
+var PRINT_YREGInt_ERQ = 3;
+var TERMINATE_STRING = 4;
+var STOP_EXEC_IRQ = 6;
 var _RoundRobin = false;
-var SWITCH_MEMORY = 4;
+var SWITCH_MEMORY = 5;
 var DISK_SIZE = 127;
 //
 // Global Variables
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
 //
 var _Quant = 6;
+var _PRIORITY = 5;
 var _FORMATTED = false;
 var _SingleStep = false;
 var _dot = false;
@@ -62,7 +64,15 @@ var _OsShell;
 var _SarcasticMode = false;
 // Global Device Driver Objects - page 12
 var _krnKeyboardDriver = null;
+var _krnDiskDriver = null;
 var _hardwareClockID = null;
+var FORMATDISK = 0;
+var CREATEFILE = 1;
+var WRITEFILE = 2;
+var READFILE = 3;
+var LIST = 4;
+var ROLLINPROG = 5;
+var ROLLOUTPROG = 6;
 // For testing (and enrichment)...
 var Glados = null; // This is the function Glados() in glados-ip*.js http://alanclasses.github.io/TSOS/test/ .
 var _GLaDOS = null; // If the above is linked in, this is the instantiated instance of Glados.
