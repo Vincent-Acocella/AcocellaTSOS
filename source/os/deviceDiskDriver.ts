@@ -333,36 +333,37 @@ module TSOS{
 
                 fileCreated.pointer = this.setNextAvaliablePointer().slice(0);
 
-
                 let keyToWriteIn = JSON.parse(sessionStorage.getItem(`${fileCreated.pointer[0]}:${fileCreated.pointer[1]}:${fileCreated.pointer[2]}`));
+                keyToWriteIn.availability = 1;
                 let index = 0;
-                for(let i = 0; i < program.length; i++){
+                let dataIndex = 0;
+                let previousKey = `${fileCreated.pointer[0]}:${fileCreated.pointer[1]}:${fileCreated.pointer[2]}`;
 
-                    if(index === keyToWriteIn.data.length){
-                        //go to next seg
-                        //set the pointer of current seg to next
-                    }else{
-                        keyToWriteIn.data[index] = program.charAt(i);
+                do{
+                    if(dataIndex === keyToWriteIn.data.length){
+                        dataIndex = 0;
+                        keyToWriteIn.pointer = this.setNextAvaliablePointer().slice(0);
+                        sessionStorage.setItem(previousKey, JSON.stringify(keyToWriteIn));
+                        keyToWriteIn = JSON.parse(sessionStorage.getItem(`${keyToWriteIn.pointer[0]}:${keyToWriteIn.pointer[1]}:${keyToWriteIn.pointer[2]}`));
+                        keyToWriteIn.availability = 1;
+                        previousKey =`${keyToWriteIn.pointer[0]}:${keyToWriteIn.pointer[1]}:${keyToWriteIn.pointer[2]}`;
                     }
-                    index++;
-                }
-            }
-                //index progNumber
-                //filename will be 
-                //~ (prognumber)
-    
-                
-            
-                //set the pointers 256 in memory
-    
-                //
-            
-        }
 
-        //
+                    keyToWriteIn.data[dataIndex] = program.charAt(index);
+                    dataIndex++;
+                    index++;
+                }while(index < program.length);
+                        //set the last item
+                sessionStorage.setItem(previousKey, JSON.stringify(keyToWriteIn));
+                //At this point the file should be written in memory
+            }
+        }
+        //Send to PCB
        public returnProgFromDisk(PID){
 
        }
+
+       //get From Scheduler
        public writeProgramOnDisk(PID){
 
        }
