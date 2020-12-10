@@ -53,13 +53,12 @@ module TSOS{
                     flag = true;
                 }
             }
-
             if(flag){
                 //Put in ready queue if no duplicates
                 if(_Schedular.addToReadyQueue(progNumber)){
                 //If CPU is not executing execute
                     if(!_CPU.isExecuting){
-                        _Schedular.deployFirstInQueueToCPU();
+                        _Schedular.startCpu();
                     }else{
                         _StdOut.putText("Program " + progNumber + " is already in the ready queue");
                     }
@@ -93,7 +92,6 @@ module TSOS{
 
         //Take process off disk
         public rollInProcess(data){
-            console.log("GETTTTDEGYBDYBUB")
 
             //set prog map
             //set memory to false
@@ -101,11 +99,19 @@ module TSOS{
             //Returns as hex
             console.log(data);
             let newSegment = this.deployNextSegmentForUse();
-            _MemoryAccessor.getProgFromSegMap(newSegment)
+            console.log(newSegment)
+
+            _Memory.clearSingleThread(newSegment);
+            
             //update PCB
            this.avaliableMemory[newSegment] = false;
-           _Memory.memoryThread[newSegment] = data.slice(0);
 
+           let index = 0;
+           for(let i = 0; i < _PCB.endIndex; i++){
+               let value = data.charAt(index) + data.charAt(index+1)
+               _MemoryAccessor.write(value, newSegment, i);
+               index+=2;
+           }
         }
 
         //Put process on disk

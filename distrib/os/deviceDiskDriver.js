@@ -46,9 +46,9 @@ var TSOS;
                     break;
                 case ROLLINPROG:
                     //returns the output of the disk as an array
-                    var fileName = this.getProgramNameFromPID(parmas[1]);
-                    if (fileName < 1) {
-                        _MemoryManager.rollInProcess(this.returnProgFromDisk(fileName));
+                    var location_1 = this.getProgramNameFromPID(parmas[1]);
+                    if (location_1 > 0) {
+                        _MemoryManager.rollInProcess(this.returnProgFromDisk(location_1).toString().replace(/,/g, ''));
                     }
                     else {
                         console.log("BAD BAD BAD");
@@ -57,11 +57,11 @@ var TSOS;
                 case ROLLOUTPROG:
                     //PID
                     var fileLocation = this.getProgramNameFromPID(parmas[1]);
-                    if (fileLocation < 1) {
+                    if (fileLocation < 0) {
                         //if file was not found allocate a spot on the disk for it
                         var timeAdded = new Date().getTime();
-                        var fileName_1 = "~" + parmas[1] + timeAdded + '.swp';
-                        fileLocation = this.createFile(fileName_1);
+                        var fileName = "~" + parmas[1] + timeAdded + '.swp';
+                        fileLocation = this.createFile(fileName);
                     }
                     this.writeProgramToDisk(fileLocation, parmas[2]);
                     break;
@@ -302,42 +302,40 @@ var TSOS;
         };
         //Send to PCB
         //Roll in 
-        DeviceDiskDriver.prototype.returnProgFromDisk = function (fileName) {
+        DeviceDiskDriver.prototype.returnProgFromDisk = function (location) {
             //get segment
             //get filename of file we want to put in memory
-            var search = this.searchForFileByName(fileName);
-            if (search > 0) {
-                var directoryFile = JSON.parse(sessionStorage.getItem("0:0:" + search));
-                var index = 0;
-                var diskIndex = 0;
-                var diskFile = JSON.parse(sessionStorage.getItem(directoryFile.pointer[0] + ":" + directoryFile.pointer[1] + ":" + directoryFile.pointer[2]));
-                diskFile.availability = 0;
-                var segmentToReturn = [];
-                var previousKey = directoryFile.pointer[0] + ":" + directoryFile.pointer[1] + ":" + directoryFile.pointer[2];
-                do {
-                    //end of disk
-                    if (diskIndex === diskFile.length) {
-                        diskIndex = 0;
-                        sessionStorage.setItem(previousKey, JSON.stringify(diskFile));
-                        _DeviceDisplay.updateHardDriveDisplay(previousKey);
-                        if (diskFile.pointer[0] === 0) {
-                            sessionStorage.setItem(previousKey, JSON.stringify(diskFile));
-                            _DeviceDisplay.updateHardDriveDisplay(previousKey);
-                            return segmentToReturn.slice(0, 256);
-                            //done
-                        }
-                        else {
-                            previousKey = diskFile.pointer[0] + ":" + diskFile.pointer[1] + ":" + diskFile.pointer[2];
-                            diskFile = JSON.parse(sessionStorage.getItem(previousKey));
-                            diskFile.availability = 0;
-                        }
-                        //clear avaliablility as go
+            var directoryFile = JSON.parse(sessionStorage.getItem("0:0:" + location));
+            var index = 0;
+            var diskIndex = 0;
+            var diskFile = JSON.parse(sessionStorage.getItem(directoryFile.pointer[0] + ":" + directoryFile.pointer[1] + ":" + directoryFile.pointer[2]));
+            diskFile.availability = 0;
+            var segmentToReturn = [];
+            var previousKey = directoryFile.pointer[0] + ":" + directoryFile.pointer[1] + ":" + directoryFile.pointer[2];
+            directoryFile.pointer = [0, 0, 0];
+            sessionStorage.setItem("0:0:" + location, JSON.stringify(directoryFile));
+            do {
+                //end of disk
+                if (diskIndex === diskFile.data.length) {
+                    diskIndex = 0;
+                    sessionStorage.setItem(previousKey, JSON.stringify(diskFile));
+                    _DeviceDisplay.updateHardDriveDisplay(previousKey);
+                    if (diskFile.pointer[0] === 0) {
+                        console.log(segmentToReturn);
+                        return segmentToReturn.slice(0, 256);
+                        //done
                     }
-                    segmentToReturn.push(diskFile[diskIndex] + diskFile[diskIndex + 1]);
-                    index++;
-                    diskIndex += 2;
-                } while (true);
-            }
+                    else {
+                        previousKey = diskFile.pointer[0] + ":" + diskFile.pointer[1] + ":" + diskFile.pointer[2];
+                        diskFile = JSON.parse(sessionStorage.getItem(previousKey));
+                        diskFile.availability = 0;
+                    }
+                    //clear avaliablility as go
+                }
+                segmentToReturn.push(diskFile.data[diskIndex] + diskFile.data[diskIndex + 1]);
+                index++;
+                diskIndex += 2;
+            } while (true);
         };
         //--------------------------------------------------------------------------------------------
         // UTILITIES 
@@ -415,17 +413,9 @@ var TSOS;
                 var block = JSON.parse(sessionStorage.getItem("0:0:" + i));
                 //if avaliable check if the names match
                 if (block.availability === 1) {
-                    var squiggle = this.convertFromHexByLetter(block.data[0] = block.data[1]);
-                    if (squiggle === '~') {
-                        if (PID === parseInt(this.convertFromHexByLetter(block.data[2] = block.data[3]))) {
-                            //return filename
-                            //40
-                            var value = '';
-                            for (var i_1 = 0; i_1 < 20; i_1++) {
-                                value += this.convertFromHexByLetter(block.data[0] + block[1]);
-                            }
-                            console.log(value);
-                            return value;
+                    if (block.data[0] === "7" && block.data[1] === "e") {
+                        if (PID.toString() === (this.convertFromHexByLetter(block.data[2] + block.data[3]))) {
+                            return i;
                         }
                     }
                 }

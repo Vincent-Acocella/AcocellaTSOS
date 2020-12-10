@@ -95,7 +95,7 @@ var TSOS;
                     }
                     this.allProcesses[pidToSwap][7] = "Swap";
                     //Set the page table
-                    _MemoryAccessor[this.allProcesses[pidToSwap][8]] = true;
+                    _MemoryManager.avaliableMemory[this.allProcesses[pidToSwap][8]] = true;
                     _MemoryAccessor.setSegtoMemMap(firstIndex, this.allProcesses[pidToSwap][8]);
                     _KernelInterruptQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, [ROLLOUTPROG, pidToSwap, _Memory.memoryThread[this.allProcesses[pidToSwap][8]].toString().replace(/,/g, '')]));
                     _KernelInterruptQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, [ROLLINPROG, firstIndex]));
@@ -105,7 +105,7 @@ var TSOS;
             }
             // console.log("Now Executing process:  " + firstIndex);
             this.allProcesses[firstIndex][7] = "Executing";
-            // this.allProcesses[firstIndex][7] = "Memory";
+            //this.allProcesses[firstIndex][7] = "Memory";
             var array = this.allProcesses[firstIndex];
             _PCB.loadPCB(array[0], array[1], array[2], array[3], array[4], array[5], array[6], array[7], array[8], array[9]);
             _PCB.loadCPU();

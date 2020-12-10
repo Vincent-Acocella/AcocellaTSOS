@@ -54,7 +54,7 @@ var TSOS;
                 if (_Schedular.addToReadyQueue(progNumber)) {
                     //If CPU is not executing execute
                     if (!_CPU.isExecuting) {
-                        _Schedular.deployFirstInQueueToCPU();
+                        _Schedular.startCpu();
                     }
                     else {
                         _StdOut.putText("Program " + progNumber + " is already in the ready queue");
@@ -85,17 +85,22 @@ var TSOS;
         };
         //Take process off disk
         MemoryManager.prototype.rollInProcess = function (data) {
-            console.log("GETTTTDEGYBDYBUB");
             //set prog map
             //set memory to false
             //set data to memory
             //Returns as hex
             console.log(data);
             var newSegment = this.deployNextSegmentForUse();
-            _MemoryAccessor.getProgFromSegMap(newSegment);
+            console.log(newSegment);
+            _Memory.clearSingleThread(newSegment);
             //update PCB
             this.avaliableMemory[newSegment] = false;
-            _Memory.memoryThread[newSegment] = data.slice(0);
+            var index = 0;
+            for (var i = 0; i < _PCB.endIndex; i++) {
+                var value = data.charAt(index) + data.charAt(index + 1);
+                _MemoryAccessor.write(value, newSegment, i);
+                index += 2;
+            }
         };
         //Put process on disk
         MemoryManager.prototype.rollOut = function () {

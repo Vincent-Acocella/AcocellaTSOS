@@ -354,14 +354,7 @@ var TSOS;
         Shell.prototype.shellKillAll = function () {
             // leave in memory but terminate all processes
             //.toLocaleTimeString()
-            var dateTime = new Date().getTime();
-            console.log(dateTime);
-            var value = '';
-            var fileName = "~" + _MemoryAccessor.nextProgInMem + dateTime + '.swp';
-            for (var i = 0; i < fileName.length; i++) {
-                value += _DeviceDiskDriver.convertToHexByLetter(fileName.charCodeAt(i));
-            }
-            console.log(value);
+            console.log(_DeviceDiskDriver.getProgramNameFromPID(3));
         };
         Shell.prototype.shellKill = function () {
             //leave in memory but kill process

@@ -463,14 +463,7 @@ module TSOS {
         public shellKillAll(){
             // leave in memory but terminate all processes
             //.toLocaleTimeString()
-            var dateTime = new Date().getTime();
-            console.log(dateTime);
-            let value ='';
-            var fileName = `~` + _MemoryAccessor.nextProgInMem + dateTime + '.swp';
-            for(let i =0; i < fileName.length; i++){
-                 value +=_DeviceDiskDriver.convertToHexByLetter(fileName.charCodeAt(i))
-            }
-            console.log(value)
+         console.log(_DeviceDiskDriver.getProgramNameFromPID(3))
         }
 
         public shellKill(){

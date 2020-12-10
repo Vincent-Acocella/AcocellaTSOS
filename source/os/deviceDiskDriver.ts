@@ -35,9 +35,9 @@ module TSOS{
                 break;
             case ROLLINPROG:
                 //returns the output of the disk as an array
-              let fileName = this.getProgramNameFromPID(parmas[1])
-               if(fileName < 1){
-                _MemoryManager.rollInProcess(this.returnProgFromDisk(fileName));
+              let location = this.getProgramNameFromPID(parmas[1])
+               if(location > 0){
+                 _MemoryManager.rollInProcess(this.returnProgFromDisk(location).toString().replace(/,/g, ''));
                }else{
                    console.log("BAD BAD BAD")
                }
@@ -47,7 +47,7 @@ module TSOS{
             case ROLLOUTPROG:
                 //PID
                 let fileLocation = this.getProgramNameFromPID(parmas[1]); 
-                if(fileLocation < 1){
+                if(fileLocation < 0){
                     //if file was not found allocate a spot on the disk for it
                     let timeAdded = new Date().getTime();
                     let fileName = `~` + parmas[1]+ timeAdded + '.swp';
@@ -342,47 +342,44 @@ module TSOS{
 
         //Send to PCB
         //Roll in 
-       public returnProgFromDisk(fileName){
+       public returnProgFromDisk(location){
         
-           //get segment
-           //get filename of file we want to put in memory
-            let search = this.searchForFileByName(fileName);
+        //get segment
+        //get filename of file we want to put in memory
+            let directoryFile = JSON.parse(sessionStorage.getItem(`0:0:${location}`));
+            let index = 0;
+            let diskIndex = 0;
+            let diskFile = JSON.parse(sessionStorage.getItem(`${directoryFile.pointer[0]}:${directoryFile.pointer[1]}:${directoryFile.pointer[2]}`));
+            diskFile.availability = 0;
+            let segmentToReturn = [];
 
-            if(search > 0){
-                let directoryFile = JSON.parse(sessionStorage.getItem(`0:0:${search}`));
-                let index = 0;
-                let diskIndex = 0;
+            let previousKey = `${directoryFile.pointer[0]}:${directoryFile.pointer[1]}:${directoryFile.pointer[2]}`;
 
-                let diskFile = JSON.parse(sessionStorage.getItem(`${directoryFile.pointer[0]}:${directoryFile.pointer[1]}:${directoryFile.pointer[2]}`));
-                diskFile.availability = 0;
-                let segmentToReturn = [];
-                let previousKey = `${directoryFile.pointer[0]}:${directoryFile.pointer[1]}:${directoryFile.pointer[2]}`;
+            directoryFile.pointer = [0,0,0];
+            sessionStorage.setItem(`0:0:${location}`, JSON.stringify(directoryFile));
 
-                do{
-                    //end of disk
-                    if(diskIndex === diskFile.length){
-                        diskIndex = 0;
+            do{
+                //end of disk
+                if(diskIndex === diskFile.data.length){
+                    diskIndex = 0;
+                    sessionStorage.setItem(previousKey, JSON.stringify(diskFile));
+                    _DeviceDisplay.updateHardDriveDisplay(previousKey);
 
-                        sessionStorage.setItem(previousKey, JSON.stringify(diskFile));
-                        _DeviceDisplay.updateHardDriveDisplay(previousKey);
-
-                        if(diskFile.pointer[0] === 0){
-                            sessionStorage.setItem(previousKey, JSON.stringify(diskFile));
-                            _DeviceDisplay.updateHardDriveDisplay(previousKey);
-                            return segmentToReturn.slice(0,256);
-                            //done
-                        }else{
-                            previousKey =`${diskFile.pointer[0]}:${diskFile.pointer[1]}:${diskFile.pointer[2]}`;
-                            diskFile = JSON.parse(sessionStorage.getItem(previousKey));
-                            diskFile.availability = 0;
-                        }
-                        //clear avaliablility as go
+                    if(diskFile.pointer[0] === 0){
+                        console.log(segmentToReturn)
+                        return segmentToReturn.slice(0,256);
+                        //done
+                    }else{
+                        previousKey =`${diskFile.pointer[0]}:${diskFile.pointer[1]}:${diskFile.pointer[2]}`;
+                        diskFile = JSON.parse(sessionStorage.getItem(previousKey));
+                        diskFile.availability = 0;
                     }
-                    segmentToReturn.push(diskFile[diskIndex] + diskFile[diskIndex+1]);
-                    index++;
-                    diskIndex+=2;
-                }while(true);
-            }
+                    //clear avaliablility as go
+                }
+                segmentToReturn.push(diskFile.data[diskIndex] + diskFile.data[diskIndex+1]);
+                index++;
+                diskIndex+=2;
+            }while(true);  
        }
 
 //--------------------------------------------------------------------------------------------
@@ -470,23 +467,14 @@ module TSOS{
         }
 
         public getProgramNameFromPID(PID){
-
             for(let i = 1; i < 8; i++){
                 //iterate thru directory
                 let block = JSON.parse(sessionStorage.getItem(`0:0:${i}`));
                 //if avaliable check if the names match
                 if(block.availability === 1){
-                    let squiggle =this.convertFromHexByLetter(block.data[0] = block.data[1]);
-                    if(squiggle === '~'){
-                        if(PID === parseInt(this.convertFromHexByLetter(block.data[2] = block.data[3]))){
-                            //return filename
-                            //40
-                            let value = '';
-                            for(let i =0; i < 20; i++){
-                                value +=this.convertFromHexByLetter(block.data[0]+block[1]);
-                            }
-                            console.log(value);
-                            return value;
+                    if(block.data[0] === "7" && block.data[1] === "e"){
+                        if(PID.toString() === (this.convertFromHexByLetter(block.data[2] + block.data[3]))){
+                            return i;
                         }
                     }
                 }
