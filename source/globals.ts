@@ -45,8 +45,8 @@ var _FORMATTED = false;
 var _SingleStep = false;
 var _dot = false;
 var _CPU:TSOS.Cpu;  // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
-var	_Memory:TSOS.Memory;
-var	_MemoryAccessor:TSOS.MemoryAccessor;
+var _Memory:TSOS.Memory;
+var _MemoryAccessor:TSOS.MemoryAccessor;
 var _DeviceDisplay : any = null;
 //	Software	(OS)
 var _MemoryManager:	any	= null;

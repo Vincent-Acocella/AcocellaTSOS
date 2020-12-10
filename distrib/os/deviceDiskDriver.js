@@ -97,10 +97,19 @@ var TSOS;
                     this.listAvaliableFiles();
                     break;
                 case ROLLINPROG:
-                    this.returnProgFromDisk(parmas[1]);
+                    //returns the output of the disk as an array
+                    _MemoryManager.rollInProcess(this.returnProgFromDisk(parmas[1]));
                     break;
                 case ROLLOUTPROG:
-                    this.writeProgramOnDisk(parmas[1]);
+                    //PID
+                    var fileLocation = this.getProgramNameFromPID(parmas[1]);
+                    if (fileLocation < 1) {
+                        //if file was not found allocate in memory for it
+                        var timeAdded = new Date().getTime();
+                        var fileName = "~" + parmas[1] + timeAdded + '.swp';
+                        fileLocation = this.createFile(fileName);
+                    }
+                    this.writeProgramToDisk(fileLocation, parmas[2]);
                     break;
                 default:
                     _KernelInterruptQueue.enqueue(new TSOS.Interrupt(99, ["TRAP TIME"]));
@@ -174,7 +183,7 @@ var TSOS;
                 }
             }
             else {
-                return false;
+                return -1;
             }
         };
         //--------------------------------------------------------------
@@ -287,68 +296,94 @@ var TSOS;
             for (var i = 1; i < 8; i++) {
                 var aFile = JSON.parse(sessionStorage.getItem("0:0:" + i));
                 console.log(aFile.availability);
-                if (aFile.availability === 1) {
+                var squiggle = this.convertFromHexByLetter(aFile.data[0] = aFile.data[1]);
+                if (aFile.availability === 1 && squiggle !== '~') {
                     filesFound[filesIndex] = this.convertToTextFromHex(aFile.data);
                     filesIndex++;
                 }
             }
             return filesFound;
         };
-        DeviceDiskDriver.prototype.writeProgramToDisk = function (program) {
+        //Write the program to the disk at the next free memory spots
+        DeviceDiskDriver.prototype.writeProgramToDisk = function (dirLocation, program) {
             //This is where we create the file in the directory
             //set format 
-            var timeAdded = new Date().getTime();
-            _MemoryAccessor.nextProgInMem++;
-            var fileName = "~" + _MemoryAccessor.nextProgInMem + timeAdded + '.swp';
-            var spot = this.createFile(fileName);
-            if (spot > 0) {
-                var fileCreated = JSON.parse(sessionStorage.getItem("0:0:" + spot));
-                fileCreated.pointer = this.setNextAvaliablePointer().slice(0);
-                console.log(fileCreated.pointer);
-                sessionStorage.setItem("0:0:" + spot, JSON.stringify(fileCreated));
-                var keyToWriteIn = JSON.parse(sessionStorage.getItem(fileCreated.pointer[0] + ":" + fileCreated.pointer[1] + ":" + fileCreated.pointer[2]));
-                keyToWriteIn.availability = 1;
-                var index = 0;
-                var dataIndex = 0;
-                var previousKey = fileCreated.pointer[0] + ":" + fileCreated.pointer[1] + ":" + fileCreated.pointer[2];
-                var trimmedProg = program.replace(/\s+/g, '');
-                do {
-                    if (dataIndex === keyToWriteIn.data.length) {
-                        dataIndex = 0;
-                        console.log("NEXT DATA SEG");
-                        //Point to next
-                        keyToWriteIn.pointer = this.setNextAvaliablePointer().slice(0);
-                        //Set at previus key
-                        sessionStorage.setItem(previousKey, JSON.stringify(keyToWriteIn));
-                        _DeviceDisplay.updateHardDriveDisplay(previousKey);
-                        console.log(keyToWriteIn.pointer[0] + ":" + keyToWriteIn.pointer[1] + ":" + keyToWriteIn.pointer[2]);
-                        previousKey = keyToWriteIn.pointer[0] + ":" + keyToWriteIn.pointer[1] + ":" + keyToWriteIn.pointer[2];
-                        keyToWriteIn = JSON.parse(sessionStorage.getItem(keyToWriteIn.pointer[0] + ":" + keyToWriteIn.pointer[1] + ":" + keyToWriteIn.pointer[2]));
-                        keyToWriteIn.availability = 1;
-                    }
-                    console.log(index);
-                    keyToWriteIn.data[dataIndex] = trimmedProg.charAt(index);
-                    dataIndex++;
-                    index++;
-                } while (index < trimmedProg.length);
-                //set the last item
-                sessionStorage.setItem(previousKey, JSON.stringify(keyToWriteIn));
-                //At this point the file should be written in memory
-                _DeviceDisplay.updateHardDriveDisplay("0:0:" + spot);
-                _DeviceDisplay.updateHardDriveDisplay(previousKey);
-            }
+            var fileCreated = JSON.parse(sessionStorage.getItem("0:0:" + dirLocation));
+            fileCreated.pointer = this.setNextAvaliablePointer().slice(0);
+            sessionStorage.setItem("0:0:" + dirLocation, JSON.stringify(fileCreated));
+            var keyToWriteIn = JSON.parse(sessionStorage.getItem(fileCreated.pointer[0] + ":" + fileCreated.pointer[1] + ":" + fileCreated.pointer[2]));
+            keyToWriteIn.availability = 1;
+            //Clear data
+            var tempDisk = new TSOS.Disk;
+            keyToWriteIn.data = tempDisk.data.slice(0);
+            var index = 0;
+            var dataIndex = 0;
+            var previousKey = fileCreated.pointer[0] + ":" + fileCreated.pointer[1] + ":" + fileCreated.pointer[2];
+            var trimmedProg = program.replace(/\s+/g, '');
+            do {
+                if (dataIndex === keyToWriteIn.data.length) {
+                    dataIndex = 0;
+                    console.log("NEXT DATA SEG");
+                    //Point to next
+                    keyToWriteIn.pointer = this.setNextAvaliablePointer().slice(0);
+                    //Set at previus key
+                    sessionStorage.setItem(previousKey, JSON.stringify(keyToWriteIn));
+                    _DeviceDisplay.updateHardDriveDisplay(previousKey);
+                    previousKey = keyToWriteIn.pointer[0] + ":" + keyToWriteIn.pointer[1] + ":" + keyToWriteIn.pointer[2];
+                    keyToWriteIn = JSON.parse(sessionStorage.getItem(keyToWriteIn.pointer[0] + ":" + keyToWriteIn.pointer[1] + ":" + keyToWriteIn.pointer[2]));
+                    keyToWriteIn.availability = 1;
+                    //Clear
+                    var tempDisk_1 = new TSOS.Disk;
+                    keyToWriteIn.data = tempDisk_1.data.slice(0);
+                }
+                keyToWriteIn.data[dataIndex] = trimmedProg.charAt(index);
+                dataIndex++;
+                index++;
+            } while (index < trimmedProg.length);
+            //set the last item
+            sessionStorage.setItem(previousKey, JSON.stringify(keyToWriteIn));
+            //At this point the file should be written in memory
+            _DeviceDisplay.updateHardDriveDisplay("0:0:" + dirLocation);
+            _DeviceDisplay.updateHardDriveDisplay(previousKey);
         };
         //Send to PCB
         //Roll in 
-        DeviceDiskDriver.prototype.returnProgFromDisk = function (PID) {
-            //Check for avaliable memory 
-            //If none, roll out current process
-            //get memorySegment
-            //this.writeProgramOnDisk()
-        };
-        //get From Scheduler
-        //roll out
-        DeviceDiskDriver.prototype.writeProgramOnDisk = function (PID) {
+        DeviceDiskDriver.prototype.returnProgFromDisk = function (fileName) {
+            //get segment
+            //get filename of file we want to put in memory
+            var search = this.searchForFileByName(fileName);
+            if (search > 0) {
+                var directoryFile = JSON.parse(sessionStorage.getItem("0:0:" + search));
+                var index = 0;
+                var diskIndex = 0;
+                var diskFile = JSON.parse(sessionStorage.getItem(directoryFile.pointer[0] + ":" + directoryFile.pointer[1] + ":" + directoryFile.pointer[2]));
+                diskFile.availability = 0;
+                var segmentToReturn = [];
+                var previousKey = directoryFile.pointer[0] + ":" + directoryFile.pointer[1] + ":" + directoryFile.pointer[2];
+                do {
+                    //end of disk
+                    if (diskIndex === diskFile.length) {
+                        diskIndex = 0;
+                        sessionStorage.setItem(previousKey, JSON.stringify(diskFile));
+                        _DeviceDisplay.updateHardDriveDisplay(previousKey);
+                        if (diskFile.pointer[0] === 0) {
+                            sessionStorage.setItem(previousKey, JSON.stringify(diskFile));
+                            _DeviceDisplay.updateHardDriveDisplay(previousKey);
+                            return segmentToReturn.slice(0, 256);
+                            //done
+                        }
+                        else {
+                            previousKey = diskFile.pointer[0] + ":" + diskFile.pointer[1] + ":" + diskFile.pointer[2];
+                            diskFile = JSON.parse(sessionStorage.getItem(previousKey));
+                            diskFile.availability = 0;
+                        }
+                        //clear avaliablility as go
+                    }
+                    segmentToReturn.push(diskFile[diskIndex] + diskFile[diskIndex + 1]);
+                    index++;
+                    diskIndex += 2;
+                } while (true);
+            }
         };
         //--------------------------------------------------------------------------------------------
         // UTILITIES 
@@ -379,10 +414,6 @@ var TSOS;
                     for (var j = 0; j < fileName.length; j++) {
                         //compare by letter if one doesnt match break
                         var value = this.convertToHexByLetter(fileName.charCodeAt(j));
-                        console.log(value);
-                        console.log(value.length);
-                        console.log(block.data[next]);
-                        console.log(block.data[next + 1]);
                         if (block.data[next] !== value.charAt(0) || block.data[next + 1] !== value.charAt(1)) {
                             return -1;
                         }
@@ -423,6 +454,29 @@ var TSOS;
         };
         DeviceDiskDriver.prototype.convertToHexByLetter = function (char) {
             return char.toString(16);
+        };
+        DeviceDiskDriver.prototype.getProgramNameFromPID = function (PID) {
+            for (var i = 1; i < 8; i++) {
+                //iterate thru directory
+                var block = JSON.parse(sessionStorage.getItem("0:0:" + i));
+                //if avaliable check if the names match
+                if (block.availability === 1) {
+                    var squiggle = this.convertFromHexByLetter(block.data[0] = block.data[1]);
+                    if (squiggle === '~') {
+                        if (PID === parseInt(this.convertFromHexByLetter(block.data[2] = block.data[3]))) {
+                            //return filename
+                            //40
+                            var value = '';
+                            for (var i_1 = 0; i_1 < 20; i_1++) {
+                                value += this.convertFromHexByLetter(block.data[0] + block[1]);
+                            }
+                            console.log(value);
+                            return value;
+                        }
+                    }
+                }
+            }
+            return -1;
         };
         return DeviceDiskDriver;
     }(TSOS.DeviceDriver));

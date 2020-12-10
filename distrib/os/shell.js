@@ -356,6 +356,12 @@ var TSOS;
             //.toLocaleTimeString()
             var dateTime = new Date().getTime();
             console.log(dateTime);
+            var value = '';
+            var fileName = "~" + _MemoryAccessor.nextProgInMem + dateTime + '.swp';
+            for (var i = 0; i < fileName.length; i++) {
+                value += _DeviceDiskDriver.convertToHexByLetter(fileName.charCodeAt(i));
+            }
+            console.log(value);
         };
         Shell.prototype.shellKill = function () {
             //leave in memory but kill process
@@ -371,7 +377,6 @@ var TSOS;
         };
         Shell.prototype.shellFormat = function () {
             if (_DeviceDiskDriver.formatDisk()) {
-                console.log(_Memory.memoryThread[0]);
                 _StdOut.putText("Disk Formatted");
             }
             else {

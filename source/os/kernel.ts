@@ -35,6 +35,9 @@ module TSOS {
             _krnKeyboardDriver.driverEntry();                    // Call the driverEntry() initialization routine.
             this.krnTrace(_krnKeyboardDriver.status);
 
+            _krnDiskDriver = new DeviceDiskDriver();
+            _krnDiskDriver.driverEntry();
+
             //memory
             _MemoryManager = new TSOS.MemoryManager();
             _PCB = new TSOS.ProcessControlBlock();
@@ -128,6 +131,8 @@ module TSOS {
                     _StdIn.handleInput();
                     break;
                 case DISKDRIVER_IRQ:
+                    console.log("Helllo there good sir")
+                    console.log(params)
                     _krnDiskDriver.isr(params);
                     break;
                 case PRINT_YREGInt_ERQ:

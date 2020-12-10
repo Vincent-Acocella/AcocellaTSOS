@@ -10,17 +10,16 @@ var TSOS;
         MemoryManager.prototype.loadMemory = function (usrProg) {
             //Need a function that returns the current segment for use
             var segment = this.deployNextSegmentForUse();
-            console.log(segment);
-            if (segment < 1) {
+            if (segment < 0) {
                 if (_FORMATTED) {
-                    console.log("here");
                     //Store program in backing store
-                    console.log(usrProg);
-                    _DeviceDiskDriver.writeProgramToDisk(usrProg);
+                    _MemoryAccessor.nextProgInMem++;
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, [ROLLOUTPROG, _MemoryAccessor.nextProgInMem, usrProg]));
                     //Create format for file names
+                    console.log(_MemoryAccessor.nextProgInMem);
                 }
                 else {
-                    return -1;
+                    return _MemoryAccessor.nextProgInMem;
                 }
             }
             else {
@@ -78,10 +77,21 @@ var TSOS;
             return output;
         };
         //Take process off disk
-        MemoryManager.prototype.rollIn = function () {
+        MemoryManager.prototype.rollInProcess = function (data) {
+            //set prog map
+            //set memory to false
+            //set data to memory
+            //Returns as hex
+            console.log(data);
+            var newSegment = this.deployNextSegmentForUse();
+            this.avaliableMemory[newSegment] = false;
+            _Memory.memoryThread[newSegment] = data.slice(0);
         };
         //Put process on disk
         MemoryManager.prototype.rollOut = function () {
+            var PID = _PCB.PID;
+            var data = _Memory.memoryThread[_PCB.location].slice(0);
+            _KernelInputQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, [ROLLOUTPROG, PID, data]));
         };
         return MemoryManager;
     }());

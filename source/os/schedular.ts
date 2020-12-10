@@ -10,7 +10,7 @@ module TSOS{
         // 6 = IR 
         // 7 = state
         // 8 = location
-        // 9 =  end of prog
+        // 9 = end of prog
 
         public readyQueue = new Queue;
         public allProcesses = [];
@@ -52,6 +52,21 @@ module TSOS{
         public deployFirstInQueueToCPU(){
             //This is the data we want
             let firstIndex = this.readyQueue.peek();
+
+            if(_MemoryAccessor.getProgFromSegMap(firstIndex) === -1){
+                let oldPID = _PCB.PID;
+
+                _MemoryAccessor[_PCB.location] = true;
+                
+                _MemoryAccessor.setSegtoMemMap(firstIndex, _PCB.location);
+                //time to swap
+                //get previous segment and deploy it to the disk
+                //get last in ready queue 
+                _KernelInputQueue.enqueue(new Interrupt(DISKDRIVER_IRQ, [ROLLOUTPROG, oldPID]));
+                //put in location
+                _KernelInputQueue.enqueue(new Interrupt(DISKDRIVER_IRQ, [ROLLINPROG, firstIndex]));
+            }
+
             console.log("Now Executing process:  " + firstIndex)
             this.allProcesses[firstIndex][7] = "Executing";
             var array = this.allProcesses[firstIndex];
@@ -164,6 +179,5 @@ module TSOS{
                 this.startCpu();
             }
         }
-
     }
 }

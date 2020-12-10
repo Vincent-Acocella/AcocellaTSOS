@@ -80,7 +80,6 @@ module TSOS {
         public hostListFiles(){
             let parmas = [LIST, "fileName"];
             _KernelInputQueue.enqueue(new Interrupt(DISKDRIVER_IRQ, parmas));
-            
         }
 
         public hostRollOutToDisk(progNumber){

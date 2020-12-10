@@ -465,6 +465,12 @@ module TSOS {
             //.toLocaleTimeString()
             var dateTime = new Date().getTime();
             console.log(dateTime);
+            let value ='';
+            var fileName = `~` + _MemoryAccessor.nextProgInMem + dateTime + '.swp';
+            for(let i =0; i < fileName.length; i++){
+                 value +=_DeviceDiskDriver.convertToHexByLetter(fileName.charCodeAt(i))
+            }
+            console.log(value)
         }
 
         public shellKill(){
@@ -560,7 +566,7 @@ module TSOS {
                     _StdOut.putText(listReturned[item])
                     _StdOut.advanceLine();
                 }
-            }
+            } 
         }
 
         public shellSetSchedule(args:string){

@@ -12,18 +12,16 @@ module TSOS{
 
             //Need a function that returns the current segment for use
             let segment = this.deployNextSegmentForUse();
-            console.log(segment)
-            if(segment <1){
+            if(segment < 0){
                 if(_FORMATTED){
-                    console.log("here")
                     //Store program in backing store
-                    console.log(usrProg)
-                    
-                    //_DeviceDiskDriver.writeProgramToDisk(usrProg);
-                    //Create format for file names
+                    _MemoryAccessor.nextProgInMem++;
 
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, [ROLLOUTPROG,_MemoryAccessor.nextProgInMem, usrProg] ))
+                    //Create format for file names
+                    console.log(_MemoryAccessor.nextProgInMem)
                 }else{
-                    return -1
+                    return _MemoryAccessor.nextProgInMem;
                 }
             }else{
                 let index = 0;
@@ -88,14 +86,23 @@ module TSOS{
         }
 
         //Take process off disk
-        public rollIn(){
-
+        public rollInProcess(data){
+            //set prog map
+            //set memory to false
+            //set data to memory
+            //Returns as hex
+            console.log(data);
+           let newSegment = this.deployNextSegmentForUse();
+           this.avaliableMemory[newSegment] =false;
+           _Memory.memoryThread[newSegment] = data.slice(0)
 
         }
 
         //Put process on disk
         public rollOut(){
-
+            let PID =_PCB.PID;
+            let data = _Memory.memoryThread[_PCB.location].slice(0);
+            _KernelInputQueue.enqueue(new Interrupt(DISKDRIVER_IRQ, [ROLLOUTPROG, PID, data]));
         }
     }
 }
