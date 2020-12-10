@@ -2,26 +2,23 @@ module TSOS{
 
     export class MemoryAccessor{
         public nextProgInMem = -1;
-        programToSegmentMap = [-1,-1,-1];
-
+        //I made a page table before it was cool
+        public programToSegmentMap = [-1,-1,-1];
+        public logicalMemory = [];
+        
         constructor() {
         }
         init(){
             _Memory.init();
         }
 
-        //Write from pysical memory to logical
+        //Write from logical memory to physical
         public write(code: string, segement:number, index:number){
             _Memory.memoryThread[segement][index] = code;
-            
-            //Chnage for single entry?
-           // _DeviceDisplay.updateMemory();
         }
-
         public read(curIndex: number, segment:number){
             return _Memory.memoryThread[segment][curIndex];
         }
-
 
 //-------------------------------------------------------------------------------
 
@@ -57,6 +54,13 @@ module TSOS{
             for(let i = 0; i < 3; i++){
                 this.programOverCleanUp(i)
             }
+        }
+
+        //Called in load
+        public addProcess(){
+            this.logicalMemory.push(this.nextProgInMem);
+            console.log(this.logicalMemory);
+            return this.nextProgInMem;
         }
     }
 }

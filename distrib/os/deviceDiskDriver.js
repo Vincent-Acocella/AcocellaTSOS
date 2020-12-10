@@ -21,58 +21,6 @@ var TSOS;
             _this.isr = _this.krnDiskDispatch;
             return _this;
         }
-        /*
-
-        |     Key   |   Value   |
-        |_______________________|
-        |           |           |
-        |     000   |     001   | Current
-        |           |      002  | current
-        |           |           |
-        |           |           |
-
-
-        Flow
-
-        Create:
-        Use Current Pointer
-        *Sets*
-        Set current to pointer
-        Iterate nextPointer up
-
-        Delete:
-        current is put on spot
-        Next remains the same
-
-        WOAH DOUBLE DELETE HOW DO WE KNOW
-
-        if current is avaliable than set nextPointer here
-
-        AHHHHHHH TRIPPLE DELETE
-
-        if next is less than new spot do nothing
- -------------------------------------------------------------------
-        SO THE RULES ARE AS FOLLOWS
-        On create:
-        - Set current (It will be up to date)
-        - set current to next
-        - Look for next if next is avaliable go to that
-            - If no next set current to -1
-
-        On delete:
-        - if current is before delete no nothing.
-        - if next is before do nothing
-        
-        - If delete index is before current,
-            -  check current status.
-                - If in use then set current status to deleted index (Leave next)
-                - If current status is not used set next to current and current to deleted index
-
-        - if current is before but delete is after
-            - leave current move next to deleted
-
-        Max 7 in Memory
-        */
         DeviceDiskDriver.prototype.krnKbdDriverEntry = function () {
             // Initialization routine for this, the kernel-mode Keyboard Device Driver.
             this.status = "loaded";
@@ -98,16 +46,22 @@ var TSOS;
                     break;
                 case ROLLINPROG:
                     //returns the output of the disk as an array
-                    _MemoryManager.rollInProcess(this.returnProgFromDisk(parmas[1]));
+                    var fileName = this.getProgramNameFromPID(parmas[1]);
+                    if (fileName < 1) {
+                        _MemoryManager.rollInProcess(this.returnProgFromDisk(fileName));
+                    }
+                    else {
+                        console.log("BAD BAD BAD");
+                    }
                     break;
                 case ROLLOUTPROG:
                     //PID
                     var fileLocation = this.getProgramNameFromPID(parmas[1]);
                     if (fileLocation < 1) {
-                        //if file was not found allocate in memory for it
+                        //if file was not found allocate a spot on the disk for it
                         var timeAdded = new Date().getTime();
-                        var fileName = "~" + parmas[1] + timeAdded + '.swp';
-                        fileLocation = this.createFile(fileName);
+                        var fileName_1 = "~" + parmas[1] + timeAdded + '.swp';
+                        fileLocation = this.createFile(fileName_1);
                     }
                     this.writeProgramToDisk(fileLocation, parmas[2]);
                     break;

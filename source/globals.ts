@@ -28,11 +28,19 @@ const TERMINATE_STRING = 4;
 
 const STOP_EXEC_IRQ = 6;
 
-const _RoundRobin = false;
+
 
 const SWITCH_MEMORY = 5;
 
 const DISK_SIZE = 127;
+
+//Schedules
+var _ActiveSchedular = 0;
+
+//default
+const _RoundRobin = 1
+const _FCFS = 2;
+const _PriorityScheduler = 3;
 
 //
 // Global Variables
@@ -40,7 +48,7 @@ const DISK_SIZE = 127;
 //
 
 var _Quant = 6;
-var _PRIORITY = 5;
+var _PRIORITY = 1;
 var _FORMATTED = false;
 var _SingleStep = false;
 var _dot = false;

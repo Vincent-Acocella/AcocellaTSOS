@@ -8,59 +8,6 @@ module TSOS{
                 this.isr = this.krnDiskDispatch;
 
             }
-        /*
-
-        |     Key   |   Value   |
-        |_______________________|
-        |           |           |
-        |     000   |     001   | Current
-        |           |      002  | current
-        |           |           | 
-        |           |           |
-
-
-        Flow
-
-        Create: 
-        Use Current Pointer
-        *Sets*
-        Set current to pointer 
-        Iterate nextPointer up
-
-        Delete:
-        current is put on spot
-        Next remains the same
-
-        WOAH DOUBLE DELETE HOW DO WE KNOW 
-
-        if current is avaliable than set nextPointer here
-
-        AHHHHHHH TRIPPLE DELETE 
-
-        if next is less than new spot do nothing
- -------------------------------------------------------------------
-        SO THE RULES ARE AS FOLLOWS
-        On create: 
-        - Set current (It will be up to date) 
-        - set current to next
-        - Look for next if next is avaliable go to that
-            - If no next set current to -1
-
-        On delete: 
-        - if current is before delete no nothing.
-        - if next is before do nothing
-        
-        - If delete index is before current, 
-            -  check current status.
-                - If in use then set current status to deleted index (Leave next)
-                - If current status is not used set next to current and current to deleted index
-
-        - if current is before but delete is after
-            - leave current move next to deleted
-
-        Max 7 in Memory
-        */
-       
 
        public krnKbdDriverEntry() {
         // Initialization routine for this, the kernel-mode Keyboard Device Driver.
@@ -88,19 +35,25 @@ module TSOS{
                 break;
             case ROLLINPROG:
                 //returns the output of the disk as an array
-                _MemoryManager.rollInProcess(this.returnProgFromDisk(parmas[1]));
-
+              let fileName = this.getProgramNameFromPID(parmas[1])
+               if(fileName < 1){
+                _MemoryManager.rollInProcess(this.returnProgFromDisk(fileName));
+               }else{
+                   console.log("BAD BAD BAD")
+               }
+                
                 break;
+
             case ROLLOUTPROG:
                 //PID
                 let fileLocation = this.getProgramNameFromPID(parmas[1]); 
                 if(fileLocation < 1){
-                    //if file was not found allocate in memory for it
+                    //if file was not found allocate a spot on the disk for it
                     let timeAdded = new Date().getTime();
                     let fileName = `~` + parmas[1]+ timeAdded + '.swp';
                     fileLocation = this.createFile(fileName);
                 }
-                this.writeProgramToDisk(fileLocation,parmas[2]);
+                this.writeProgramToDisk(fileLocation, parmas[2]);
                 break;
             default:
                 _KernelInterruptQueue.enqueue(new Interrupt(99, ["TRAP TIME"]));
@@ -148,7 +101,7 @@ module TSOS{
             if(this.searchForFileByName(fileName) < 0){
 
                 let nextBlock = this.getNextAvaliableBlock();
-                console.log("Adding to " + nextBlock)
+                console.log("Adding to " + nextBlock);
 
                 if(nextBlock > 0){
                     let avaliableBlock = JSON.parse(sessionStorage.getItem(`0:0:${nextBlock}`));
@@ -390,6 +343,7 @@ module TSOS{
         //Send to PCB
         //Roll in 
        public returnProgFromDisk(fileName){
+        
            //get segment
            //get filename of file we want to put in memory
             let search = this.searchForFileByName(fileName);
@@ -531,7 +485,6 @@ module TSOS{
                             for(let i =0; i < 20; i++){
                                 value +=this.convertFromHexByLetter(block.data[0]+block[1]);
                             }
-
                             console.log(value);
                             return value;
                         }

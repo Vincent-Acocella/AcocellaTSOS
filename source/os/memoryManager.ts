@@ -1,7 +1,6 @@
 module TSOS{
     export class MemoryManager {
         public avaliableMemory = [];
-        public currentMemorySegment = 0;
 
         constructor() {
             this.avaliableMemory = [true, true, true];
@@ -12,16 +11,17 @@ module TSOS{
 
             //Need a function that returns the current segment for use
             let segment = this.deployNextSegmentForUse();
+            let timeAdded = new Date().getTime();
             if(segment < 0){
                 if(_FORMATTED){
+                    segment = 9;
                     //Store program in backing store
                     _MemoryAccessor.nextProgInMem++;
 
-                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, [ROLLOUTPROG,_MemoryAccessor.nextProgInMem, usrProg] ))
-                    //Create format for file names
-                    console.log(_MemoryAccessor.nextProgInMem)
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, [ROLLOUTPROG, _MemoryAccessor.nextProgInMem, usrProg]))
+                    _PCB.newTask(_MemoryAccessor.nextProgInMem, 9, 99);
                 }else{
-                    return _MemoryAccessor.nextProgInMem;
+                    return -1;
                 }
             }else{
                 let index = 0;
@@ -38,28 +38,34 @@ module TSOS{
                 //Set the map from program to segment
                 _MemoryAccessor.setSegtoMemMap(_MemoryAccessor.nextProgInMem, segment);
                 _DeviceDisplay.startUpMemory();
-                return _MemoryAccessor.nextProgInMem ;
-            }  
+            } 
+            //didnt error
+            return _MemoryAccessor.addProcess();
         }
 
         public runMemory(progNumber){
-
-            let segment = _MemoryAccessor.getProgFromSegMap(progNumber);
+            let flag = false;
             //Checks to see if the program exists in memory
-            if(segment < 0){
-                _StdOut.putText("Could not run program.... not in memory");
-            }else{
-
-                //Put in ready queue if no duplicates
-               if(_Schedular.addToReadyQueue(progNumber)){
-                //If CPU is not executing execute
-                if(!_CPU.isExecuting){
-                    _Schedular.deployFirstInQueueToCPU();
-                    _Schedular.startCpu();
+            //Includes() doesn't work :/
+            let array = _MemoryAccessor.logicalMemory.slice(0);
+            for(let i = 0; i < array.length; i++){
+                if(array[i] === parseInt(progNumber)){
+                    flag = true;
                 }
-               }else{
-                _StdOut.putText("Program " + progNumber + " is already in the ready queue");
-               }
+            }
+
+            if(flag){
+                //Put in ready queue if no duplicates
+                if(_Schedular.addToReadyQueue(progNumber)){
+                //If CPU is not executing execute
+                    if(!_CPU.isExecuting){
+                        _Schedular.deployFirstInQueueToCPU();
+                    }else{
+                        _StdOut.putText("Program " + progNumber + " is already in the ready queue");
+                    }
+                }else{
+                _StdOut.putText("Could not run program.... not in memory");
+                }
             }
         }
 
@@ -87,14 +93,18 @@ module TSOS{
 
         //Take process off disk
         public rollInProcess(data){
+            console.log("GETTTTDEGYBDYBUB")
+
             //set prog map
             //set memory to false
             //set data to memory
             //Returns as hex
             console.log(data);
-           let newSegment = this.deployNextSegmentForUse();
-           this.avaliableMemory[newSegment] =false;
-           _Memory.memoryThread[newSegment] = data.slice(0)
+            let newSegment = this.deployNextSegmentForUse();
+            _MemoryAccessor.getProgFromSegMap(newSegment)
+            //update PCB
+           this.avaliableMemory[newSegment] = false;
+           _Memory.memoryThread[newSegment] = data.slice(0);
 
         }
 

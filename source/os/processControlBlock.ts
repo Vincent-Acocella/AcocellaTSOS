@@ -22,6 +22,7 @@ module TSOS{
                     public IR: string = "x",
                     public state: string = "",
                     public location: number = -1,
+                    public locationState:string = "",
                     public Zflag: number = 0,
                     public timeAdded:number = 0,
                     public priority:number = 0,
@@ -35,6 +36,7 @@ module TSOS{
             this.Xreg = 0;
             this.Yreg = 0;
             this.IR = "x";
+            this.locationState ="";
             this.state = "Unknown";
             this.location = -1;
             this.Zflag = 0;
@@ -50,6 +52,11 @@ module TSOS{
             let tempPID = parseInt(PID);
             this.PID = tempPID;
             this.location = segment;
+            if(this.location > 2){
+                this.locationState = "Disk"
+            }else{
+                this.locationState= "Memory"
+            }
             this.endIndex = index;
             this.state = "ready";
             _Schedular.addProccess(PID);

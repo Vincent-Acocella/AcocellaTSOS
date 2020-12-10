@@ -11,8 +11,13 @@ var TSOS;
             // 5 = ZReg
             // 6 = IR 
             // 7 = state
-            // 8 = location
-            // 9 = end of prog
+            // 8 = priority
+            // 8 = location state
+            // 9 = location
+            // 10 = timeAdded
+            //Depresiated
+            // 10 = end of prog
+            //TODO: Update
             this.readyQueue = new TSOS.Queue;
             this.allProcesses = [];
             this.quant = _Quant;
@@ -45,20 +50,63 @@ var TSOS;
             //This is the data we want
             var firstIndex = this.readyQueue.peek();
             if (_MemoryAccessor.getProgFromSegMap(firstIndex) === -1) {
-                var oldPID = _PCB.PID;
-                _MemoryAccessor[_PCB.location] = true;
-                _MemoryAccessor.setSegtoMemMap(firstIndex, _PCB.location);
-                //time to swap
-                //get previous segment and deploy it to the disk
-                //get last in ready queue 
-                _KernelInputQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, [ROLLOUTPROG, oldPID]));
-                //put in location
-                _KernelInputQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, [ROLLINPROG, firstIndex]));
+                console.log("Come in here");
+                //see if there's an open spot in memory on process terminate
+                var openSeg = _MemoryManager.deployNextSegmentForUse();
+                if (openSeg > 0) {
+                    //Open ice take advantage
+                    _KernelInputQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, [ROLLINPROG, firstIndex]));
+                }
+                else {
+                    var pidToSwap = void 0;
+                    //Checks
+                    //RR enabled
+                    //Priority Enabled
+                    //Set the PCB to the info we want to switch
+                    switch (_ActiveSchedular) {
+                        case _RoundRobin:
+                            console.log("NOOOOjsndfnjasddmsakmf");
+                            var oldPID = _PCB.PID;
+                            //Reset location
+                            _MemoryAccessor[_PCB.location] = true;
+                            //set new map
+                            _MemoryAccessor.setSegtoMemMap(firstIndex, _PCB.location);
+                            //update process
+                            _PCB.location = 9;
+                            _PCB.locationState = "Disk";
+                            //time to swap
+                            //get previous segment and deploy it to the disk
+                            //get last in ready queue 
+                            _KernelInputQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, [ROLLOUTPROG, oldPID]));
+                            //put in location
+                            _KernelInputQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, [ROLLINPROG, firstIndex,]));
+                            this.addProccess(_PCB.PID);
+                            break;
+                        case _FCFS:
+                            //Take out last entered in memory
+                            break;
+                        case _PRIORITY:
+                            break;
+                        default:
+                            console.log("Come here");
+                            //Single Run of process
+                            //Take process process in block 3
+                            pidToSwap = _MemoryAccessor.programToSegmentMap[2];
+                    }
+                    this.allProcesses[pidToSwap][7] = "Swap";
+                    //Set the page table
+                    _MemoryAccessor[this.allProcesses[pidToSwap][8]] = true;
+                    _MemoryAccessor.setSegtoMemMap(firstIndex, this.allProcesses[pidToSwap][8]);
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, [ROLLOUTPROG, pidToSwap, _Memory.memoryThread[this.allProcesses[pidToSwap][8]].toString().replace(/,/g, '')]));
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, [ROLLINPROG, firstIndex]));
+                    this.allProcesses[pidToSwap][8] = 9;
+                }
+                //we deploy but the info doesn't get there until interputs
             }
-            console.log("Now Executing process:  " + firstIndex);
+            // console.log("Now Executing process:  " + firstIndex);
             this.allProcesses[firstIndex][7] = "Executing";
+            // this.allProcesses[firstIndex][7] = "Memory";
             var array = this.allProcesses[firstIndex];
-            console.log(array);
             _PCB.loadPCB(array[0], array[1], array[2], array[3], array[4], array[5], array[6], array[7], array[8], array[9]);
             _PCB.loadCPU();
             // Load PCB then put into CPU
@@ -68,14 +116,13 @@ var TSOS;
             this.deployFirstInQueueToCPU();
             _DeviceDisplay.startUpSchedular();
             _CPU.isComplete = false;
-            _CPU.isExecuting = true;
         };
         //--------------------------------------------------------
         //SWITCH MEMORY
         Schedular.prototype.switchMemoryInterupt = function () {
             //Take PCB
             _PCB.copyCPU();
-            _PCB.state = "Holding";
+            _PCB.state = "Waiting";
             this.addProccess(_PCB.PID);
             this.switchMemoryUnit();
             this.startCpu();
@@ -115,14 +162,12 @@ var TSOS;
         Schedular.prototype.addAllToReadyQueue = function () {
             //3 is the number of segments in memory
             var added = false;
-            for (var i = 0; i < 3; i++) {
-                var prog = _MemoryAccessor.programToSegmentMap[i];
-                if (prog > -1) {
-                    this.addToReadyQueue(prog);
-                    added = true;
-                }
+            for (var prog in _MemoryAccessor.logicalMemory) {
+                this.addToReadyQueue(prog);
+                added = true;
             }
             if (added) {
+                //TODO: Organize depending on schedule
                 _CPU.isExecuting = true;
                 this.deployFirstInQueueToCPU();
                 _DeviceDisplay.updateReadyQueue();
@@ -133,20 +178,19 @@ var TSOS;
         };
         //UTIL
         Schedular.prototype.alreadyExistsInQueue = function (prog) {
-            var flag = false;
+            console.log(this.readyQueue.getSize());
             for (var i = 0; i < this.readyQueue.getSize(); i++) {
                 var pullVal = this.readyQueue.dequeue();
                 this.readyQueue.enqueue(pullVal);
                 if (parseInt(pullVal) === parseInt(prog)) {
-                    flag = true;
+                    return true;
                 }
             }
-            return flag;
+            return false;
         };
         //Check if the last program is finsihed executing
         Schedular.prototype.processComplete = function () {
             this.removeFromReadyQueue();
-            console.log(this.readyQueue.getSize());
             if (this.readyQueue.getSize() === 0) {
                 _CPU.isExecuting = false;
             }

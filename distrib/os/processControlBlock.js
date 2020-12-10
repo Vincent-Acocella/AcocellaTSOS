@@ -11,7 +11,7 @@ var TSOS;
         // 7 = state
         // 8 = location
         // 9 = end of prog
-        function ProcessControlBlock(PID, PC, Acc, Xreg, Yreg, IR, state, location, Zflag, timeAdded, priority, endIndex) {
+        function ProcessControlBlock(PID, PC, Acc, Xreg, Yreg, IR, state, location, locationState, Zflag, timeAdded, priority, endIndex) {
             if (PID === void 0) { PID = 0; }
             if (PC === void 0) { PC = 0; }
             if (Acc === void 0) { Acc = 0; }
@@ -20,6 +20,7 @@ var TSOS;
             if (IR === void 0) { IR = "x"; }
             if (state === void 0) { state = ""; }
             if (location === void 0) { location = -1; }
+            if (locationState === void 0) { locationState = ""; }
             if (Zflag === void 0) { Zflag = 0; }
             if (timeAdded === void 0) { timeAdded = 0; }
             if (priority === void 0) { priority = 0; }
@@ -32,6 +33,7 @@ var TSOS;
             this.IR = IR;
             this.state = state;
             this.location = location;
+            this.locationState = locationState;
             this.Zflag = Zflag;
             this.timeAdded = timeAdded;
             this.priority = priority;
@@ -44,6 +46,7 @@ var TSOS;
             this.Xreg = 0;
             this.Yreg = 0;
             this.IR = "x";
+            this.locationState = "";
             this.state = "Unknown";
             this.location = -1;
             this.Zflag = 0;
@@ -58,6 +61,12 @@ var TSOS;
             var tempPID = parseInt(PID);
             this.PID = tempPID;
             this.location = segment;
+            if (this.location > 2) {
+                this.locationState = "Disk";
+            }
+            else {
+                this.locationState = "Memory";
+            }
             this.endIndex = index;
             this.state = "ready";
             _Schedular.addProccess(PID);

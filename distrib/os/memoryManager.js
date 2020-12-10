@@ -3,23 +3,23 @@ var TSOS;
     var MemoryManager = /** @class */ (function () {
         function MemoryManager() {
             this.avaliableMemory = [];
-            this.currentMemorySegment = 0;
             this.avaliableMemory = [true, true, true];
         }
         //LOAD MEMORY INTO SELECTED SEGMENT
         MemoryManager.prototype.loadMemory = function (usrProg) {
             //Need a function that returns the current segment for use
             var segment = this.deployNextSegmentForUse();
+            var timeAdded = new Date().getTime();
             if (segment < 0) {
                 if (_FORMATTED) {
+                    segment = 9;
                     //Store program in backing store
                     _MemoryAccessor.nextProgInMem++;
                     _KernelInterruptQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, [ROLLOUTPROG, _MemoryAccessor.nextProgInMem, usrProg]));
-                    //Create format for file names
-                    console.log(_MemoryAccessor.nextProgInMem);
+                    _PCB.newTask(_MemoryAccessor.nextProgInMem, 9, 99);
                 }
                 else {
-                    return _MemoryAccessor.nextProgInMem;
+                    return -1;
                 }
             }
             else {
@@ -35,26 +35,33 @@ var TSOS;
                 //Set the map from program to segment
                 _MemoryAccessor.setSegtoMemMap(_MemoryAccessor.nextProgInMem, segment);
                 _DeviceDisplay.startUpMemory();
-                return _MemoryAccessor.nextProgInMem;
             }
+            //didnt error
+            return _MemoryAccessor.addProcess();
         };
         MemoryManager.prototype.runMemory = function (progNumber) {
-            var segment = _MemoryAccessor.getProgFromSegMap(progNumber);
+            var flag = false;
             //Checks to see if the program exists in memory
-            if (segment < 0) {
-                _StdOut.putText("Could not run program.... not in memory");
+            //Includes() doesn't work :/
+            var array = _MemoryAccessor.logicalMemory.slice(0);
+            for (var i = 0; i < array.length; i++) {
+                if (array[i] === parseInt(progNumber)) {
+                    flag = true;
+                }
             }
-            else {
+            if (flag) {
                 //Put in ready queue if no duplicates
                 if (_Schedular.addToReadyQueue(progNumber)) {
                     //If CPU is not executing execute
                     if (!_CPU.isExecuting) {
                         _Schedular.deployFirstInQueueToCPU();
-                        _Schedular.startCpu();
+                    }
+                    else {
+                        _StdOut.putText("Program " + progNumber + " is already in the ready queue");
                     }
                 }
                 else {
-                    _StdOut.putText("Program " + progNumber + " is already in the ready queue");
+                    _StdOut.putText("Could not run program.... not in memory");
                 }
             }
         };
@@ -78,12 +85,15 @@ var TSOS;
         };
         //Take process off disk
         MemoryManager.prototype.rollInProcess = function (data) {
+            console.log("GETTTTDEGYBDYBUB");
             //set prog map
             //set memory to false
             //set data to memory
             //Returns as hex
             console.log(data);
             var newSegment = this.deployNextSegmentForUse();
+            _MemoryAccessor.getProgFromSegMap(newSegment);
+            //update PCB
             this.avaliableMemory[newSegment] = false;
             _Memory.memoryThread[newSegment] = data.slice(0);
         };

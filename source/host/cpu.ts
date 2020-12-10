@@ -47,13 +47,10 @@ module TSOS {
         }
 
         public cycle(): void {
-            console.log("----------Cycle-----------------")
+            console.log("Cycle???")
 
             _Kernel.krnTrace('CPU cycle');
             let moveThatBus = this.fetch(this.PC);
-            console.log("SPOT 122 = " + _MemoryAccessor.read(122,0))
-            console.log("SPOT 123 = " +_MemoryAccessor.read(123,0));
-            console.log("Segment " + this.segment)
             
             if (moveThatBus + this.PC > 256) {
                 this.PC = (this.PC + moveThatBus) % 256;
@@ -61,7 +58,7 @@ module TSOS {
             else {
                 this.PC += moveThatBus;
             } 
-            console.log("PC = " + this.PC);
+
             _PCB.updateScheduler();
             _DeviceDisplay.cycleReload();
 
@@ -76,7 +73,7 @@ module TSOS {
         public fetch(PC){
 
             let opCode = _MemoryAccessor.read(PC,this.segment)
-            console.log("Op code: " + opCode)
+ 
             this.IR = opCode.toString();
 
             switch(opCode){
@@ -162,7 +159,7 @@ module TSOS {
 
         public systemCall(code){
             this.bytesNeeded = 1;
-            console.log("The X register for the SC: " + +this.Xreg)
+
 
             switch (parseInt(this.Xreg.toString())) {
                 case 1: // Print integer from y register
@@ -172,7 +169,7 @@ module TSOS {
                     this.printStringYReg();
                     break;
                 default:
-                    console.log("JKLFDJOIKFNDNFOINHSODIFNHIOSDNHIOFNHISODFNHIOSDNOIFPNHISODPFNOPIDFNIPONHDFPOINHFIP)ODNIPOFIDFPOIDSHIOFJOSDIFOI")
+                
                     _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_STRING, ["Invalid system call operation, stoping execution."]));
             }
         }
@@ -185,7 +182,7 @@ module TSOS {
 
             //Loads next value in memory
             let newValue = _MemoryAccessor.read(value+1, this.segment); 
-            console.log("Loading into Acc" + newValue)
+     
             this.Acc = newValue;
         }
 
@@ -207,7 +204,7 @@ module TSOS {
           }else{
             //value + 1 is base 10
             let valueInMemory = this.convfromHex(_MemoryAccessor.read((value+1), this.segment));
-            console.log("Value" + valueInMemory);
+
             this.Acc = _MemoryAccessor.read(valueInMemory, this.segment);
           }
         }
@@ -225,7 +222,6 @@ module TSOS {
                  _StdOut.putText("Invalid opcode detected")
             }else{
                 let spotInMem = this.convfromHex(_MemoryAccessor.read((value+1),this.segment));
-                console.log("The acc + " + this.Acc)
 
                 _MemoryAccessor.write((this.Acc.toString()), this.segment, spotInMem);
           }
@@ -243,14 +239,9 @@ module TSOS {
                  _StdOut.putText("Invalid opcode detected");
             }else{
                 let valueToLook = this.convfromHex(_MemoryAccessor.read(value+1, this.segment));
-
-                console.log(valueToLook)
-                console.log("Acc = " + this.Acc);
-                console.log((_Memory.memoryThread[this.segment][valueToLook]));
                 
                 //Comes in as 01 change
                 this.Acc = this.addPadding(this.convfromHex(this.Acc.toString()) + parseInt(_Memory.memoryThread[this.segment][valueToLook]));
-                console.log("Now equals: " + this.Acc)
             }
         }
 
@@ -275,8 +266,6 @@ module TSOS {
             }else{
                 //Returns the value in memory in this case we are loading that into y
                 let spotInMem = this.convfromHex(_MemoryAccessor.read(value+1, this.segment));
-                console.log('%c Oh my heavens! ', 'background: #222; color: #bada55');
-                console.log(spotInMem)
                 this.Xreg = _Memory.memoryThread[this.segment][spotInMem];
             }
         }
@@ -306,7 +295,7 @@ module TSOS {
             this.bytesNeeded = 3;
 
             let segmentToLook:number =  this.returnSegmentFromMemory(_MemoryAccessor.read(value+2, this.segment));
-            console.log("Segment looking: " + segmentToLook);
+   
            
             if(segmentToLook < 0){
                  _StdOut.putText("Invalid opcode detected");
@@ -315,13 +304,7 @@ module TSOS {
                 let spotInMem = this.convfromHex(_MemoryAccessor.read(value+1, this.segment));
                 // look at 
 
-                console.log("LOOKING AT SEGMENT " + segmentToLook)
-
-                console.log("Spot looking at: " + spotInMem)
-                console.log("Also look at: " + _MemoryAccessor.read(value+1, this.segment))
                 let valueToCompair = parseInt((_Memory.memoryThread[this.segment][spotInMem]));
-
-                console.log("this: " + this.convfromHex(this.Xreg.toString()) + " Or " + valueToCompair)
     
                 if(this.convfromHex(this.Xreg.toString()) === valueToCompair){
                     this.Zflag = 1;
@@ -337,8 +320,6 @@ module TSOS {
                 //Gets location to set the program counter to
                 // this.PC = this.convToHex(_Memory.memoryThread[value + 1]);
                 //If we are branching to 0
-
-                console.log("Branching:  " + (_MemoryAccessor.read(value+1, this.segment)))
                 if(value === 0){
                     this.bytesNeeded = 1;
                 }else{
@@ -361,7 +342,6 @@ module TSOS {
             }else{
                 let location = this.convfromHex(_MemoryAccessor.read(value+1, this.segment));
                 _Memory.memoryThread[this.segment][location]++; 
-                console.log("Increase Value at: " +  location + "To: " + _Memory.memoryThread[this.segment][location]);
             }
         }
 //----------------------------------------------------
@@ -381,7 +361,6 @@ module TSOS {
             
             let output = "";
             let i = this.convfromHex(this.Yreg);
-            console.log("Printing out " + i);
             let locInMem = _MemoryAccessor.read(i ,this.segment);
             
             while(locInMem !== "00"){

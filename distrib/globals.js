@@ -20,15 +20,20 @@ var DISKDRIVER_IRQ = 2;
 var PRINT_YREGInt_ERQ = 3;
 var TERMINATE_STRING = 4;
 var STOP_EXEC_IRQ = 6;
-var _RoundRobin = false;
 var SWITCH_MEMORY = 5;
 var DISK_SIZE = 127;
+//Schedules
+var _ActiveSchedular = 0;
+//default
+var _RoundRobin = 1;
+var _FCFS = 2;
+var _PriorityScheduler = 3;
 //
 // Global Variables
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
 //
 var _Quant = 6;
-var _PRIORITY = 5;
+var _PRIORITY = 1;
 var _FORMATTED = false;
 var _SingleStep = false;
 var _dot = false;

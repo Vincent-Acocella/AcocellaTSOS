@@ -3,16 +3,16 @@ var TSOS;
     var MemoryAccessor = /** @class */ (function () {
         function MemoryAccessor() {
             this.nextProgInMem = -1;
+            //I made a page table before it was cool
             this.programToSegmentMap = [-1, -1, -1];
+            this.logicalMemory = [];
         }
         MemoryAccessor.prototype.init = function () {
             _Memory.init();
         };
-        //Write from pysical memory to logical
+        //Write from logical memory to physical
         MemoryAccessor.prototype.write = function (code, segement, index) {
             _Memory.memoryThread[segement][index] = code;
-            //Chnage for single entry?
-            // _DeviceDisplay.updateMemory();
         };
         MemoryAccessor.prototype.read = function (curIndex, segment) {
             return _Memory.memoryThread[segment][curIndex];
@@ -46,6 +46,12 @@ var TSOS;
             for (var i = 0; i < 3; i++) {
                 this.programOverCleanUp(i);
             }
+        };
+        //Called in load
+        MemoryAccessor.prototype.addProcess = function () {
+            this.logicalMemory.push(this.nextProgInMem);
+            console.log(this.logicalMemory);
+            return this.nextProgInMem;
         };
         return MemoryAccessor;
     }());

@@ -55,19 +55,15 @@ var TSOS;
             this.interuptToCall = "";
         };
         Cpu.prototype.cycle = function () {
-            console.log("----------Cycle-----------------");
+            console.log("Cycle???");
             _Kernel.krnTrace('CPU cycle');
             var moveThatBus = this.fetch(this.PC);
-            console.log("SPOT 122 = " + _MemoryAccessor.read(122, 0));
-            console.log("SPOT 123 = " + _MemoryAccessor.read(123, 0));
-            console.log("Segment " + this.segment);
             if (moveThatBus + this.PC > 256) {
                 this.PC = (this.PC + moveThatBus) % 256;
             }
             else {
                 this.PC += moveThatBus;
             }
-            console.log("PC = " + this.PC);
             _PCB.updateScheduler();
             _DeviceDisplay.cycleReload();
             //Queue interupt
@@ -78,7 +74,6 @@ var TSOS;
         };
         Cpu.prototype.fetch = function (PC) {
             var opCode = _MemoryAccessor.read(PC, this.segment);
-            console.log("Op code: " + opCode);
             this.IR = opCode.toString();
             switch (opCode) {
                 //Load the accumulator with a constant
@@ -147,7 +142,6 @@ var TSOS;
         //FF
         Cpu.prototype.systemCall = function (code) {
             this.bytesNeeded = 1;
-            console.log("The X register for the SC: " + +this.Xreg);
             switch (parseInt(this.Xreg.toString())) {
                 case 1: // Print integer from y register
                     this.printIntYReg();
@@ -156,7 +150,6 @@ var TSOS;
                     this.printStringYReg();
                     break;
                 default:
-                    console.log("JKLFDJOIKFNDNFOINHSODIFNHIOSDNHIOFNHISODFNHIOSDNOIFPNHISODPFNOPIDFNIPONHDFPOINHFIP)ODNIPOFIDFPOIDSHIOFJOSDIFOI");
                     _KernelInterruptQueue.enqueue(new TSOS.Interrupt(TERMINATE_STRING, ["Invalid system call operation, stoping execution."]));
             }
         };
@@ -167,7 +160,6 @@ var TSOS;
             this.bytesNeeded = 2;
             //Loads next value in memory
             var newValue = _MemoryAccessor.read(value + 1, this.segment);
-            console.log("Loading into Acc" + newValue);
             this.Acc = newValue;
         };
         //All of this has to change
@@ -186,7 +178,6 @@ var TSOS;
             else {
                 //value + 1 is base 10
                 var valueInMemory = this.convfromHex(_MemoryAccessor.read((value + 1), this.segment));
-                console.log("Value" + valueInMemory);
                 this.Acc = _MemoryAccessor.read(valueInMemory, this.segment);
             }
         };
@@ -200,7 +191,6 @@ var TSOS;
             }
             else {
                 var spotInMem = this.convfromHex(_MemoryAccessor.read((value + 1), this.segment));
-                console.log("The acc + " + this.Acc);
                 _MemoryAccessor.write((this.Acc.toString()), this.segment, spotInMem);
             }
         };
@@ -215,12 +205,8 @@ var TSOS;
             }
             else {
                 var valueToLook = this.convfromHex(_MemoryAccessor.read(value + 1, this.segment));
-                console.log(valueToLook);
-                console.log("Acc = " + this.Acc);
-                console.log((_Memory.memoryThread[this.segment][valueToLook]));
                 //Comes in as 01 change
                 this.Acc = this.addPadding(this.convfromHex(this.Acc.toString()) + parseInt(_Memory.memoryThread[this.segment][valueToLook]));
-                console.log("Now equals: " + this.Acc);
             }
         };
         //----------------------------------------------------------------------------------
@@ -240,8 +226,6 @@ var TSOS;
             else {
                 //Returns the value in memory in this case we are loading that into y
                 var spotInMem = this.convfromHex(_MemoryAccessor.read(value + 1, this.segment));
-                console.log('%c Oh my heavens! ', 'background: #222; color: #bada55');
-                console.log(spotInMem);
                 this.Xreg = _Memory.memoryThread[this.segment][spotInMem];
             }
         };
@@ -269,18 +253,13 @@ var TSOS;
         Cpu.prototype.compXmem = function (value) {
             this.bytesNeeded = 3;
             var segmentToLook = this.returnSegmentFromMemory(_MemoryAccessor.read(value + 2, this.segment));
-            console.log("Segment looking: " + segmentToLook);
             if (segmentToLook < 0) {
                 _StdOut.putText("Invalid opcode detected");
             }
             else {
                 var spotInMem = this.convfromHex(_MemoryAccessor.read(value + 1, this.segment));
                 // look at 
-                console.log("LOOKING AT SEGMENT " + segmentToLook);
-                console.log("Spot looking at: " + spotInMem);
-                console.log("Also look at: " + _MemoryAccessor.read(value + 1, this.segment));
                 var valueToCompair = parseInt((_Memory.memoryThread[this.segment][spotInMem]));
-                console.log("this: " + this.convfromHex(this.Xreg.toString()) + " Or " + valueToCompair);
                 if (this.convfromHex(this.Xreg.toString()) === valueToCompair) {
                     this.Zflag = 1;
                 }
@@ -296,7 +275,6 @@ var TSOS;
                 //Gets location to set the program counter to
                 // this.PC = this.convToHex(_Memory.memoryThread[value + 1]);
                 //If we are branching to 0
-                console.log("Branching:  " + (_MemoryAccessor.read(value + 1, this.segment)));
                 if (value === 0) {
                     this.bytesNeeded = 1;
                 }
@@ -319,7 +297,6 @@ var TSOS;
             else {
                 var location_1 = this.convfromHex(_MemoryAccessor.read(value + 1, this.segment));
                 _Memory.memoryThread[this.segment][location_1]++;
-                console.log("Increase Value at: " + location_1 + "To: " + _Memory.memoryThread[this.segment][location_1]);
             }
         };
         //----------------------------------------------------
@@ -337,7 +314,6 @@ var TSOS;
             //  the Y register.
             var output = "";
             var i = this.convfromHex(this.Yreg);
-            console.log("Printing out " + i);
             var locInMem = _MemoryAccessor.read(i, this.segment);
             while (locInMem !== "00") {
                 output += String.fromCharCode(this.convfromHex(locInMem));
