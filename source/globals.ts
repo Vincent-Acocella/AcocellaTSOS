@@ -48,7 +48,7 @@ const _PriorityScheduler = 3;
 //
 
 var _Quant = 6;
-var _PRIORITY = 1;
+var _PRIORITY = 5;
 var _FORMATTED = false;
 var _SingleStep = false;
 var _dot = false;

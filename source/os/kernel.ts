@@ -143,7 +143,7 @@ module TSOS {
                     break;
                 case SWITCH_MEMORY:
                     console.log("**********************SWITCHING MEMORY***********************")
-                    _Schedular.switchMemoryInterupt()
+                    _Schedular.switchMemoryInterupt();
                     break;
                 case STOP_EXEC_IRQ:
                     _StdOut.putText(params.toString());

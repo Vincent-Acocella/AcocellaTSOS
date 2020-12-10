@@ -273,8 +273,7 @@ module TSOS{
             for(let i = 1; i< 8; i++){
                 let aFile = JSON.parse(sessionStorage.getItem(`0:0:${i}`));
                 console.log(aFile.availability)
-                let squiggle =this.convertFromHexByLetter(aFile.data[0] = aFile.data[1]);
-                if(aFile.availability === 1 && squiggle !=='~'){
+                if(aFile.availability === 1 && aFile.data[0] !== "7" && aFile.data[1] !== "e"){
                     filesFound[filesIndex] = this.convertToTextFromHex(aFile.data);
                     filesIndex++;
                 }
@@ -289,9 +288,7 @@ module TSOS{
     
             //set format 
             let fileCreated = JSON.parse(sessionStorage.getItem(`0:0:${dirLocation}`));
-
             fileCreated.pointer = this.setNextAvaliablePointer().slice(0);
-
             sessionStorage.setItem(`0:0:${dirLocation}`, JSON.stringify(fileCreated));
 
             let keyToWriteIn = JSON.parse(sessionStorage.getItem(`${fileCreated.pointer[0]}:${fileCreated.pointer[1]}:${fileCreated.pointer[2]}`));
@@ -367,7 +364,6 @@ module TSOS{
                     _DeviceDisplay.updateHardDriveDisplay(previousKey);
 
                     if(diskFile.pointer[0] === 0){
-                        console.log(segmentToReturn)
                         return segmentToReturn.slice(0,256);
                         //done
                     }else{
@@ -380,6 +376,7 @@ module TSOS{
                 segmentToReturn.push(diskFile.data[diskIndex] + diskFile.data[diskIndex+1]);
                 index++;
                 diskIndex+=2;
+                
             }while(true);  
        }
 

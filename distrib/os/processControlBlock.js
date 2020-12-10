@@ -54,13 +54,15 @@ var TSOS;
             this.priority = 0;
             this.endIndex = 0;
         };
-        ProcessControlBlock.prototype.newTask = function (PID, segment, index) {
+        ProcessControlBlock.prototype.newTask = function (PID, segment, index, priority) {
             //We need to save the state of the PCB in case it is being used
             var tempPCB = this.returnPCB();
             this.init();
             var tempPID = parseInt(PID);
+            this.priority = priority;
             this.PID = tempPID;
             this.location = segment;
+            this.timeAdded = new Date().getTime();
             if (this.location > 2) {
                 this.locationState = "Disk";
             }
@@ -70,15 +72,15 @@ var TSOS;
             this.endIndex = index;
             this.state = "ready";
             _Schedular.addProccess(PID);
-            this.loadPCB(tempPCB[0], tempPCB[1], tempPCB[2], tempPCB[3], tempPCB[4], tempPCB[5], tempPCB[6], tempPCB[7], tempPCB[8], tempPCB[9]);
+            this.loadPCB(tempPCB[0], tempPCB[1], tempPCB[2], tempPCB[3], tempPCB[4], tempPCB[5], tempPCB[6], tempPCB[7], tempPCB[8], tempPCB[9], tempPCB[10], tempPCB[11], tempPCB[12]);
         };
         ProcessControlBlock.prototype.terminateCPU = function () {
             this.state = "terminated";
-            //_MemoryAccessor.programOverCleanUp(this.location);
-            //this.location = -1;
-            _Schedular.processComplete();
+            _MemoryAccessor.programOverCleanUp(this.location);
+            this.location = -1;
+            _Schedular.processComplete(_PCB.PID);
         };
-        ProcessControlBlock.prototype.loadPCB = function (PID, PC, ACC, X, Y, Z, IR, state, loc, end) {
+        ProcessControlBlock.prototype.loadPCB = function (PID, PC, ACC, X, Y, Z, IR, state, locState, priority, timeAdded, loc, end) {
             this.PID = PID;
             this.PC = PC;
             this.Acc = ACC;
@@ -87,7 +89,10 @@ var TSOS;
             this.Zflag = Z;
             this.IR = IR;
             this.state = state;
+            this.locationState = locState;
             this.location = loc;
+            this.priority = priority;
+            this.timeAdded = timeAdded;
             this.endIndex = end;
         };
         ProcessControlBlock.prototype.copyCPU = function () {
@@ -115,7 +120,7 @@ var TSOS;
             _CPU.endOfProg = this.endIndex;
         };
         ProcessControlBlock.prototype.returnPCB = function () {
-            return [this.PID, this.PC, this.Acc, this.Xreg, this.Yreg, this.Zflag, this.IR, this.state, this.location, this.endIndex];
+            return [this.PID, this.PC, this.Acc, this.Xreg, this.Yreg, this.Zflag, this.IR, this.state, this.locationState, this.priority, this.timeAdded, this.location, this.endIndex];
         };
         return ProcessControlBlock;
     }());

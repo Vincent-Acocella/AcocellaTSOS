@@ -172,6 +172,16 @@ module TSOS {
                 "- List Programs");
             this.commandList[this.commandList.length] = sc;
 
+            sc = new ShellCommand(this.shellSetSchedule,
+                "setschedule",
+                "- List Programs");
+            this.commandList[this.commandList.length] = sc;
+
+            sc = new ShellCommand(this.shellGetSchedule,
+                "getschedule",
+                "- List Programs");
+            this.commandList[this.commandList.length] = sc;
+
         }
         public putPrompt() {
             _StdOut.putText(this.promptStr);
@@ -410,10 +420,19 @@ module TSOS {
                    _StdOut.advanceLine();
                    _StdOut.putText("Input greater than 256 or hexidecimal format")
                } else {
-                   let progNum = _MemoryManager.loadMemory(program);
+                   let priority = _PRIORITY;
+
+                    if(args.length > 0){
+                        priority = parseInt(args[0].toString());
+                        console.log(priority);
+                    }
+
+                   let progNum = _MemoryManager.loadMemory(program, priority);
                    if(progNum < 0){
                     _StdOut.putText("No avaliable memory for use");
                    }else{
+                    _StdOut.putText("Priority Set to " + priority);
+                    _StdOut.advanceLine();
                     _StdOut.putText("Type 'run " + progNum +"' To run code");
                     //_DeviceDisplay.updateMemory();
                    }   
@@ -564,11 +583,41 @@ module TSOS {
 
         public shellSetSchedule(args:string){
             //set priority for PCB
-            //ENable swapping
+            if(args.length > 0){
+                let selected;
+                switch(args.toString()){
+                    case "fcfs":
+                        selected = "FCFS";
+                        _ActiveSchedular = _FCFS;
+                        break;
+                    case 'priority':
+                        selected = "Priority";
+                        _ActiveSchedular = _PRIORITY;
+                        break;
+                    default:
+                        selected = "Round Robin";
+                        _ActiveSchedular = _RoundRobin;
 
+                }
+
+                _StdOut.putText("The CPU will be running "+ selected + " schedualing")
+            }
         }
 
         public shellGetSchedule(){
+            let selected;
+            switch(_ActiveSchedular){
+
+                case _RoundRobin:
+                    selected = "Round Robin";
+                    break;
+                case _PRIORITY:
+                    selected = "Priority";
+                    break;
+                case _FCFS:
+                    selected = 'FCFS';
+            }
+            _StdOut.putText(selected);
 
         }
 

@@ -86,6 +86,10 @@ var TSOS;
             this.commandList[this.commandList.length] = sc;
             sc = new TSOS.ShellCommand(this.shellList, "ls", "- List Programs");
             this.commandList[this.commandList.length] = sc;
+            sc = new TSOS.ShellCommand(this.shellSetSchedule, "setschedule", "- List Programs");
+            this.commandList[this.commandList.length] = sc;
+            sc = new TSOS.ShellCommand(this.shellGetSchedule, "getschedule", "- List Programs");
+            this.commandList[this.commandList.length] = sc;
         };
         Shell.prototype.putPrompt = function () {
             _StdOut.putText(this.promptStr);
@@ -305,11 +309,18 @@ var TSOS;
                     _StdOut.putText("Input greater than 256 or hexidecimal format");
                 }
                 else {
-                    var progNum = _MemoryManager.loadMemory(program);
+                    var priority = _PRIORITY;
+                    if (args.length > 0) {
+                        priority = parseInt(args[0].toString());
+                        console.log(priority);
+                    }
+                    var progNum = _MemoryManager.loadMemory(program, priority);
                     if (progNum < 0) {
                         _StdOut.putText("No avaliable memory for use");
                     }
                     else {
+                        _StdOut.putText("Priority Set to " + priority);
+                        _StdOut.advanceLine();
                         _StdOut.putText("Type 'run " + progNum + "' To run code");
                         //_DeviceDisplay.updateMemory();
                     }
@@ -457,9 +468,37 @@ var TSOS;
         };
         Shell.prototype.shellSetSchedule = function (args) {
             //set priority for PCB
-            //ENable swapping
+            if (args.length > 0) {
+                var selected = void 0;
+                switch (args.toString()) {
+                    case "fcfs":
+                        selected = "FCFS";
+                        _ActiveSchedular = _FCFS;
+                        break;
+                    case 'priority':
+                        selected = "Priority";
+                        _ActiveSchedular = _PRIORITY;
+                        break;
+                    default:
+                        selected = "Round Robin";
+                        _ActiveSchedular = _RoundRobin;
+                }
+                _StdOut.putText("The CPU will be running " + selected + " schedualing");
+            }
         };
         Shell.prototype.shellGetSchedule = function () {
+            var selected;
+            switch (_ActiveSchedular) {
+                case _RoundRobin:
+                    selected = "Round Robin";
+                    break;
+                case _PRIORITY:
+                    selected = "Priority";
+                    break;
+                case _FCFS:
+                    selected = 'FCFS';
+            }
+            _StdOut.putText(selected);
         };
         return Shell;
     }());

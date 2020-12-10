@@ -104,7 +104,7 @@ var TSOS;
             while (table.hasChildNodes()) {
                 table.removeChild(table.firstChild);
             }
-            var header = ["PID", "PC", "ACC", "X", "Y", "Z", "IR", "State", "Location"];
+            var header = ["PID", "PC", "ACC", "X", "Y", "Z", "IR", "State", "Location", "P"];
             var row = table.insertRow(0);
             for (var i = 0; i < header.length; i++) {
                 var next = row.insertCell(i);

@@ -64,11 +64,12 @@ module TSOS {
             _DeviceDisplay.cycleReload();
 
             //Queue interupt
-            if(!this.isComplete && _Schedular.readyQueue.getSize() > 1 && _Schedular.checkIfSwitch()){
+            if(_ActiveSchedular == 1){
+                if(!this.isComplete && _Schedular.readyQueue.getSize() > 1 && _Schedular.checkIfSwitch()){
                     // interupt switch memory
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(SWITCH_MEMORY, ["Switching Memory"]));
+                }
             }
-           
         }
 
         public fetch(PC){

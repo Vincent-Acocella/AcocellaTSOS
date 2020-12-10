@@ -6,17 +6,16 @@ var TSOS;
             this.avaliableMemory = [true, true, true];
         }
         //LOAD MEMORY INTO SELECTED SEGMENT
-        MemoryManager.prototype.loadMemory = function (usrProg) {
+        MemoryManager.prototype.loadMemory = function (usrProg, priority) {
             //Need a function that returns the current segment for use
             var segment = this.deployNextSegmentForUse();
-            var timeAdded = new Date().getTime();
             if (segment < 0) {
                 if (_FORMATTED) {
                     segment = 9;
                     //Store program in backing store
                     _MemoryAccessor.nextProgInMem++;
                     _KernelInterruptQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, [ROLLOUTPROG, _MemoryAccessor.nextProgInMem, usrProg]));
-                    _PCB.newTask(_MemoryAccessor.nextProgInMem, 9, 99);
+                    _PCB.newTask(_MemoryAccessor.nextProgInMem, 9, 99, priority);
                 }
                 else {
                     return -1;
@@ -31,7 +30,7 @@ var TSOS;
                     index++;
                 }
                 _MemoryAccessor.nextProgInMem++;
-                _PCB.newTask(_MemoryAccessor.nextProgInMem, segment, index);
+                _PCB.newTask(_MemoryAccessor.nextProgInMem, segment, index, priority);
                 //Set the map from program to segment
                 _MemoryAccessor.setSegtoMemMap(_MemoryAccessor.nextProgInMem, segment);
                 _DeviceDisplay.startUpMemory();

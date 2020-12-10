@@ -322,7 +322,6 @@ var TSOS;
                     sessionStorage.setItem(previousKey, JSON.stringify(diskFile));
                     _DeviceDisplay.updateHardDriveDisplay(previousKey);
                     if (diskFile.pointer[0] === 0) {
-                        console.log(segmentToReturn);
                         return segmentToReturn.slice(0, 256);
                         //done
                     }

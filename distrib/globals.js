@@ -33,7 +33,7 @@ var _PriorityScheduler = 3;
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
 //
 var _Quant = 6;
-var _PRIORITY = 1;
+var _PRIORITY = 5;
 var _FORMATTED = false;
 var _SingleStep = false;
 var _dot = false;

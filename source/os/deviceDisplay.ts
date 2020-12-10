@@ -127,7 +127,7 @@ module TSOS{
                 table.removeChild(table.firstChild);
             }
 
-            let header = ["PID", "PC", "ACC", "X", "Y", "Z", "IR", "State", "Location"];
+            let header = ["PID", "PC", "ACC", "X", "Y", "Z", "IR", "State", "Location", "P"];
 
             let row = table.insertRow(0);
             for(let i = 0; i < header.length; i++){

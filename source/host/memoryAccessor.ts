@@ -46,6 +46,7 @@ module TSOS{
         // reset map
         public programOverCleanUp(segment){
             this.removeProgFromSegMap(segment);
+            _Memory.clearSingleThread(segment);
             _MemoryManager.avaliableMemory[segment] = true;
         }   
 

@@ -7,11 +7,10 @@ module TSOS{
         }
        
         //LOAD MEMORY INTO SELECTED SEGMENT
-        public loadMemory(usrProg:string){
+        public loadMemory(usrProg:string, priority){
 
             //Need a function that returns the current segment for use
             let segment = this.deployNextSegmentForUse();
-            let timeAdded = new Date().getTime();
             if(segment < 0){
                 if(_FORMATTED){
                     segment = 9;
@@ -19,7 +18,7 @@ module TSOS{
                     _MemoryAccessor.nextProgInMem++;
 
                     _KernelInterruptQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, [ROLLOUTPROG, _MemoryAccessor.nextProgInMem, usrProg]))
-                    _PCB.newTask(_MemoryAccessor.nextProgInMem, 9, 99);
+                    _PCB.newTask(_MemoryAccessor.nextProgInMem, 9, 99, priority);
                 }else{
                     return -1;
                 }
@@ -33,7 +32,7 @@ module TSOS{
                 }
                 
                 _MemoryAccessor.nextProgInMem++;
-                _PCB.newTask(_MemoryAccessor.nextProgInMem, segment, index);
+                _PCB.newTask(_MemoryAccessor.nextProgInMem, segment, index, priority);
 
                 //Set the map from program to segment
                 _MemoryAccessor.setSegtoMemMap(_MemoryAccessor.nextProgInMem, segment);

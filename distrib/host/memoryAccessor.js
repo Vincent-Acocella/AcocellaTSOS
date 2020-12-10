@@ -39,6 +39,7 @@ var TSOS;
         // reset map
         MemoryAccessor.prototype.programOverCleanUp = function (segment) {
             this.removeProgFromSegMap(segment);
+            _Memory.clearSingleThread(segment);
             _MemoryManager.avaliableMemory[segment] = true;
         };
         MemoryAccessor.prototype.clearAllMemory = function () {
