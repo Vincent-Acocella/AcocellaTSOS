@@ -48,6 +48,7 @@ module TSOS {
 
         public cycle(): void {
             console.log("Cycle???")
+            console.log(this.PC)
 
             _Kernel.krnTrace('CPU cycle');
             let moveThatBus = this.fetch(this.PC);

@@ -50,6 +50,7 @@ var TSOS;
             //This is the data we want
             var firstIndex = this.readyQueue.peek();
             if (_MemoryAccessor.getProgFromSegMap(firstIndex) === -1) {
+                //Page Fault
                 console.log("Come in here");
                 //see if there's an open spot in memory on process terminate
                 var openSeg = _MemoryManager.deployNextSegmentForUse();
@@ -88,7 +89,6 @@ var TSOS;
                         case _PRIORITY:
                             break;
                         default:
-                            console.log("Come here");
                             //Single Run of process
                             //Take process process in block 3
                             pidToSwap = _MemoryAccessor.programToSegmentMap[2];
@@ -96,6 +96,8 @@ var TSOS;
                     this.allProcesses[pidToSwap][7] = "Swap";
                     //Set the page table
                     _MemoryManager.avaliableMemory[this.allProcesses[pidToSwap][8]] = true;
+                    this.allProcesses[firstIndex][8] = this.allProcesses[pidToSwap][8];
+                    console.log(this.allProcesses[firstIndex][8]);
                     _MemoryAccessor.setSegtoMemMap(firstIndex, this.allProcesses[pidToSwap][8]);
                     _KernelInterruptQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, [ROLLOUTPROG, pidToSwap, _Memory.memoryThread[this.allProcesses[pidToSwap][8]].toString().replace(/,/g, '')]));
                     _KernelInterruptQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, [ROLLINPROG, firstIndex]));
@@ -107,6 +109,7 @@ var TSOS;
             this.allProcesses[firstIndex][7] = "Executing";
             //this.allProcesses[firstIndex][7] = "Memory";
             var array = this.allProcesses[firstIndex];
+            console.log(array);
             _PCB.loadPCB(array[0], array[1], array[2], array[3], array[4], array[5], array[6], array[7], array[8], array[9]);
             _PCB.loadCPU();
             // Load PCB then put into CPU
@@ -116,6 +119,7 @@ var TSOS;
             this.deployFirstInQueueToCPU();
             _DeviceDisplay.startUpSchedular();
             _CPU.isComplete = false;
+            _CPU.isExecuting = true;
         };
         //--------------------------------------------------------
         //SWITCH MEMORY

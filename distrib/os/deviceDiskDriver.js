@@ -314,6 +314,7 @@ var TSOS;
             var previousKey = directoryFile.pointer[0] + ":" + directoryFile.pointer[1] + ":" + directoryFile.pointer[2];
             directoryFile.pointer = [0, 0, 0];
             sessionStorage.setItem("0:0:" + location, JSON.stringify(directoryFile));
+            _DeviceDisplay.updateHardDriveDisplay("0:0:" + location);
             do {
                 //end of disk
                 if (diskIndex === diskFile.data.length) {

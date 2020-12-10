@@ -56,6 +56,7 @@ var TSOS;
         };
         Cpu.prototype.cycle = function () {
             console.log("Cycle???");
+            console.log(this.PC);
             _Kernel.krnTrace('CPU cycle');
             var moveThatBus = this.fetch(this.PC);
             if (moveThatBus + this.PC > 256) {

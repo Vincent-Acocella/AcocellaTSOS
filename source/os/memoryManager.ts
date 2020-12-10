@@ -108,10 +108,11 @@ module TSOS{
 
            let index = 0;
            for(let i = 0; i < _PCB.endIndex; i++){
-               let value = data.charAt(index) + data.charAt(index+1)
+               let value = data.charAt(index) + data.charAt(index+1);
                _MemoryAccessor.write(value, newSegment, i);
                index+=2;
            }
+           _DeviceDisplay.cycleReload();
         }
 
         //Put process on disk

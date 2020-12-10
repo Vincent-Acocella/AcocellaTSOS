@@ -101,6 +101,7 @@ var TSOS;
                 _MemoryAccessor.write(value, newSegment, i);
                 index += 2;
             }
+            _DeviceDisplay.cycleReload();
         };
         //Put process on disk
         MemoryManager.prototype.rollOut = function () {

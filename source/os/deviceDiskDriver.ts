@@ -357,6 +357,7 @@ module TSOS{
 
             directoryFile.pointer = [0,0,0];
             sessionStorage.setItem(`0:0:${location}`, JSON.stringify(directoryFile));
+            _DeviceDisplay.updateHardDriveDisplay(`0:0:${location}`);
 
             do{
                 //end of disk
