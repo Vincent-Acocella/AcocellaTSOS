@@ -14,8 +14,9 @@ var TSOS;
                     segment = 9;
                     //Store program in backing store
                     _MemoryAccessor.nextProgInMem++;
-                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, [ROLLOUTPROG, _MemoryAccessor.nextProgInMem, usrProg]));
-                    _PCB.newTask(_MemoryAccessor.nextProgInMem, 9, 99, priority);
+                    var endIndex = usrProg.replace(/\s+/g, '').length;
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, [ROLLOUTPROG, _MemoryAccessor.nextProgInMem, usrProg, endIndex / 2]));
+                    _PCB.newTask(_MemoryAccessor.nextProgInMem, 9, endIndex, priority);
                 }
                 else {
                     return -1;
@@ -29,6 +30,7 @@ var TSOS;
                     _MemoryAccessor.write(code, segment, index);
                     index++;
                 }
+                console.log(index);
                 _MemoryAccessor.nextProgInMem++;
                 _PCB.newTask(_MemoryAccessor.nextProgInMem, segment, index, priority);
                 //Set the map from program to segment
@@ -84,29 +86,20 @@ var TSOS;
         };
         //Take process off disk
         MemoryManager.prototype.rollInProcess = function (data) {
-            //set prog map
-            //set memory to false
-            //set data to memory
-            //Returns as hex
-            console.log(data);
             var newSegment = this.deployNextSegmentForUse();
-            console.log(newSegment);
             _Memory.clearSingleThread(newSegment);
             //update PCB
             this.avaliableMemory[newSegment] = false;
+            //end index is the exact number of chars in the program
+            console.log("Storing");
+            console.log(data.length);
             var index = 0;
-            for (var i = 0; i < _PCB.endIndex; i++) {
-                var value = data.charAt(index) + data.charAt(index + 1);
-                _MemoryAccessor.write(value, newSegment, i);
-                index += 2;
+            for (var i = 0; i < data.length; i += 2) {
+                var value = data.charAt(i) + data.charAt(i + 1);
+                _MemoryAccessor.write(value, newSegment, index);
+                index++;
             }
             _DeviceDisplay.cycleReload();
-        };
-        //Put process on disk
-        MemoryManager.prototype.rollOut = function () {
-            var PID = _PCB.PID;
-            var data = _Memory.memoryThread[_PCB.location].slice(0);
-            _KernelInputQueue.enqueue(new TSOS.Interrupt(DISKDRIVER_IRQ, [ROLLOUTPROG, PID, data]));
         };
         return MemoryManager;
     }());

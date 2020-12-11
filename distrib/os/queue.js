@@ -37,6 +37,19 @@ var TSOS;
             }
             return retVal;
         };
+        Queue.prototype.getCaboose = function () {
+            var retVal = -1;
+            if (this.q.length > 0) {
+                for (var i = 0; i < this.q.length; i++) {
+                    var x = this.dequeue();
+                    if (i === this.q.length - 1) {
+                        retVal = x;
+                    }
+                    this.enqueue(x);
+                }
+                return retVal;
+            }
+        };
         //Look at the first element in the queue
         Queue.prototype.peek = function () {
             var retVal = -1;
@@ -48,8 +61,6 @@ var TSOS;
                     }
                     this.enqueue(x);
                 }
-                console.log("return value: " + retVal);
-                console.log("Status of queue: " + this.q.toString());
                 return retVal;
             }
         };

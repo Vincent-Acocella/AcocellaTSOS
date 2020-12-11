@@ -23,7 +23,7 @@ var STOP_EXEC_IRQ = 6;
 var SWITCH_MEMORY = 5;
 var DISK_SIZE = 127;
 //Schedules
-var _ActiveSchedular = 0;
+var _ActiveSchedular = 1;
 //default
 var _RoundRobin = 1;
 var _FCFS = 2;

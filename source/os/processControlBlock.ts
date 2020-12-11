@@ -67,9 +67,11 @@ module TSOS{
 
         public terminateCPU(){
             this.state = "terminated";
+            this.locationState = "dead";
             _MemoryAccessor.programOverCleanUp(this.location);
             this.location = -1;
             _Schedular.processComplete(_PCB.PID);
+            _DeviceDisplay.updateSchedular();
         }
 
         public loadPCB(PID, PC, ACC, X, Y, Z, IR, state, locState, priority, timeAdded, loc, end){

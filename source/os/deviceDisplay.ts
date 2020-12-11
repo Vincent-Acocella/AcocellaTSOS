@@ -17,7 +17,6 @@ module TSOS{
         public updateMemory(){
             let table: HTMLTableElement = <HTMLTableElement> document.getElementById('memoryUnit');
 
-
             let index = 0;
             for (let i = 0; i < table.rows.length; i++) {
                 for (let j = 1; j < 9; j++) {

@@ -16,7 +16,7 @@ var TSOS;
             this.dataInit();
         }
         Disk.prototype.dataInit = function () {
-            for (var i = 0; i < 160; i++) {
+            for (var i = 0; i < 128; i++) {
                 this.data[i] = "0";
             }
         };

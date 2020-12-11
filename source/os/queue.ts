@@ -9,7 +9,8 @@
    ------------ */
 module TSOS {
     export class Queue {
-        constructor(public q = new Array()) {
+        constructor(public q = new Array(),
+        ) { 
         }
 
         public getSize() {
@@ -40,6 +41,20 @@ module TSOS {
             return retVal;
         }
 
+        public getCaboose(){
+            var retVal = -1;
+            if(this.q.length>0){
+                for(var i = 0; i < this.q.length; i++){
+                    var x = this.dequeue()
+                    if(i === this.q.length-1){
+                        retVal = x
+                    }
+                    this.enqueue(x)
+                }
+                return retVal;
+            }
+        }
+
         //Look at the first element in the queue
         public peek(){
 
@@ -52,8 +67,6 @@ module TSOS {
                     }
                     this.enqueue(x)
                 }
-                console.log("return value: " + retVal)
-                console.log("Status of queue: " + this.q.toString())
                 return retVal;
             }
         }

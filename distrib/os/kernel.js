@@ -114,7 +114,6 @@ var TSOS;
                     _StdIn.handleInput();
                     break;
                 case DISKDRIVER_IRQ:
-                    console.log("Helllo there good sir");
                     console.log(params);
                     _krnDiskDriver.isr(params);
                     break;
@@ -129,8 +128,8 @@ var TSOS;
                     _Schedular.switchMemoryInterupt();
                     break;
                 case STOP_EXEC_IRQ:
-                    _StdOut.putText(params.toString());
                     _StdOut.advanceLine();
+                    _StdOut.putText(params.toString());
                     _PCB.terminateCPU();
                     break;
                 default:

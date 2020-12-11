@@ -14,7 +14,7 @@ module TSOS{
         }
 
         public dataInit(){
-            for(let i = 0; i < 160; i++){
+            for(let i = 0; i < 128; i++){
                 this.data[i] = "0";
             }
         }

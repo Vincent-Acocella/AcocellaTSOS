@@ -51,8 +51,13 @@ var TSOS;
         //Called in load
         MemoryAccessor.prototype.addProcess = function () {
             this.logicalMemory.push(this.nextProgInMem);
-            console.log(this.logicalMemory);
             return this.nextProgInMem;
+        };
+        MemoryAccessor.prototype.removeProcess = function (prognumber) {
+            var index = this.logicalMemory.indexOf(prognumber);
+            if (index > -1) {
+                this.logicalMemory.splice(index, 1);
+            }
         };
         return MemoryAccessor;
     }());

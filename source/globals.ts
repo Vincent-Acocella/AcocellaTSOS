@@ -35,12 +35,13 @@ const SWITCH_MEMORY = 5;
 const DISK_SIZE = 127;
 
 //Schedules
-var _ActiveSchedular = 0;
+var _ActiveSchedular = 1;
 
 //default
 const _RoundRobin = 1
 const _FCFS = 2;
 const _PriorityScheduler = 3;
+
 
 //
 // Global Variables

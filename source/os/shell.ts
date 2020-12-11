@@ -500,11 +500,14 @@ module TSOS {
         }
 
         public shellFormat(){
-
-            if(_DeviceDiskDriver.formatDisk()){
-                _StdOut.putText("Disk Formatted");
+            if(!_CPU.isExecuting){
+                if(_DeviceDiskDriver.formatDisk()){
+                    _StdOut.putText("Disk Formatted");
+                }else{
+                    _StdOut.putText("Disk Already Formatted");
+                }
             }else{
-                _StdOut.putText("Disk Already Formatted");
+                _StdOut.putText("No formatting while programs are executing");
             }
         }
 
@@ -592,7 +595,7 @@ module TSOS {
                         break;
                     case 'priority':
                         selected = "Priority";
-                        _ActiveSchedular = _PRIORITY;
+                        _ActiveSchedular = _PriorityScheduler;
                         break;
                     default:
                         selected = "Round Robin";

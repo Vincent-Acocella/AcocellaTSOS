@@ -63,7 +63,7 @@ var TSOS;
                         var fileName = "~" + parmas[1] + timeAdded + '.swp';
                         fileLocation = this.createFile(fileName);
                     }
-                    this.writeProgramToDisk(fileLocation, parmas[2]);
+                    this.writeProgramToDisk(fileLocation, parmas[2], parmas[3]);
                     break;
                 default:
                     _KernelInterruptQueue.enqueue(new TSOS.Interrupt(99, ["TRAP TIME"]));
@@ -76,7 +76,6 @@ var TSOS;
         //Called in shell
         DeviceDiskDriver.prototype.formatDisk = function () {
             //directory
-            var index = 0;
             if (sessionStorage.getItem('0:0:0') === null) {
                 //First instance is always in use
                 //used to hold next aval
@@ -85,13 +84,13 @@ var TSOS;
                     for (var k = 0; k <= 7; k++) {
                         for (var j = 0; j <= 7; j++) {
                             var newDisk = new TSOS.Disk;
-                            if (index === 0)
-                                newDisk.setAvalibility(1);
                             sessionStorage.setItem(i + ":" + k + ":" + j, newDisk.storeInSession());
-                            index++;
                         }
                     }
                 }
+                var first = JSON.parse(sessionStorage.getItem("0:0:0"));
+                first.availability = 1;
+                sessionStorage.setItem("0:0:0", JSON.stringify(first));
                 _DeviceDisplay.hardDriveDisplay();
                 _FORMATTED = true;
                 return true;
@@ -250,8 +249,7 @@ var TSOS;
             for (var i = 1; i < 8; i++) {
                 var aFile = JSON.parse(sessionStorage.getItem("0:0:" + i));
                 console.log(aFile.availability);
-                var squiggle = this.convertFromHexByLetter(aFile.data[0] = aFile.data[1]);
-                if (aFile.availability === 1 && squiggle !== '~') {
+                if (aFile.availability === 1 && aFile.data[0] !== "7" && aFile.data[1] !== "e") {
                     filesFound[filesIndex] = this.convertToTextFromHex(aFile.data);
                     filesIndex++;
                 }
@@ -259,9 +257,10 @@ var TSOS;
             return filesFound;
         };
         //Write the program to the disk at the next free memory spots
-        DeviceDiskDriver.prototype.writeProgramToDisk = function (dirLocation, program) {
+        DeviceDiskDriver.prototype.writeProgramToDisk = function (dirLocation, program, progLength) {
             //This is where we create the file in the directory
-            //set format 
+            console.log(progLength);
+            //Get file JSON for process
             var fileCreated = JSON.parse(sessionStorage.getItem("0:0:" + dirLocation));
             fileCreated.pointer = this.setNextAvaliablePointer().slice(0);
             sessionStorage.setItem("0:0:" + dirLocation, JSON.stringify(fileCreated));
@@ -277,7 +276,6 @@ var TSOS;
             do {
                 if (dataIndex === keyToWriteIn.data.length) {
                     dataIndex = 0;
-                    console.log("NEXT DATA SEG");
                     //Point to next
                     keyToWriteIn.pointer = this.setNextAvaliablePointer().slice(0);
                     //Set at previus key
@@ -290,10 +288,15 @@ var TSOS;
                     var tempDisk_1 = new TSOS.Disk;
                     keyToWriteIn.data = tempDisk_1.data.slice(0);
                 }
-                keyToWriteIn.data[dataIndex] = trimmedProg.charAt(index);
+                if (index > trimmedProg.length - 1) {
+                    keyToWriteIn.data[dataIndex] = "0";
+                }
+                else {
+                    keyToWriteIn.data[dataIndex] = trimmedProg.charAt(index);
+                }
                 dataIndex++;
                 index++;
-            } while (index < trimmedProg.length);
+            } while (index < 512);
             //set the last item
             sessionStorage.setItem(previousKey, JSON.stringify(keyToWriteIn));
             //At this point the file should be written in memory
@@ -303,34 +306,34 @@ var TSOS;
         //Send to PCB
         //Roll in 
         DeviceDiskDriver.prototype.returnProgFromDisk = function (location) {
-            //get segment
-            //get filename of file we want to put in memory
             var directoryFile = JSON.parse(sessionStorage.getItem("0:0:" + location));
+            var diskFile = JSON.parse(sessionStorage.getItem(directoryFile.pointer[0] + ":" + directoryFile.pointer[1] + ":" + directoryFile.pointer[2]));
             var index = 0;
             var diskIndex = 0;
-            var diskFile = JSON.parse(sessionStorage.getItem(directoryFile.pointer[0] + ":" + directoryFile.pointer[1] + ":" + directoryFile.pointer[2]));
             diskFile.availability = 0;
             var segmentToReturn = [];
             var previousKey = directoryFile.pointer[0] + ":" + directoryFile.pointer[1] + ":" + directoryFile.pointer[2];
             directoryFile.pointer = [0, 0, 0];
             sessionStorage.setItem("0:0:" + location, JSON.stringify(directoryFile));
+            sessionStorage.setItem(previousKey, JSON.stringify(diskFile));
             _DeviceDisplay.updateHardDriveDisplay("0:0:" + location);
             do {
                 //end of disk
                 if (diskIndex === diskFile.data.length) {
                     diskIndex = 0;
+                    //Update files
                     sessionStorage.setItem(previousKey, JSON.stringify(diskFile));
                     _DeviceDisplay.updateHardDriveDisplay(previousKey);
                     if (diskFile.pointer[0] === 0) {
-                        return segmentToReturn.slice(0, 256);
+                        return segmentToReturn.slice(0);
                         //done
                     }
                     else {
                         previousKey = diskFile.pointer[0] + ":" + diskFile.pointer[1] + ":" + diskFile.pointer[2];
                         diskFile = JSON.parse(sessionStorage.getItem(previousKey));
                         diskFile.availability = 0;
+                        //clear avaliablility as go
                     }
-                    //clear avaliablility as go
                 }
                 segmentToReturn.push(diskFile.data[diskIndex] + diskFile.data[diskIndex + 1]);
                 index++;

@@ -40,7 +40,6 @@ module TSOS{
         public removeProgFromSegMap(segement){
             this.programToSegmentMap[segement] = -1;
         }
-
         // Set memory as avaliable
         // clear memory 
         // reset map
@@ -60,8 +59,16 @@ module TSOS{
         //Called in load
         public addProcess(){
             this.logicalMemory.push(this.nextProgInMem);
-            console.log(this.logicalMemory);
             return this.nextProgInMem;
         }
+        public removeProcess(prognumber){
+
+            const index = this.logicalMemory.indexOf(prognumber);
+            if(index > -1){
+                this.logicalMemory.splice(index,1)
+            }
+                
+        }
+        
     }
 }

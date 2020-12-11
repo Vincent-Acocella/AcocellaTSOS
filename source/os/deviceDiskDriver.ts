@@ -41,7 +41,6 @@ module TSOS{
                }else{
                    console.log("BAD BAD BAD")
                }
-                
                 break;
 
             case ROLLOUTPROG:
@@ -53,7 +52,7 @@ module TSOS{
                     let fileName = `~` + parmas[1]+ timeAdded + '.swp';
                     fileLocation = this.createFile(fileName);
                 }
-                this.writeProgramToDisk(fileLocation, parmas[2]);
+                this.writeProgramToDisk(fileLocation, parmas[2],parmas[3]);
                 break;
             default:
                 _KernelInterruptQueue.enqueue(new Interrupt(99, ["TRAP TIME"]));
@@ -69,7 +68,7 @@ module TSOS{
         public formatDisk(){
 
             //directory
-            let index = 0;
+
             if(sessionStorage.getItem('0:0:0') === null){
 
             //First instance is always in use
@@ -79,13 +78,13 @@ module TSOS{
                     for(let k = 0; k<= 7; k++){
                         for(let j = 0; j<= 7; j++){
                             let newDisk =  new Disk;
-                            if(index === 0)newDisk.setAvalibility(1);
-                            
                             sessionStorage.setItem(`${i}:${k}:${j}`, newDisk.storeInSession());
-                            index++;
                         }
                     }
                 }
+                let first = JSON.parse(sessionStorage.getItem(`0:0:0`));
+                first.availability = 1;
+                sessionStorage.setItem(`0:0:0`, JSON.stringify(first));
                 _DeviceDisplay.hardDriveDisplay();
                 _FORMATTED = true;
                 return true;
@@ -283,12 +282,17 @@ module TSOS{
 
         //Write the program to the disk at the next free memory spots
 
-        public writeProgramToDisk(dirLocation, program){
+        public writeProgramToDisk(dirLocation, program, progLength){
             //This is where we create the file in the directory
+
+            console.log(progLength)
     
-            //set format 
+            //Get file JSON for process
             let fileCreated = JSON.parse(sessionStorage.getItem(`0:0:${dirLocation}`));
+ 
+
             fileCreated.pointer = this.setNextAvaliablePointer().slice(0);
+
             sessionStorage.setItem(`0:0:${dirLocation}`, JSON.stringify(fileCreated));
 
             let keyToWriteIn = JSON.parse(sessionStorage.getItem(`${fileCreated.pointer[0]}:${fileCreated.pointer[1]}:${fileCreated.pointer[2]}`));
@@ -300,13 +304,14 @@ module TSOS{
 
             let index = 0;
             let dataIndex = 0;
-            let previousKey = `${fileCreated.pointer[0]}:${fileCreated.pointer[1]}:${fileCreated.pointer[2]}`;
-            let trimmedProg = program.replace(/\s+/g, '');
 
+            let previousKey = `${fileCreated.pointer[0]}:${fileCreated.pointer[1]}:${fileCreated.pointer[2]}`;
+
+            let trimmedProg = program.replace(/\s+/g, '');
+            
             do{
                 if(dataIndex === keyToWriteIn.data.length){
                     dataIndex = 0;
-                    console.log("NEXT DATA SEG");
 
                     //Point to next
                     keyToWriteIn.pointer = this.setNextAvaliablePointer().slice(0);
@@ -325,12 +330,17 @@ module TSOS{
                     keyToWriteIn.data = tempDisk.data.slice(0);
                 }
 
-                keyToWriteIn.data[dataIndex] = trimmedProg.charAt(index);
+                if(index > trimmedProg.length-1){
+                    keyToWriteIn.data[dataIndex] = "0"
+                }else{
+                    keyToWriteIn.data[dataIndex] = trimmedProg.charAt(index);
+                }
+               
                 dataIndex++;
                 index++;
 
-            }while(index < trimmedProg.length);
-                    //set the last item
+            }while(index < 512);
+            //set the last item
             sessionStorage.setItem(previousKey, JSON.stringify(keyToWriteIn));
             //At this point the file should be written in memory
             _DeviceDisplay.updateHardDriveDisplay(`0:0:${dirLocation}`);
@@ -341,12 +351,13 @@ module TSOS{
         //Roll in 
        public returnProgFromDisk(location){
         
-        //get segment
-        //get filename of file we want to put in memory
             let directoryFile = JSON.parse(sessionStorage.getItem(`0:0:${location}`));
+
+            let diskFile = JSON.parse(sessionStorage.getItem(`${directoryFile.pointer[0]}:${directoryFile.pointer[1]}:${directoryFile.pointer[2]}`));
+
             let index = 0;
             let diskIndex = 0;
-            let diskFile = JSON.parse(sessionStorage.getItem(`${directoryFile.pointer[0]}:${directoryFile.pointer[1]}:${directoryFile.pointer[2]}`));
+
             diskFile.availability = 0;
             let segmentToReturn = [];
 
@@ -354,29 +365,34 @@ module TSOS{
 
             directoryFile.pointer = [0,0,0];
             sessionStorage.setItem(`0:0:${location}`, JSON.stringify(directoryFile));
+
+            sessionStorage.setItem(previousKey, JSON.stringify(diskFile));
             _DeviceDisplay.updateHardDriveDisplay(`0:0:${location}`);
 
             do{
                 //end of disk
                 if(diskIndex === diskFile.data.length){
                     diskIndex = 0;
+
+                    //Update files
                     sessionStorage.setItem(previousKey, JSON.stringify(diskFile));
                     _DeviceDisplay.updateHardDriveDisplay(previousKey);
 
                     if(diskFile.pointer[0] === 0){
-                        return segmentToReturn.slice(0,256);
+                        return segmentToReturn.slice(0);
                         //done
                     }else{
                         previousKey =`${diskFile.pointer[0]}:${diskFile.pointer[1]}:${diskFile.pointer[2]}`;
+
                         diskFile = JSON.parse(sessionStorage.getItem(previousKey));
                         diskFile.availability = 0;
+                        //clear avaliablility as go
                     }
-                    //clear avaliablility as go
                 }
+                
                 segmentToReturn.push(diskFile.data[diskIndex] + diskFile.data[diskIndex+1]);
                 index++;
                 diskIndex+=2;
-                
             }while(true);  
        }
 
