@@ -113,6 +113,8 @@ module TSOS{
             let row = table.insertRow(_PCB.PID+1);
 
             for(let i = 0; i < 9; i++){
+                row.cells.item(i).style.textAlign ="center";
+                row.cells.item(i).style.border = "1px solid black";
                row.insertCell(i).innerHTML =_Schedular.allProcesses[_PCB.PID][i]
             }
         }
@@ -130,6 +132,8 @@ module TSOS{
 
             let row = table.insertRow(0);
             for(let i = 0; i < header.length; i++){
+                row.cells.item(i).style.textAlign ="center";
+                row.cells.item(i).style.border = "1px solid black";
                 let next = row.insertCell(i);
                 next.innerHTML = String(header[i]);
             }
@@ -137,6 +141,8 @@ module TSOS{
             for(let i = 1; i < _MemoryAccessor.nextProgInMem + 2; i++){
                 let row = table.insertRow(i);
                 for(let j = 0; j < header.length; j++){
+                    row.cells.item(j).style.textAlign ="center";
+                    row.cells.item(j).style.border = "1px solid black";
                     row.insertCell(j).innerHTML = _Schedular.allProcesses[i-1][j];
                 }
             }
