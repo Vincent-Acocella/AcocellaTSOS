@@ -203,19 +203,19 @@ module TSOS{
                         if(this.allProcesses[topP][9] > this.allProcesses[array[i]][9]){
                             topP = array[i];
                             result.unshift(array[i]);
+                            console.log(result)
                             //unshift
                         }else{
                             result.push(array[i])
                         }
-                        console.log(result)
                     }
+                    console.log(result)
 
-                    console.log(this.readyQueue.getSize())
+                    console.log(this.readyQueue.getSize());
 
-                    for(let single in result){
-                        this.readyQueue.enqueue(single);
+                    for(let j =0; j < result.length; j++){
+                        this.readyQueue.enqueue(result[j]);
                     }
-                    console.log(this.readyQueue)
                 }
               }
 
