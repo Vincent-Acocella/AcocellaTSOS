@@ -113,5 +113,24 @@ module TSOS{
            
            _DeviceDisplay.cycleReload();
         }
+
+        public issueAHit(progNumber){
+            if(progNumber === _PCB.PID){
+                _PCB.terminateCPU();
+            }else{
+
+                //look in memory 
+
+                let resultOfMap = _MemoryAccessor.getProgFromSegMap(progNumber);
+
+                if(resultOfMap < 0){
+                    //It is on the disk
+                    let message = _DeviceDiskDriver.deleteProgramOnDisk(progNumber);
+                }else{
+                    //it's in main memory
+
+                }
+            }
+        }
     }
 }

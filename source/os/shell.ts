@@ -409,7 +409,7 @@ module TSOS {
             _Kernel.krnTrapError("AHHHHHHHHHHHHHHH WHY MUST YOU CAUSE ME HARM FOR A DAMN TEST YOU BASTARD");
         }
 
-        public shellLoad(args: String[]){
+        public shellLoad(args: string[]){
             let program = (<HTMLInputElement>document.getElementById("taProgramInput")).value;
 
             if(program.length > 0) {
@@ -421,8 +421,9 @@ module TSOS {
                    _StdOut.putText("Input greater than 256 or hexidecimal format")
                } else {
                    let priority = _PRIORITY;
+                   let isNumber = parseInt(args[1])
 
-                    if(args.length > 0){
+                    if(!isNaN(isNumber) &&args.length > 0){
                         priority = parseInt(args[0].toString());
                         console.log(priority);
                     }
@@ -431,7 +432,7 @@ module TSOS {
                    if(progNum < 0){
                     _StdOut.putText("No avaliable memory for use");
                    }else{
-                    _StdOut.putText("Priority Set to " + priority);
+                    _StdOut.putText("Priority Set to " + priority) + " (default 5)";
                     _StdOut.advanceLine();
                     _StdOut.putText("Type 'run " + progNum +"' To run code");
                     //_DeviceDisplay.updateMemory();
@@ -442,9 +443,9 @@ module TSOS {
             }
         }
 
-        public shellRun(args: String[]){
+        public shellRun(args: string[]){
 
-            if(args.length > 0){
+            if(!isNaN(parseInt(args[1])) && args.length > 0){
                 _MemoryManager.runMemory(args)
             } else{
                 _StdOut.putText("Please input a program");
@@ -485,7 +486,20 @@ module TSOS {
          console.log(_DeviceDiskDriver.getProgramNameFromPID(3))
         }
 
-        public shellKill(){
+        public shellKill(args:string){
+            let progNum = parseInt(args[1])
+
+            if(args.length > 0 &&!isNaN(progNum)){
+               let mem = _MemoryAccessor.logicalMemory
+
+                for(let i = 0; i < mem.length;i++ ){
+                    if(mem[i] === progNum){
+                        _MemoryManager.issuedAHit(progNum)
+                    }
+                }
+            }else{
+                _StdOut.putText("Please input a valid process");
+            }
             //leave in memory but kill process
             //remove from ready Queue
         }
@@ -575,12 +589,19 @@ module TSOS {
         }
 
         public shellList(){
-            let listReturned = _DeviceDiskDriver.listAvaliableFiles();
-            if(listReturned.length > 0){
-                for(let item in listReturned){
-                    _StdOut.putText(listReturned[item])
-                    _StdOut.advanceLine();
+
+            if(_FORMATTED){
+                let listReturned = _DeviceDiskDriver.listAvaliableFiles();
+                if(listReturned.length > 0){
+                    for(let item in listReturned){
+                        _StdOut.putText(listReturned[item])
+                        _StdOut.advanceLine();
+                    }
+                }else{
+                    _StdOut.putText("No Files On Disk")
                 }
+            }else{
+                _StdOut.putText("Please format hard drive.");
             } 
         }
 
@@ -597,12 +618,12 @@ module TSOS {
                         selected = "Priority";
                         _ActiveSchedular = _PriorityScheduler;
                         break;
+                    case 'rr':
+                        selected = "Round Robin"
                     default:
-                        selected = "Round Robin";
+                        selected = "Default: Round Robin";
                         _ActiveSchedular = _RoundRobin;
-
                 }
-
                 _StdOut.putText("The CPU will be running "+ selected + " schedualing")
             }
         }
@@ -620,9 +641,8 @@ module TSOS {
                 case _FCFS:
                     selected = 'FCFS';
             }
-            _StdOut.putText(selected);
+            _StdOut.putText("Running :" + selected);
 
         }
-
     }
 }

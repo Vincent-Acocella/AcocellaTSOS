@@ -53,7 +53,6 @@ var TSOS;
                 //Page Fault
                 //see if there's an open spot in memory on process terminate
                 var openSeg = _MemoryManager.deployNextSegmentForUse();
-                console.log(openSeg);
                 if (openSeg !== -1) {
                     //Open ice take advantage
                     this.allProcesses[firstIndex][11] = openSeg;
@@ -159,7 +158,6 @@ var TSOS;
                 added = true;
             }
             if (added) {
-                console.log(_ActiveSchedular);
                 if (_ActiveSchedular === 3) {
                     var size = this.readyQueue.getSize();
                     //alter ready Q

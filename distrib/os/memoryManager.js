@@ -101,6 +101,8 @@ var TSOS;
             }
             _DeviceDisplay.cycleReload();
         };
+        MemoryManager.prototype.issueAHit = function (progNumber) {
+        };
         return MemoryManager;
     }());
     TSOS.MemoryManager = MemoryManager;

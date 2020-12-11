@@ -271,7 +271,7 @@ module TSOS{
             let filesIndex = 0;
             for(let i = 1; i< 8; i++){
                 let aFile = JSON.parse(sessionStorage.getItem(`0:0:${i}`));
-                console.log(aFile.availability)
+
                 if(aFile.availability === 1 && aFile.data[0] !== "7" && aFile.data[1] !== "e"){
                     filesFound[filesIndex] = this.convertToTextFromHex(aFile.data);
                     filesIndex++;
@@ -280,12 +280,43 @@ module TSOS{
             return filesFound;
         }
 
+
+
+        public deleteProgramOnDisk(PID){
+           let location = this.getProgramNameFromPID(PID);
+
+           if(location > 0){
+
+            let removingDisk = JSON.parse(sessionStorage.getItem(`0:0:${location}`));
+            removingDisk.availability = 0;
+            let pointer = `${removingDisk.pointer[0]}:${removingDisk.pointer[1]}:${removingDisk.pointer[2]}`;
+            removingDisk.pointer = [0,0,0];
+            let files = JSON.parse(sessionStorage.getItem(pointer));
+            files.availability = 0;
+
+            //remove chain of pointers
+            do{
+                sessionStorage.setItem(pointer, JSON.stringify(files));
+                _DeviceDisplay.updateHardDriveDisplay(pointer);
+                pointer =`${files.pointer[0]}:${files.pointer[1]}:${files.pointer[2]}`;
+                files = JSON.parse(sessionStorage.getItem(pointer));
+                files.availability = 0;
+
+            }while(pointer!== `0:0:0`);
+
+            sessionStorage.setItem(`0:0:${location}`, JSON.stringify(removingDisk));
+            _DeviceDisplay.updateHardDriveDisplay(`0:0:${location}`);
+            return PID
+
+           }else{
+               return ("Unable to delete process with PID: " + PID);
+           }
+        }
+
         //Write the program to the disk at the next free memory spots
 
         public writeProgramToDisk(dirLocation, program, progLength){
             //This is where we create the file in the directory
-
-            console.log(progLength)
     
             //Get file JSON for process
             let fileCreated = JSON.parse(sessionStorage.getItem(`0:0:${dirLocation}`));

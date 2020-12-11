@@ -64,11 +64,11 @@ module TSOS{
                 //Page Fault
                 //see if there's an open spot in memory on process terminate
                 let openSeg = _MemoryManager.deployNextSegmentForUse();
-                console.log(openSeg)
                 if(openSeg !== -1){
                     //Open ice take advantage
                     this.allProcesses[firstIndex][11] = openSeg;
                     _KernelInterruptQueue.enqueue(new Interrupt(DISKDRIVER_IRQ, [ROLLINPROG, firstIndex]));
+
                 }else{
                     let pidToSwap;
                     //Checks
@@ -96,7 +96,6 @@ module TSOS{
                     } 
                     //Get spot
                     let location = this.allProcesses[pidToSwap][11];
-
                     //Set the page table
                     _MemoryManager.avaliableMemory[location] = true;
                     _MemoryAccessor.setSegtoMemMap(firstIndex, location);
@@ -185,7 +184,6 @@ module TSOS{
             }
 
            if(added){
-               console.log(_ActiveSchedular)
               if(_ActiveSchedular === 3){
                     let size = this.readyQueue.getSize();
 
@@ -195,6 +193,7 @@ module TSOS{
                     for(let i = 0; i < size; i++){
                         array[i] = this.readyQueue.dequeue();
                     }
+
                     let result = [];
 
                     let topP = array[0];
@@ -253,6 +252,7 @@ module TSOS{
                     this.readyQueue.enqueue(pullVal);
                  }
             }
+            _DeviceDisplay.cycleReload();
             
             if(this.readyQueue.getSize() === 0){
                 _CPU.isExecuting = false;
